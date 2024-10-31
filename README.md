@@ -45,7 +45,9 @@ To run the use case tests, follow these steps:
 ## Example Output
 
 When you run the `UseCases` class, you should see output similar to the following:
-Booking ID: 1 Hotel Name: Grand Hotel Room Type: Deluxe
+Booking ID: 1 
+Hotel Name: Grand Hotel 
+Room Type: Deluxe
 
 
 ## Classes and Attributes
