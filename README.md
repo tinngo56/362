@@ -156,4 +156,3 @@ Room Type: Deluxe
 - `hotelSize`: double
 - `numberOfHotelsOwned`: int
 - `contactInfo`: String
->>>>>>> b6524b6 (Blueprint)
