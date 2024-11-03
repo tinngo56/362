@@ -3,11 +3,12 @@ public class Hotel {
     private String name;
     private String location;
     private int roomCount;
+    private int numAvailableRooms;
     private double propertyTax;
     private double size;
     private double rating;
 
-    public Hotel(int id, String name, String location, int roomCount, double propertyTax, double size, double rating) {
+    public Hotel(int id, String name, String location, int roomCount, double propertyTax, double size, double rating, int numAvailableRooms) {
         this.id = id;
         this.name = name;
         this.location = location;
@@ -15,6 +16,7 @@ public class Hotel {
         this.propertyTax = propertyTax;
         this.size = size;
         this.rating = rating;
+        this.numAvailableRooms = numAvailableRooms;
     }
 
     // Getters and setters
@@ -29,6 +31,7 @@ public class Hotel {
     public String getName() {
         return name;
     }
+
 
     public void setName(String name) {
         this.name = name;
@@ -72,5 +75,13 @@ public class Hotel {
 
     public void setRating(double rating) {
         this.rating = rating;
+    }
+
+    public int getNumAvailableRooms() {
+        return numAvailableRooms;
+    }
+
+    public void setNumAvailableRooms(int numAvailableRooms) {
+        this.numAvailableRooms = numAvailableRooms;
     }
 }

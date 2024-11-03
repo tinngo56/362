@@ -4,13 +4,15 @@ public class Room {
     private String roomType;
     private double pricePerNight;
     private String status;
+    private Hotel hotel; // The hotel this room belongs to
 
-    public Room(int id, int bedCount, String roomType, double pricePerNight, String status) {
+    public Room(int id, int bedCount, String roomType, double pricePerNight, String status, Hotel hotel) {
         this.id = id;
         this.bedCount = bedCount;
         this.roomType = roomType;
         this.pricePerNight = pricePerNight;
         this.status = status;
+        this.hotel = hotel;
     }
 
     // Getters and setters
@@ -52,5 +54,13 @@ public class Room {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Hotel getHotel() {
+        return hotel;
+    }
+
+    public void setHotel(Hotel hotel) {
+        this.hotel = hotel;
     }
 }
