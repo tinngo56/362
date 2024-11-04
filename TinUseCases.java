@@ -6,7 +6,7 @@ import java.util.*;
 public class TinUseCases {
     private final HotelStorageHelper storage;
     private static final DateTimeFormatter DATE_FORMAT = 
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
     public TinUseCases(String dataDirectory) throws IOException {
         this.storage = new HotelStorageHelper(dataDirectory);
@@ -79,15 +79,16 @@ public class TinUseCases {
             if (inventory == null) {
                 inventory = new HashMap<>();
                 inventory.put("itemId", supply.getKey());
-                inventory.put("quantity", 0);
+                inventory.put("quantity", 0L); // Use Long instead of int
             }
             
-            int currentQuantity = (int) inventory.get("quantity");
-            int newQuantity = currentQuantity - supply.getValue();
+            // Fix the casting issue by using Long
+            Long currentQuantity = (Long) inventory.get("quantity");
+            long newQuantity = currentQuantity - supply.getValue();
             
             if (newQuantity < 0) {
                 // Handle insufficient supplies
-                requestSupplies(supply.getKey(), Math.abs(newQuantity));
+                requestSupplies(supply.getKey(), Math.abs((int)newQuantity));
                 continue;
             }
             

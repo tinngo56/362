@@ -6,7 +6,7 @@ import java.util.*;
 public class HotelSystemDemo {
     private final HotelStorageHelper storage;
     private static final DateTimeFormatter DATE_FORMAT = 
-        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
     public HotelSystemDemo(String dataDirectory) throws IOException {
         this.storage = new HotelStorageHelper(dataDirectory);
