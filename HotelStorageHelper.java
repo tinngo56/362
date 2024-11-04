@@ -38,6 +38,7 @@ public class HotelStorageHelper {
         registerStore(new BasicStore<>("staff"));
         registerStore(new BasicStore<>("room_service_menu"));
         registerStore(new BasicStore<>("inspections"));
+        registerStore(new BasicStore<>("charges"));
     }
 
     private void registerStore(DataStore<?> store) throws IOException {
