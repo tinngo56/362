@@ -1,6 +1,7 @@
 import Controllers.*;
 import Models.*;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class UseCases {
@@ -19,7 +20,7 @@ public class UseCases {
     public void runUseCase(int useCaseNumber) throws IOException {
         switch (useCaseNumber) {
             case 1:
-                createBooking();
+                CheckInToHotelRoom();
                 break;
             case 2:
                 getBooking();
@@ -50,6 +51,64 @@ public class UseCases {
                 break;
             default:
                 System.out.println("Invalid use case number.");
+        }
+    }
+
+    // Use Case 1
+    private void CheckInToHotelRoom() {
+        Scanner scanner = new Scanner(System.in);
+
+        Hotel hotel = new Hotel(1, "Marriot", "123 Place", 5, .7f, 5, 4, 5);
+
+        ArrayList<Room> rooms = new ArrayList<>();
+        rooms.add(new Room(1, "Deluxe", 150.0, "AVAILABLE", "", ""));
+        rooms.add(new Room(2, "Standard", 100.0, "AVAILABLE", "", ""));
+        rooms.add(new Room(3, "Standard", 125.0, "AVAILABLE", "", ""));
+        rooms.add(new Room(4, "Suite", 300.0, "AVAILABLE", "", ""));
+        rooms.add(new Room(5, "Standard", 150.0, "AVAILABLE", "", ""));
+
+        System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
+        if(hotel.getNumAvailableRooms() <= 0) {
+            System.out.println("Hotel is sold out!");
+            return;
+        }
+
+        boolean didBook = false;
+
+        System.out.print("What room type? (Standard, Deluxe or Suite):  ");
+        String roomType = scanner.next();
+
+        for(Room room : rooms) {
+            // if room is found matching request
+            if(room.getRoomType().equals(roomType) && Objects.equals(room.getStatus(), "AVAILABLE")) {
+                System.out.print("There is a room for $" + room.getPricePerNight() + " per night. " +
+                        "Purchase? (y/n) ");
+                char answer = scanner.next().charAt(0);
+                if(answer == 'y') {
+                    System.out.print("How many nights? ");
+                    int nights = scanner.nextInt();
+                    LocalDate checkoutDate = LocalDate.now().plusDays(nights);
+
+                    room.setStatus("OCCUPIED");
+                    room.setCurrentGuest("Bob");
+
+                    Booking booking = new Booking(1, LocalDate.now().toString(), checkoutDate.toString(),
+                            room.getPricePerNight() * nights, "Complete", room);
+
+                    try {
+                        bookingController.createBooking(booking);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    System.out.println("Booking complete! Checkout date: " + checkoutDate);
+                    didBook = true;
+                    break;
+                }
+            }
+        }
+        if(!didBook) {
+            System.out.println("Could not find a room. Try again with different requirements.");
         }
     }
 
@@ -126,7 +185,7 @@ public class UseCases {
 
             while (true) {
                 System.out.println("Select a use case to run:");
-                System.out.println("1. Create Booking");
+                System.out.println("1. Check In To Hotel");
                 System.out.println("2. Get Booking");
                 System.out.println("3. Update Booking");
                 System.out.println("4. Delete Booking");
