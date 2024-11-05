@@ -49,7 +49,7 @@ To run the use case tests, follow these steps:
 3. Compile all the Java files. You can use the following command in the terminal:
 
     ```sh
-    javac -d bin Controllers/*.java Models/*.java Storage/*.java UseCases/UseCases.java
+    javac -d bin Controllers/*.java Models/*.java Storage/*.java UseCases.java
     ```
 
 4. Run the `UseCases` class to see the output of the use case tests:
