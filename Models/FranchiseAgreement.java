@@ -1,3 +1,4 @@
+package Models;
 public class FranchiseAgreement {
     private int id;
     private String startDate;

@@ -1,3 +1,5 @@
+package Models;
+
 public class Payroll {
     private int id;
     private int employeeId;
