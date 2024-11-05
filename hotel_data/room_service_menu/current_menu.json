@@ -1,0 +1,30 @@
+{
+  "lastUpdated": "2024-11-04_18-19-35",
+  "lastModified": "2024-11-04_18-19-35",
+  "items": [
+  {
+  "price": 15.99,
+  "name": "Burger",
+  "available": true,
+  "category": "Main Course"
+},
+  {
+  "price": 12.99,
+  "name": "Caesar Salad",
+  "available": true,
+  "category": "Starter"
+},
+  {
+  "price": 8.99,
+  "name": "Chocolate Cake",
+  "available": true,
+  "category": "Dessert"
+},
+  {
+  "price": 3.99,
+  "name": "Soft Drinks",
+  "available": true,
+  "category": "Beverages"
+}
+]
+}

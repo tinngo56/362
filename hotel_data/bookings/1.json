@@ -1,0 +1,16 @@
+{
+  "checkOutDate": "2024-11-06",
+  "totalPrice": 300.0,
+  "id": 1,
+  "lastModified": "2024-11-05_15-23-53",
+  "checkInDate": "2024-11-05",
+  "paymentStatus": "Complete",
+  "room": {
+  "roomNumber": 301,
+  "currentGuest": "Bob",
+  "lastCleaned": "",
+  "roomType": "Suite",
+  "pricePerNight": 300.0,
+  "status": "OCCUPIED"
+}
+}

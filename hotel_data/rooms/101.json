@@ -1,0 +1,9 @@
+{
+  "roomNumber": 101,
+  "currentGuest": "",
+  "lastModified": "2024-11-05_15-22-14",
+  "lastCleaned": "",
+  "roomType": "Deluxe",
+  "pricePerNight": 150.0,
+  "status": "AVAILABLE"
+}
