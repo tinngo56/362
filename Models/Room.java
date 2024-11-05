@@ -83,7 +83,7 @@ public class Room {
 
     // Convert map to object
     public static Room fromMap(Map<String, Object> map) {
-        int roomNumber = (Integer) map.get("roomNumber");
+        int roomNumber = ((Number)(map.get("roomNumber"))).intValue();
         String roomType = (String) map.get("roomType");
         double pricePerNight = (Double) map.get("pricePerNight");
         String status = (String) map.get("status");

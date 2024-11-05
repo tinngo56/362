@@ -83,7 +83,7 @@ public class Booking {
 
     // Convert map to object
     public static Booking fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
+        int id = ((Number)(map.get("id"))).intValue();
         String checkInDate = (String) map.get("checkInDate");
         String checkOutDate = (String) map.get("checkOutDate");
         double totalPrice = (Double) map.get("totalPrice");

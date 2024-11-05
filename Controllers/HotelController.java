@@ -4,29 +4,29 @@ import java.io.IOException;
 import java.util.Map;
 
 import Models.Hotel;
-import Storage.HotelStorageHelper;
+import storage.StorageHelper;
 
 public class HotelController {
-    private HotelStorageHelper hotelStorageHelper;
+    private StorageHelper storageHelper;
 
     public HotelController(String baseDirectory) throws IOException {
-        this.hotelStorageHelper = new HotelStorageHelper(baseDirectory);
+        this.storageHelper = new StorageHelper(baseDirectory, "hotels");
     }
 
     public void createHotel(Hotel hotel) throws IOException {
-        hotelStorageHelper.getStore("hotels").save(String.valueOf(hotel.getId()), hotel.toMap());
+        storageHelper.getStore("hotels").save(String.valueOf(hotel.getId()), hotel.toMap());
     }
 
     public Hotel getHotel(int id) throws IOException {
-        Map<String, Object> data = hotelStorageHelper.getStore("hotels").load(String.valueOf(id));
+        Map<String, Object> data = storageHelper.getStore("hotels").load(String.valueOf(id));
         return data != null ? Hotel.fromMap(data) : null;
     }
 
     public void updateHotel(Hotel hotel) throws IOException {
-        hotelStorageHelper.getStore("hotels").save(String.valueOf(hotel.getId()), hotel.toMap());
+        storageHelper.getStore("hotels").save(String.valueOf(hotel.getId()), hotel.toMap());
     }
 
     public void deleteHotel(int id) throws IOException {
-        hotelStorageHelper.getStore("hotels").delete(String.valueOf(id));
+        storageHelper.getStore("hotels").delete(String.valueOf(id));
     }
 }

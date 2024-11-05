@@ -105,11 +105,11 @@ public class Hotel {
 
     // Convert map to object
     public static Hotel fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
+        int id = ((Number)(map.get("id"))).intValue();
         String name = (String) map.get("name");
         String location = (String) map.get("location");
-        int roomCount = (Integer) map.get("roomCount");
-        int numAvailableRooms = (Integer) map.get("numAvailableRooms");
+        int roomCount = ((Number)(map.get("roomCount"))).intValue();
+        int numAvailableRooms = ((Number)(map.get("numAvailableRooms"))).intValue();
         double propertyTax = (Double) map.get("propertyTax");
         double size = (Double) map.get("size");
         double rating = (Double) map.get("rating");

@@ -8,6 +8,7 @@ public class UseCases {
     private final BookingController bookingController;
     private final CustomerController customerController;
     private final PaymentController paymentController;
+    private final RoomController roomController;
     private final HotelController hotelController;
 
     public UseCases(String baseDirectory) throws IOException {
@@ -15,6 +16,7 @@ public class UseCases {
         this.customerController = new CustomerController(baseDirectory);
         this.hotelController = new HotelController(baseDirectory);
         this.paymentController = new PaymentController(baseDirectory);
+        this.roomController = new RoomController(baseDirectory);
     }
 
     public void runUseCase(int useCaseNumber) throws IOException {
@@ -60,12 +62,17 @@ public class UseCases {
 
         Hotel hotel = new Hotel(1, "Marriot", "123 Place", 5, .7f, 5, 4, 5);
 
-        ArrayList<Room> rooms = new ArrayList<>();
-        rooms.add(new Room(1, "Deluxe", 150.0, "AVAILABLE", "", ""));
-        rooms.add(new Room(2, "Standard", 100.0, "AVAILABLE", "", ""));
-        rooms.add(new Room(3, "Standard", 125.0, "AVAILABLE", "", ""));
-        rooms.add(new Room(4, "Suite", 300.0, "AVAILABLE", "", ""));
-        rooms.add(new Room(5, "Standard", 150.0, "AVAILABLE", "", ""));
+        List<Room> rooms = null;
+        try {
+            rooms = roomController.getAllRooms();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+//        rooms.add(new Room(101, "Deluxe", 150.0, "AVAILABLE", "", ""));
+//        rooms.add(new Room(102, "Standard", 100.0, "AVAILABLE", "", ""));
+//        rooms.add(new Room(201, "Standard", 125.0, "AVAILABLE", "", ""));
+//        rooms.add(new Room(301, "Suite", 300.0, "AVAILABLE", "", ""));
+//        rooms.add(new Room(202, "Standard", 150.0, "AVAILABLE", "", ""));
 
         System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
         if(hotel.getNumAvailableRooms() <= 0) {
@@ -97,6 +104,7 @@ public class UseCases {
 
                     try {
                         bookingController.createBooking(booking);
+                        roomController.updateRoom(room);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
