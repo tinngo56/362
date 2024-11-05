@@ -1,3 +1,4 @@
+package Models;
 public class CEO {
     private int id;
     private String name;

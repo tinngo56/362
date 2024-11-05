@@ -1,4 +1,5 @@
-public class Receptionist {
+package Models;
+public class CleaningStaff {
     private int id;
     private String name;
     private String contactInfo;
@@ -6,7 +7,7 @@ public class Receptionist {
     private String shiftHours;
     private int experience;
 
-    public Receptionist(int id, String name, String contactInfo, double wage, String shiftHours, int experience) {
+    public CleaningStaff(int id, String name, String contactInfo, double wage, String shiftHours, int experience) {
         this.id = id;
         this.name = name;
         this.contactInfo = contactInfo;

@@ -1,139 +1,149 @@
+import Controllers.*;
+import Models.*;
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class UseCases {
-    public static void main(String[] args) {
-        /*
-         * Room room = new Room(1, 2, "Deluxe", 150.0, "Available");
-         * Booking booking = new Booking(1, "2023-10-01", "2023-10-05", 600.0, "Paid",
-         * room);
-         * Hotel hotel = new Hotel(1, "Grand Hotel", "New York", 100, 5000.0, 20000.0,
-         * 4.5);
-         * 
-         * System.out.println("Booking ID: " + booking.getId());
-         * System.out.println("Hotel Name: " + hotel.getName());
-         * System.out.println("Room Type: " + booking.getRoom().getRoomType());
-         */
+    private final BookingController bookingController;
+    private final CustomerController customerController;
+    private final PaymentController paymentController;
+    private final HotelController hotelController;
 
-        Scanner scanner = new Scanner(System.in);
+    public UseCases(String baseDirectory) throws IOException {
+        this.bookingController = new BookingController(baseDirectory);
+        this.customerController = new CustomerController(baseDirectory);
+        this.hotelController = new HotelController(baseDirectory);
+        this.paymentController = new PaymentController(baseDirectory);
+    }
 
-        Hotel hotel = new Hotel(1, "Grand Hotel", "New York", 5,
-                5000.0, 20000.0, 4.5, 5);
-        ArrayList<Room> rooms = GenerateRooms(hotel);
-
-        while (true) {
-            System.out.println("\nWelcome! Choose an actor: \n");
-            PrintActors();
-
-            System.out.print("Enter actor number: ");
-            int actor = scanner.nextInt();
-
-            switch (actor) {
-                case 0:
-                    System.exit(0);
-
-                    // ACTOR: CUSTOMER
-                case 1:
-                    CustomerScenario(scanner, hotel, rooms);
-                    break;
-
-                default:
-                    continue;
-            }
-
+    public void runUseCase(int useCaseNumber) throws IOException {
+        switch (useCaseNumber) {
+            case 1:
+                createBooking();
+                break;
+            case 2:
+                getBooking();
+                break;
+            case 3:
+                updateBooking();
+                break;
+            case 4:
+                deleteBooking();
+                break;
+            case 5:
+                createCustomer();
+                break;
+            case 6:
+                getCustomer();
+                break;
+            case 7:
+                updateCustomer();
+                break;
+            case 8:
+                deleteCustomer();
+                break;
+            case 9:
+                createPaymentMethod();
+                break;
+            case 10:
+                getPaymentMethod();
+                break;
+            default:
+                System.out.println("Invalid use case number.");
         }
-
     }
 
-    /**
-     * Generates some pre-defined rooms
-     * 
-     * @param hotel The hotel in which the rooms belong to
-     * @return List of rooms
-     */
-    public static ArrayList<Room> GenerateRooms(Hotel hotel) {
-        ArrayList<Room> rooms = new ArrayList<>();
-        rooms.add(new Room(1, 2, "Deluxe", 150.0, "Available", hotel));
-        rooms.add(new Room(2, 1, "Standard", 100.0, "Available", hotel));
-        rooms.add(new Room(3, 2, "Standard", 125.0, "Available", hotel));
-        rooms.add(new Room(4, 2, "Suite", 300.0, "Available", hotel));
-        rooms.add(new Room(5, 3, "Standard", 150.0, "Available", hotel));
-        return rooms;
+    private void createBooking() throws IOException {
+        Booking booking = new Booking(1, "2023-11-01", "2023-11-05", 500.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
+        bookingController.createBooking(booking);
+        System.out.println("Booking created successfully.");
     }
 
-    /**
-     * Prints the actors for the system.
-     */
-    public static void PrintActors() {
-        System.out.println("1. Customer");
-        System.out.println("0 to exit.");
-    }
-
-    /**
-     * Use cases for customer
-     * 
-     * @param scanner main loop scanner
-     * @param hotel   hotel for the use case
-     * @param rooms   list of rooms for the user case
-     */
-    public static void CustomerScenario(Scanner scanner, Hotel hotel, ArrayList<Room> rooms) {
-        Customer customer = new Customer(1, "Bob", "bob@gmail.com", "Silver",
-                "Card", 0);
-
-        System.out.println("\nWhat would you like to do?");
-        System.out.print("1. Book a hotel room\n2. Check out of hotel room\nEnter action: ");
-        int action = scanner.nextInt();
-
-        // BOOK HOTEL ROOM
-        if (action == 1) {
-            System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
-            if (hotel.getNumAvailableRooms() <= 0) {
-                System.out.println("Hotel is sold out!");
-                return;
-            }
-
-            boolean didBook = false;
-
-            System.out.print("How many beds? ");
-            int beds = scanner.nextInt();
-            System.out.print("What room type? (Standard, Deluxe or Suite):  ");
-            String roomType = scanner.next();
-
-            for (Room room : rooms) {
-                // if room is found matching request
-                if (room.getRoomType().equals(roomType) && room.getBedCount() == beds) {
-                    System.out.print("There is a room for $" + room.getPricePerNight() + " per night. " +
-                            "Purchase? (y/n) ");
-                    char answer = scanner.next().charAt(0);
-                    if (answer == 'y') {
-                        System.out.print("How many nights? ");
-                        int nights = scanner.nextInt();
-                        LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-                        Booking booking = new Booking(1, LocalDate.now().toString(), checkoutDate.toString(),
-                                room.getPricePerNight() * nights, "Complete", room);
-                        System.out.println("Booking complete! Checkout date: " + checkoutDate);
-                        didBook = true;
-                        break;
-                    }
-                }
-            }
-            if (!didBook) {
-                System.out.println("Could not find a room. Try again with different requirements.");
-            }
-
-            // CHECK OUT OF HOTEL ROOM
+    private void getBooking() throws IOException {
+        Booking booking = bookingController.getBooking(1);
+        if (booking != null) {
+            System.out.println("Booking details: " + booking.toMap());
         } else {
-            System.out.println("\n\n----- CHECK OUT OF A HOTEL ROOM -----\n");
+            System.out.println("Booking not found.");
+        }
+    }
 
+    private void updateBooking() throws IOException {
+        Booking booking = new Booking(1, "2023-11-01", "2023-11-06", 600.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
+        bookingController.updateBooking(booking);
+        System.out.println("Booking updated successfully.");
+    }
+
+    private void deleteBooking() throws IOException {
+        bookingController.deleteBooking(1);
+        System.out.println("Booking deleted successfully.");
+    }
+
+    private void createCustomer() throws IOException {
+        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "GOLD", "CREDIT_CARD", 5);
+        customerController.createCustomer(customer);
+        System.out.println("Customer created successfully.");
+    }
+
+    private void getCustomer() throws IOException {
+        Customer customer = customerController.getCustomer(1);
+        if (customer != null) {
+            System.out.println("Customer details: " + customer.toMap());
+        } else {
+            System.out.println("Customer not found.");
+        }
+    }
+
+    private void updateCustomer() throws IOException {
+        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "PLATINUM", "CREDIT_CARD", 10);
+        customerController.updateCustomer(customer);
+        System.out.println("Customer updated successfully.");
+    }
+
+    private void deleteCustomer() throws IOException {
+        customerController.deleteCustomer(1);
+        System.out.println("Customer deleted successfully.");
+    }
+
+    private void createPaymentMethod() throws IOException {
+        PaymentMethod paymentMethod = new PaymentMethod(1, "CREDIT_CARD", "1234567890123456", "12/23", "ACTIVE");
+        paymentController.createPaymentMethod(paymentMethod);
+        System.out.println("Payment method created successfully.");
+    }
+
+    private void getPaymentMethod() throws IOException {
+        PaymentMethod paymentMethod = paymentController.getPaymentMethod(1);
+        if (paymentMethod != null) {
+            System.out.println("Payment method details: " + paymentMethod.toMap());
+        } else {
+            System.out.println("Payment method not found.");
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        try (Scanner scanner = new Scanner(System.in)) {
+            UseCases useCases = new UseCases("hotel_data");
+
+            while (true) {
+                System.out.println("Select a use case to run:");
+                System.out.println("1. Create Booking");
+                System.out.println("2. Get Booking");
+                System.out.println("3. Update Booking");
+                System.out.println("4. Delete Booking");
+                System.out.println("5. Create Customer");
+                System.out.println("6. Get Customer");
+                System.out.println("7. Update Customer");
+                System.out.println("8. Delete Customer");
+                System.out.println("9. Create Payment Method");
+                System.out.println("10. Get Payment Method");
+                System.out.println("0. Exit");
+
+                int useCaseNumber = scanner.nextInt();
+                if (useCaseNumber == 0) {
+                    break;
+                }
+                useCases.runUseCase(useCaseNumber);
+            }
         }
     }
 }

@@ -1,3 +1,5 @@
+package Models;
+
 public class PointOfSale {
     private int id;
     private String operator;

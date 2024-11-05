@@ -1,3 +1,5 @@
+package Models;
+
 public class HR {
     private int id;
     private String name;

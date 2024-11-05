@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# 362 test
-=======
 # Hotel Management System
 
 This project is a simple hotel management system implemented in Java. It includes various classes representing different entities in the system, such as `CEO`, `FranchiseAgreement`, `Hotel`, `CleaningStaff`, `Receptionist`, `HR`, `Payroll`, `Room`, `Booking`, `PointOfSale`, `LoyaltyProgram`, `PaymentMethod`, `Customer`, and `FranchiseOwner`.
@@ -9,45 +6,74 @@ This project is a simple hotel management system implemented in Java. It include
 
 The project is organized into multiple Java files, each representing a different class:
 
-- `CEO.java`
-- `FranchiseAgreement.java`
-- `Hotel.java`
-- `CleaningStaff.java`
-- `Receptionist.java`
-- `HR.java`
-- `Payroll.java`
-- `Room.java`
-- `Booking.java`
-- `PointOfSale.java`
-- `LoyaltyProgram.java`
-- `PaymentMethod.java`
-- `Customer.java`
-- `FranchiseOwner.java`
-- `UseCases.java`
+- `Controllers`
+  - `BookingController.java`
+  - `CustomerController.java`
+  - `HotelController.java`
+  - `PaymentController.java`
+- `Models`
+  - `Booking.java`
+  - `CEO.java`
+  - `CleaningStaff.java`
+  - `Customer.java`
+  - `FranchiseAgreement.java`
+  - `FranchiseOwner.java`
+  - `HR.java`
+  - `Hotel.java`
+  - `LoyaltyProgram.java`
+  - `PaymentMethod.java`
+  - `Payroll.java`
+  - `Person.java`
+  - `PointOfSale.java`
+  - `Receptionist.java`
+  - `Room.java`
+- `Storage`
+  - `BookingStorageHelper.java`
+  - `CustomerStorageHelper.java`
+  - `HotelStorageHelper.java`
+  - `PaymentStorageHelper.java`
+- `UseCases`
+  - `UseCases.java`
 
 ## How to Run
 
 To run the use case tests, follow these steps:
 
 1. Ensure you have Java installed on your machine.
-2. Compile all the Java files. You can use the following command in the terminal:
+2. Navigate to the root directory of the project:
 
     ```sh
-    javac *.java
+    cd "c:\Users\gabeb\Desktop\362"
     ```
 
-3. Run the `UseCases` class to see the output of the use case tests:
+3. Compile all the Java files. You can use the following command in the terminal:
 
     ```sh
-    java UseCases
+    javac -d bin Controllers/*.java Models/*.java Storage/*.java UseCases/UseCases.java
+    ```
+
+4. Run the `UseCases` class to see the output of the use case tests:
+
+    ```sh
+    java -cp bin UseCases.UseCases
     ```
 
 ## Example Output
 
 When you run the `UseCases` class, you should see output similar to the following:
-Booking ID: 1 
-Hotel Name: Grand Hotel 
-Room Type: Deluxe
+Select a use case to run:
+
+Create Booking
+Get Booking
+Update Booking
+Delete Booking
+Create Customer
+Get Customer
+Update Customer
+Delete Customer
+Create Payment Method
+Get Payment Method
+Exit
 
 
 ## Classes and Attributes

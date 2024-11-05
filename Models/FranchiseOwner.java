@@ -1,3 +1,5 @@
+package Models;
+
 public class FranchiseOwner {
     private int id;
     private String name;

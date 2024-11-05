@@ -1,3 +1,4 @@
+package Storage;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
@@ -6,14 +7,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-public class HotelStorageHelper {
+public class BookingStorageHelper {
     private final String baseDirectory;
     private final Map<String, DataStore<?>> stores;
     private final JsonConverter jsonConverter;
     private static final DateTimeFormatter DATE_FORMAT = 
         DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
-    public HotelStorageHelper(String baseDirectory) throws IOException {
+    public BookingStorageHelper(String baseDirectory) throws IOException {
         this.baseDirectory = baseDirectory;
         this.stores = new HashMap<>();
         this.jsonConverter = new JsonConverter();
@@ -27,18 +28,7 @@ public class HotelStorageHelper {
 
     private void initializeStores() throws IOException {
         // Initialize core stores
-        registerStore(new BasicStore<>("rooms"));
-        registerStore(new BasicStore<>("guests"));
-        registerStore(new BasicStore<>("reservations"));
-        registerStore(new BasicStore<>("inventory"));
-        registerStore(new BasicStore<>("cleaning_records"));
-        registerStore(new BasicStore<>("maintenance_requests"));
-        registerStore(new BasicStore<>("room_service_orders"));
-        registerStore(new BasicStore<>("lost_found"));
-        registerStore(new BasicStore<>("staff"));
-        registerStore(new BasicStore<>("room_service_menu"));
-        registerStore(new BasicStore<>("inspections"));
-        registerStore(new BasicStore<>("charges"));
+        registerStore(new BasicStore<>("bookings"));
     }
 
     private void registerStore(DataStore<?> store) throws IOException {

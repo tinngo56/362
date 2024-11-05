@@ -1,3 +1,5 @@
+package Models;
+
 public class LoyaltyProgram {
     private int id;
     private String tier;
