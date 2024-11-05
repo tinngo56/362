@@ -1,38 +1,18 @@
 package Models;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class Staff {
-    private String id;
-    private String name;
-    private String role;
-    private String status;
+public abstract class Staff extends Person {
+    protected String role;
+    protected String status;
 
-    public Staff(String id, String name, String role, String status) {
-        this.id = id;
-        this.name = name;
+    public Staff(int id, String name, String contactInfo, String role, String status) {
+        super(id, name, contactInfo);
         this.role = role;
         this.status = status;
     }
 
     // Getters and setters
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getRole() {
         return role;
     }
@@ -50,10 +30,9 @@ public class Staff {
     }
 
     // Convert object to map
+    @Override
     public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("name", name);
+        Map<String, Object> map = super.toMap();
         map.put("role", role);
         map.put("status", status);
         return map;
@@ -61,10 +40,11 @@ public class Staff {
 
     // Convert map to object
     public static Staff fromMap(Map<String, Object> map) {
-        String id = (String) map.get("id");
+        int id = (Integer) map.get("id");
         String name = (String) map.get("name");
+        String contactInfo = (String) map.get("contactInfo");
         String role = (String) map.get("role");
         String status = (String) map.get("status");
-        return new Staff(id, name, role, status);
+        return new Staff(id, name, contactInfo, role, status) {};
     }
 }

@@ -1,46 +1,20 @@
 package Models;
-public class CEO {
-    private int id;
-    private String name;
-    private String contactInfo;
+
+import java.util.Map;
+
+public class CEO extends Staff {
     private int numberOfFranchisesManaged;
     private double grossProfit;
     private double feesCosts;
 
-    public CEO(int id, String name, String contactInfo, int numberOfFranchisesManaged, double grossProfit, double feesCosts) {
-        this.id = id;
-        this.name = name;
-        this.contactInfo = contactInfo;
+    public CEO(int id, String name, String contactInfo, String role, String status, int numberOfFranchisesManaged, double grossProfit, double feesCosts) {
+        super(id, name, contactInfo, role, status);
         this.numberOfFranchisesManaged = numberOfFranchisesManaged;
         this.grossProfit = grossProfit;
         this.feesCosts = feesCosts;
     }
 
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
     public int getNumberOfFranchisesManaged() {
         return numberOfFranchisesManaged;
     }
@@ -63,5 +37,28 @@ public class CEO {
 
     public void setFeesCosts(double feesCosts) {
         this.feesCosts = feesCosts;
+    }
+
+    // Convert object to map
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put("numberOfFranchisesManaged", numberOfFranchisesManaged);
+        map.put("grossProfit", grossProfit);
+        map.put("feesCosts", feesCosts);
+        return map;
+    }
+
+    // Convert map to object
+    public static CEO fromMap(Map<String, Object> map) {
+        int id = (Integer) map.get("id");
+        String name = (String) map.get("name");
+        String contactInfo = (String) map.get("contactInfo");
+        String role = (String) map.get("role");
+        String status = (String) map.get("status");
+        int numberOfFranchisesManaged = (Integer) map.get("numberOfFranchisesManaged");
+        double grossProfit = (Double) map.get("grossProfit");
+        double feesCosts = (Double) map.get("feesCosts");
+        return new CEO(id, name, contactInfo, role, status, numberOfFranchisesManaged, grossProfit, feesCosts);
     }
 }

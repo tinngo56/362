@@ -1,46 +1,20 @@
 package Models;
-public class CleaningStaff {
-    private int id;
-    private String name;
-    private String contactInfo;
+
+import java.util.Map;
+
+public class CleaningStaff extends Staff {
     private double wage;
     private String shiftHours;
     private int experience;
 
-    public CleaningStaff(int id, String name, String contactInfo, double wage, String shiftHours, int experience) {
-        this.id = id;
-        this.name = name;
-        this.contactInfo = contactInfo;
+    public CleaningStaff(int id, String name, String contactInfo, String role, String status, double wage, String shiftHours, int experience) {
+        super(id, name, contactInfo, role, status);
         this.wage = wage;
         this.shiftHours = shiftHours;
         this.experience = experience;
     }
 
     // Getters and setters
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getContactInfo() {
-        return contactInfo;
-    }
-
-    public void setContactInfo(String contactInfo) {
-        this.contactInfo = contactInfo;
-    }
-
     public double getWage() {
         return wage;
     }
@@ -63,5 +37,28 @@ public class CleaningStaff {
 
     public void setExperience(int experience) {
         this.experience = experience;
+    }
+
+    // Convert object to map
+    @Override
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = super.toMap();
+        map.put("wage", wage);
+        map.put("shiftHours", shiftHours);
+        map.put("experience", experience);
+        return map;
+    }
+
+    // Convert map to object
+    public static CleaningStaff fromMap(Map<String, Object> map) {
+        int id = (Integer) map.get("id");
+        String name = (String) map.get("name");
+        String contactInfo = (String) map.get("contactInfo");
+        String role = (String) map.get("role");
+        String status = (String) map.get("status");
+        double wage = (Double) map.get("wage");
+        String shiftHours = (String) map.get("shiftHours");
+        int experience = (Integer) map.get("experience");
+        return new CleaningStaff(id, name, contactInfo, role, status, wage, shiftHours, experience);
     }
 }

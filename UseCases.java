@@ -69,7 +69,7 @@ public class UseCases {
     }
 
     private void updateBooking() throws IOException {
-        Booking booking = new Booking(1, "2023-11-01", "2023-11-06", 600.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
+        Booking booking = new Booking(1, "2023-11-01", "2023-11-12", 600.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
         bookingController.updateBooking(booking);
         System.out.println("Booking updated successfully.");
     }
