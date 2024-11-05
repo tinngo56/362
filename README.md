@@ -55,7 +55,7 @@ To run the use case tests, follow these steps:
 4. Run the `UseCases` class to see the output of the use case tests:
 
     ```sh
-    java -cp bin UseCases.UseCases
+    java -cp bin UseCases
     ```
 
 ## Example Output
