@@ -1,0 +1,19 @@
+{
+  "statusNotes": "In kitchen",
+  "lastUpdated": "2024-11-04_18-19-35",
+  "completionTime": "2024-11-04_18-19-35",
+  "roomNumber": "201",
+  "orderTime": "2024-11-04_18-19-35",
+  "orderId": "RS_2024-11-04_18-19-35",
+  "chargeId": "CHG_2024-11-04_18-19-35",
+  "lastModified": "2024-11-04_18-19-35",
+  "guestId": "G001",
+  "items": [
+  {
+  "quantity": 1,
+  "price": 15.99,
+  "name": "Burger"
+}
+],
+  "status": "COMPLETED"
+}

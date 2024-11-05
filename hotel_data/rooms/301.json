@@ -1,0 +1,9 @@
+{
+  "roomNumber": 301,
+  "currentGuest": "Bob",
+  "lastModified": "2024-11-05_15-23-53",
+  "lastCleaned": "",
+  "roomType": "Suite",
+  "pricePerNight": 300.0,
+  "status": "OCCUPIED"
+}

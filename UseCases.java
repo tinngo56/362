@@ -96,6 +96,7 @@ public class UseCases {
                     int nights = scanner.nextInt();
                     LocalDate checkoutDate = LocalDate.now().plusDays(nights);
 
+
                     room.setStatus("OCCUPIED");
                     room.setCurrentGuest("Bob");
 
