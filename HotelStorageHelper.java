@@ -1,8 +1,9 @@
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.*;
-import java.util.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -10,7 +11,7 @@ public class HotelStorageHelper {
     private final String baseDirectory;
     private final Map<String, DataStore<?>> stores;
     private final JsonConverter jsonConverter;
-    private static final DateTimeFormatter DATE_FORMAT = 
+    private final DateTimeFormatter DATE_FORMAT = 
         DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
     public HotelStorageHelper(String baseDirectory) throws IOException {
@@ -26,19 +27,19 @@ public class HotelStorageHelper {
     }
 
     private void initializeStores() throws IOException {
-        // Initialize core stores
-        registerStore(new BasicStore<>("rooms"));
-        registerStore(new BasicStore<>("guests"));
-        registerStore(new BasicStore<>("reservations"));
-        registerStore(new BasicStore<>("inventory"));
-        registerStore(new BasicStore<>("cleaning_records"));
-        registerStore(new BasicStore<>("maintenance_requests"));
-        registerStore(new BasicStore<>("room_service_orders"));
-        registerStore(new BasicStore<>("lost_found"));
-        registerStore(new BasicStore<>("staff"));
-        registerStore(new BasicStore<>("room_service_menu"));
-        registerStore(new BasicStore<>("inspections"));
-        registerStore(new BasicStore<>("charges"));
+        // Initialize core stores with generic store implementation
+        registerStore(new ReflectiveStore<>("rooms"));
+        registerStore(new ReflectiveStore<>("guests"));
+        registerStore(new ReflectiveStore<>("reservations"));
+        registerStore(new ReflectiveStore<>("inventory"));
+        registerStore(new ReflectiveStore<>("cleaning_records"));
+        registerStore(new ReflectiveStore<>("maintenance_requests"));
+        registerStore(new ReflectiveStore<>("room_service_orders"));
+        registerStore(new ReflectiveStore<>("lost_found"));
+        registerStore(new ReflectiveStore<>("staff"));
+        registerStore(new ReflectiveStore<>("room_service_menu"));
+        registerStore(new ReflectiveStore<>("inspections"));
+        registerStore(new ReflectiveStore<>("charges"));
     }
 
     private void registerStore(DataStore<?> store) throws IOException {
@@ -55,22 +56,13 @@ public class HotelStorageHelper {
         return store;
     }
 
-    // Core interfaces
-    public interface DataStore<T> {
-        String getStoreName();
-        void save(String id, Map<String, Object> data) throws IOException;
-        Map<String, Object> load(String id) throws IOException;
-        List<Map<String, Object>> loadAll() throws IOException;
-        void delete(String id) throws IOException;
-    }
+    // Modified store implementation using reflection
+    public class ReflectiveStore<T> implements DataStore<T> {
+        public final String storeName;
+        public final ReentrantReadWriteLock lock;
+        public final Map<String, Map<String, Object>> cache;
 
-    // Basic store implementation
-    private class BasicStore<T> implements DataStore<T> {
-        private final String storeName;
-        private final ReentrantReadWriteLock lock;
-        private final Map<String, Map<String, Object>> cache;
-
-        public BasicStore(String storeName) {
+        public ReflectiveStore(String storeName) {
             this.storeName = storeName;
             this.lock = new ReentrantReadWriteLock();
             this.cache = new HashMap<>();
@@ -94,6 +86,30 @@ public class HotelStorageHelper {
             }
         }
 
+        // Helper method to save an object directly
+        @Override
+        public void saveObject(String id, Object obj) throws IOException {
+            save(id, objectToMap(obj));
+        }
+
+        private Map<String, Object> objectToMap(Object obj) {
+            Map<String, Object> map = new HashMap<>();
+            for (Field field : obj.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+                try {
+                    Object value = field.get(obj);
+                    // Handle Hotel reference to prevent circular reference
+                    if (value != null && field.getName().equals("hotel")) {
+                        value = String.valueOf(((Hotel) value).getId());
+                    }
+                    map.put(field.getName(), value);
+                } catch (Exception e) {
+                    System.err.println("Error accessing field " + field.getName() + ": " + e.getMessage());
+                }
+            }
+            return map;
+        }
+
         @Override
         public Map<String, Object> load(String id) throws IOException {
             lock.readLock().lock();
@@ -113,6 +129,75 @@ public class HotelStorageHelper {
             } finally {
                 lock.readLock().unlock();
             }
+        }
+
+        // Helper method to load an object directly
+        @Override
+        public <E> E loadObject(String id, Class<E> clazz, Object context) throws IOException {
+            Map<String, Object> data = load(id);
+            if (data == null) {
+                return null;
+            }
+            return mapToObject(data, clazz, context);
+        }
+
+        private <E> E mapToObject(Map<String, Object> map, Class<E> clazz, Object context) {
+            try {
+                E instance = clazz.getDeclaredConstructor().newInstance();
+                
+                for (Field field : clazz.getDeclaredFields()) {
+                    field.setAccessible(true);
+                    Object value = map.get(field.getName());
+                    
+                    if (value != null) {
+                        // Handle type conversions
+                        if (field.getType() != value.getClass()) {
+                            value = convertValue(value, field.getType());
+                        }
+                        
+                        // Special handling for Hotel reference
+                        if (field.getName().equals("hotel") && context instanceof Hotel) {
+                            value = context;
+                        }
+                        
+                        field.set(instance, value);
+                    }
+                }
+                return instance;
+            } catch (Exception e) {
+                System.err.println("Error creating instance of " + clazz.getName() + ": " + e.getMessage());
+                return null;
+            }
+        }
+        @Override
+        public Object convertValue(Object value, Class<?> targetType) {
+            if (value == null) return null;
+            
+            // Handle number conversions
+            if (value instanceof Number) {
+                Number num = (Number) value;
+                if (targetType == Integer.class || targetType == int.class) {
+                    return num.intValue();
+                } else if (targetType == Long.class || targetType == long.class) {
+                    return num.longValue();
+                } else if (targetType == Double.class || targetType == double.class) {
+                    return num.doubleValue();
+                } else if (targetType == Float.class || targetType == float.class) {
+                    return num.floatValue();
+                }
+            }
+            
+            // Handle String to enum conversion
+            if (targetType.isEnum() && value instanceof String) {
+                return Enum.valueOf((Class<? extends Enum>) targetType, (String) value);
+            }
+            
+            // Handle LocalDateTime
+            if (targetType == LocalDateTime.class && value instanceof String) {
+                return LocalDateTime.parse((String) value, DATE_FORMAT);
+            }
+
+            return value;
         }
 
         @Override
@@ -136,6 +221,14 @@ public class HotelStorageHelper {
             }
         }
 
+        // Helper method to load all objects of a specific type
+        public <E> List<E> loadAllObjects(Class<E> clazz, Object context) throws IOException {
+            return loadAll().stream()
+                .map(data -> mapToObject(data, clazz, context))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        }
+
         @Override
         public void delete(String id) throws IOException {
             lock.writeLock().lock();
@@ -153,7 +246,7 @@ public class HotelStorageHelper {
     }
 
     // JSON conversion utility
-    private static class JsonConverter {
+    private class JsonConverter {
         public void writeToFile(Map<String, Object> data, Path path) throws IOException {
             String json = mapToJson(data);
             Files.write(path, json.getBytes());

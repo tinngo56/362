@@ -4,7 +4,8 @@ public class Room {
     private String roomType;
     private double pricePerNight;
     private String status;
-    private Hotel hotel; // The hotel this room belongs to
+    private Hotel hotel;
+    private Customer customer;
 
     public Room(int id, int bedCount, String roomType, double pricePerNight, String status, Hotel hotel) {
         this.id = id;
@@ -62,5 +63,13 @@ public class Room {
 
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
+    }
+
+    public Customer getCustomer() {
+        return customer;
+    }    
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 }
