@@ -1,8 +1,11 @@
 import Controllers.*;
 import Models.*;
+
+import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class UseCases {
     private final BookingController bookingController;
@@ -22,10 +25,10 @@ public class UseCases {
     public void runUseCase(int useCaseNumber) throws IOException {
         switch (useCaseNumber) {
             case 1:
-                CheckInToHotelRoom();
+                BookHotelRoom();
                 break;
             case 2:
-                getBooking();
+                CheckOutOfHotelRoom();
                 break;
             case 3:
                 updateBooking();
@@ -57,17 +60,11 @@ public class UseCases {
     }
 
     // Use Case 1
-    private void CheckInToHotelRoom() {
+    private void BookHotelRoom() throws IOException {
         Scanner scanner = new Scanner(System.in);
 
-        Hotel hotel = new Hotel(1, "Marriot", "123 Place", 5, .7f, 5, 4, 5);
-
-        List<Room> rooms = null;
-        try {
-            rooms = roomController.getAllRooms();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Hotel hotel = hotelController.getHotel(1);
+        List<Room> rooms = roomController.getAllRooms();
 //        rooms.add(new Room(101, "Deluxe", 150.0, "AVAILABLE", "", ""));
 //        rooms.add(new Room(102, "Standard", 100.0, "AVAILABLE", "", ""));
 //        rooms.add(new Room(201, "Standard", 125.0, "AVAILABLE", "", ""));
@@ -96,21 +93,23 @@ public class UseCases {
                     int nights = scanner.nextInt();
                     LocalDate checkoutDate = LocalDate.now().plusDays(nights);
 
+                    System.out.println("");
 
                     room.setStatus("OCCUPIED");
                     room.setCurrentGuest("Bob");
 
-                    Booking booking = new Booking(1, LocalDate.now().toString(), checkoutDate.toString(),
-                            room.getPricePerNight() * nights, "Complete", room);
+                    int bookingId = bookingController.getNumOfBookings() + 1;
+                    Booking booking = new Booking(bookingId, LocalDate.now().toString(),
+                            checkoutDate.toString(), room.getPricePerNight() * nights, "Complete",
+                            room.getRoomNumber(), false);
 
-                    try {
-                        bookingController.createBooking(booking);
-                        roomController.updateRoom(room);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                    bookingController.createBooking(booking);
+                    roomController.updateRoom(room);
+                    hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
+                    hotelController.updateHotel(hotel);
 
-                    System.out.println("Booking complete! Checkout date: " + checkoutDate);
+                    System.out.println("Booking complete! Your booking ID is " + booking + ". Please remember this for checkout. " +
+                            "Checkout date: " + checkoutDate);
                     didBook = true;
                     break;
                 }
@@ -121,10 +120,62 @@ public class UseCases {
         }
     }
 
+    // Use Case 2
+    private void CheckOutOfHotelRoom() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        Hotel hotel = hotelController.getHotel(1);
+
+        System.out.println("\n\n----- CHECK OUT -----\n");
+        if(hotel.getNumAvailableRooms() >= hotel.getRoomCount()) {
+            System.out.println("All rooms are not checked in.");
+            return;
+        }
+
+        System.out.print("\nPlease enter booking ID: ");
+        int bookingId = scanner.nextInt();
+
+        Booking booking = bookingController.getBooking(bookingId);
+        if(booking == null) {
+            System.out.println("Booking ID " + bookingId + " not found. Please try again.\n");
+            return;
+        }
+
+        Room room = roomController.getRoom(booking.getRoomNum());
+
+        System.out.print("\nWould you like to extend your stay? (y/n) ");
+        char extend = scanner.next().charAt(0);
+        if(extend == 'y') {
+            System.out.print("How many nights? ");
+            int nights = scanner.nextInt();
+            LocalDate checkoutDate = LocalDate.now().plusDays(nights);
+            booking.setCheckOutDate(checkoutDate.toString());
+            booking.setTotalPrice(booking.getTotalPrice() + (room.getPricePerNight() * nights));
+            bookingController.updateBooking(booking);
+            System.out.println("Your stay has been extended to " + checkoutDate);
+            return;
+        }
+
+        if(!Objects.equals(booking.getCheckOutDate(), LocalDate.now().toString())) {
+            System.out.println("WARNING: You are checking out early (booking checkout date is " + booking.getCheckOutDate() + "). " +
+                    "You will still be required to pay your remaining nights.");
+            System.out.print("Do you want to do this? (y/n) ");
+            char answer = scanner.next().charAt(0);
+            if(answer == 'y') {
+
+                room.setStatus("NEEDS CLEANING");
+                room.setCurrentGuest("");
+                hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() + 1);
+                roomController.updateRoom(room);
+                bookingController.deleteBooking(bookingId);
+                hotelController.updateHotel(hotel);
+                System.out.println("Successfully checked out. Thanks for staying at " + hotel.getName());
+            }
+        }
+
+    }
+
     private void createBooking() throws IOException {
-        Booking booking = new Booking(1, "2023-11-01", "2023-11-05", 500.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
-        bookingController.createBooking(booking);
-        System.out.println("Booking created successfully.");
+
     }
 
     private void getBooking() throws IOException {
@@ -137,9 +188,7 @@ public class UseCases {
     }
 
     private void updateBooking() throws IOException {
-        Booking booking = new Booking(1, "2023-11-01", "2023-11-12", 600.0, "PAID", new Room(101, "STANDARD", 150.0, "AVAILABLE", null, "2023-10-31"));
-        bookingController.updateBooking(booking);
-        System.out.println("Booking updated successfully.");
+
     }
 
     private void deleteBooking() throws IOException {
@@ -194,8 +243,8 @@ public class UseCases {
 
             while (true) {
                 System.out.println("Select a use case to run:");
-                System.out.println("1. Check In To Hotel");
-                System.out.println("2. Get Booking");
+                System.out.println("1. Book Hotel Room");
+                System.out.println("2. Check Out Of Hotel Room");
                 System.out.println("3. Update Booking");
                 System.out.println("4. Delete Booking");
                 System.out.println("5. Create Customer");
@@ -205,7 +254,7 @@ public class UseCases {
                 System.out.println("9. Create Payment Method");
                 System.out.println("10. Get Payment Method");
                 System.out.println("0. Exit");
-
+                System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();
                 if (useCaseNumber == 0) {
                     break;

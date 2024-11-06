@@ -9,15 +9,19 @@ public class Booking {
     private String checkOutDate;
     private double totalPrice;
     private String paymentStatus;
-    private Room room;
+    private int roomNum;
 
-    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, Room room) {
+    private boolean canCheckOutEarly;
+
+    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, int roomNum,
+                   boolean canCheckOutEarly) {
         this.id = id;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.totalPrice = totalPrice;
         this.paymentStatus = paymentStatus;
-        this.room = room;
+        this.roomNum = roomNum;
+        this.canCheckOutEarly = canCheckOutEarly;
     }
 
     // Getters and setters
@@ -61,12 +65,20 @@ public class Booking {
         this.paymentStatus = paymentStatus;
     }
 
-    public Room getRoom() {
-        return room;
+    public int getRoomNum() {
+        return roomNum;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setRoomNum(int roomNum) {
+        this.roomNum = roomNum;
+    }
+
+    public boolean isCanCheckOutEarly() {
+        return canCheckOutEarly;
+    }
+
+    public void setCanCheckOutEarly(boolean canCheckOutEarly) {
+        this.canCheckOutEarly = canCheckOutEarly;
     }
 
     // Convert object to map
@@ -77,7 +89,8 @@ public class Booking {
         map.put("checkOutDate", checkOutDate);
         map.put("totalPrice", totalPrice);
         map.put("paymentStatus", paymentStatus);
-        map.put("room", room.toMap()); // Assuming Room class has a toMap() method
+        map.put("roomNum", roomNum);
+        map.put("canCheckOutEarly", canCheckOutEarly);
         return map;
     }
 
@@ -88,9 +101,8 @@ public class Booking {
         String checkOutDate = (String) map.get("checkOutDate");
         double totalPrice = (Double) map.get("totalPrice");
         String paymentStatus = (String) map.get("paymentStatus");
-        @SuppressWarnings("unchecked")
-        Map<String, Object> roomMap = (Map<String, Object>) map.get("room");
-        Room room = Room.fromMap(roomMap); // Assuming Room class has a fromMap() method
-        return new Booking(id, checkInDate, checkOutDate, totalPrice, paymentStatus, room);
+        int roomNum = ((Number)(map.get("roomNum"))).intValue();
+        boolean canCheckOutEarly = (Boolean) map.get("canCheckOutEarly");
+        return new Booking(id, checkInDate, checkOutDate, totalPrice, paymentStatus, roomNum, canCheckOutEarly);
     }
 }
