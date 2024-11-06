@@ -22,7 +22,7 @@ public class RoomController {
 
     public Room getRoom(int id) throws IOException {
         Map<String, Object> data = storageHelper.getStore("rooms").load(String.valueOf(id));
-        return data != null ? Room.fromMap(data) : null;
+        return data != null ? new Room().fromMap(data) : null;
     }
 
     public void updateRoom(Room room) throws IOException {
@@ -38,7 +38,7 @@ public class RoomController {
         if (data == null || data.isEmpty()) return null;
         List<Room> rooms = new ArrayList<>();
         for (Map<String, Object> room : data) {
-            rooms.add(Room.fromMap(room));
+            rooms.add(new Room().fromMap(room));
         }
        return rooms;
     }

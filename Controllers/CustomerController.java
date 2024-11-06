@@ -20,7 +20,7 @@ public class CustomerController {
 
     public Customer getCustomer(int id) throws IOException {
         Map<String, Object> data = storageHelper.getStore("customers").load(String.valueOf(id));
-        return data != null ? Customer.fromMap(data) : null;
+        return data != null ? (Customer) new Customer().fromMap(data) : null;
     }
 
     public void updateCustomer(Customer customer) throws IOException {

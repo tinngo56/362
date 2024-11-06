@@ -13,6 +13,9 @@ public class CleaningStaff extends Staff {
         this.shiftHours = shiftHours;
         this.experience = experience;
     }
+    public CleaningStaff() {
+        super();
+    }
 
     // Getters and setters
     public double getWage() {
@@ -37,28 +40,5 @@ public class CleaningStaff extends Staff {
 
     public void setExperience(int experience) {
         this.experience = experience;
-    }
-
-    // Convert object to map
-    @Override
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = super.toMap();
-        map.put("wage", wage);
-        map.put("shiftHours", shiftHours);
-        map.put("experience", experience);
-        return map;
-    }
-
-    // Convert map to object
-    public static CleaningStaff fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String role = (String) map.get("role");
-        String status = (String) map.get("status");
-        double wage = (Double) map.get("wage");
-        String shiftHours = (String) map.get("shiftHours");
-        int experience = (Integer) map.get("experience");
-        return new CleaningStaff(id, name, contactInfo, role, status, wage, shiftHours, experience);
     }
 }

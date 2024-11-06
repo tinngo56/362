@@ -14,6 +14,9 @@ public class CEO extends Staff {
         this.feesCosts = feesCosts;
     }
 
+    public CEO() {
+        super();
+    }
     // Getters and setters
     public int getNumberOfFranchisesManaged() {
         return numberOfFranchisesManaged;
@@ -37,28 +40,5 @@ public class CEO extends Staff {
 
     public void setFeesCosts(double feesCosts) {
         this.feesCosts = feesCosts;
-    }
-
-    // Convert object to map
-    @Override
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = super.toMap();
-        map.put("numberOfFranchisesManaged", numberOfFranchisesManaged);
-        map.put("grossProfit", grossProfit);
-        map.put("feesCosts", feesCosts);
-        return map;
-    }
-
-    // Convert map to object
-    public static CEO fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String role = (String) map.get("role");
-        String status = (String) map.get("status");
-        int numberOfFranchisesManaged = (Integer) map.get("numberOfFranchisesManaged");
-        double grossProfit = (Double) map.get("grossProfit");
-        double feesCosts = (Double) map.get("feesCosts");
-        return new CEO(id, name, contactInfo, role, status, numberOfFranchisesManaged, grossProfit, feesCosts);
     }
 }

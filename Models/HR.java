@@ -14,6 +14,10 @@ public class HR extends Staff {
         this.policiesImplemented = policiesImplemented;
     }
 
+    public HR() {
+        super();
+    }
+
     // Getters and setters
     public double getWageBudget() {
         return wageBudget;
@@ -37,28 +41,5 @@ public class HR extends Staff {
 
     public void setPoliciesImplemented(String policiesImplemented) {
         this.policiesImplemented = policiesImplemented;
-    }
-
-    // Convert object to map
-    @Override
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = super.toMap();
-        map.put("wageBudget", wageBudget);
-        map.put("numberOfEmployeesManaged", numberOfEmployeesManaged);
-        map.put("policiesImplemented", policiesImplemented);
-        return map;
-    }
-
-    // Convert map to object
-    public static HR fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String role = (String) map.get("role");
-        String status = (String) map.get("status");
-        double wageBudget = (Double) map.get("wageBudget");
-        int numberOfEmployeesManaged = (Integer) map.get("numberOfEmployeesManaged");
-        String policiesImplemented = (String) map.get("policiesImplemented");
-        return new HR(id, name, contactInfo, role, status, wageBudget, numberOfEmployeesManaged, policiesImplemented);
     }
 }

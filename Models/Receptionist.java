@@ -14,6 +14,10 @@ public class Receptionist extends Staff {
         this.experience = experience;
     }
 
+    public Receptionist() {
+        super();
+    }
+
     // Getters and setters
     public double getWage() {
         return wage;
@@ -37,28 +41,5 @@ public class Receptionist extends Staff {
 
     public void setExperience(int experience) {
         this.experience = experience;
-    }
-
-    // Convert object to map
-    @Override
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = super.toMap();
-        map.put("wage", wage);
-        map.put("shiftHours", shiftHours);
-        map.put("experience", experience);
-        return map;
-    }
-
-    // Convert map to object
-    public static Receptionist fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String role = (String) map.get("role");
-        String status = (String) map.get("status");
-        double wage = (Double) map.get("wage");
-        String shiftHours = (String) map.get("shiftHours");
-        int experience = (Integer) map.get("experience");
-        return new Receptionist(id, name, contactInfo, role, status, wage, shiftHours, experience);
     }
 }

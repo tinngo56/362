@@ -20,7 +20,7 @@ public class BookingController {
 
     public Booking getBooking(int id) throws IOException {
         Map<String, Object> data = storageHelper.getStore(STORE_NAME).load(String.valueOf(id));
-        return data != null ? Booking.fromMap(data) : null;
+        return data != null ? new Booking().fromMap(data) : null;
     }
 
     public void updateBooking(Booking booking) throws IOException {

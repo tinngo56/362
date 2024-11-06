@@ -1,5 +1,5 @@
 package Models;
-public class FranchiseAgreement {
+public class FranchiseAgreement extends Mappable<FranchiseAgreement> {
     private int id;
     private String startDate;
     private String endDate;
@@ -12,6 +12,10 @@ public class FranchiseAgreement {
         this.endDate = endDate;
         this.fees = fees;
         this.conditions = conditions;
+    }
+
+    public FranchiseAgreement() {
+        super();
     }
 
     // Getters and setters

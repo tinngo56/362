@@ -1,6 +1,6 @@
 package Models;
 
-public class Payroll {
+public class Payroll extends Mappable<Payroll> {
     private int id;
     private int employeeId;
     private double salary;
@@ -15,6 +15,10 @@ public class Payroll {
         this.bonuses = bonuses;
         this.dateIssued = dateIssued;
         this.paymentStatus = paymentStatus;
+    }
+
+    public Payroll() {
+        super();
     }
 
     // Getters and setters

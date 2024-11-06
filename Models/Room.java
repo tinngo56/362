@@ -3,7 +3,7 @@ package Models;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Room {
+public class Room extends Mappable<Room> {
     private int roomNumber;
     private String roomType;
     private double pricePerNight;
@@ -18,6 +18,10 @@ public class Room {
         this.status = status;
         this.currentGuest = currentGuest;
         this.lastCleaned = lastCleaned;
+    }
+
+    public Room() { 
+        super();
     }
 
     // Getters and setters
@@ -67,28 +71,5 @@ public class Room {
 
     public void setLastCleaned(String lastCleaned) {
         this.lastCleaned = lastCleaned;
-    }
-
-    // Convert object to map
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("roomNumber", roomNumber);
-        map.put("roomType", roomType);
-        map.put("pricePerNight", pricePerNight);
-        map.put("status", status);
-        map.put("currentGuest", currentGuest);
-        map.put("lastCleaned", lastCleaned);
-        return map;
-    }
-
-    // Convert map to object
-    public static Room fromMap(Map<String, Object> map) {
-        int roomNumber = ((Number)(map.get("roomNumber"))).intValue();
-        String roomType = (String) map.get("roomType");
-        double pricePerNight = (Double) map.get("pricePerNight");
-        String status = (String) map.get("status");
-        String currentGuest = (String) map.get("currentGuest");
-        String lastCleaned = (String) map.get("lastCleaned");
-        return new Room(roomNumber, roomType, pricePerNight, status, currentGuest, lastCleaned);
     }
 }

@@ -3,7 +3,7 @@ package Models;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Hotel {
+public class Hotel extends Mappable<Hotel> {
     private int id;
     private String name;
     private String location;
@@ -22,6 +22,9 @@ public class Hotel {
         this.size = size;
         this.rating = rating;
         this.numAvailableRooms = numAvailableRooms;
+    }
+    public Hotel() {
+        super();
     }
 
     // Getters and setters
@@ -87,32 +90,5 @@ public class Hotel {
 
     public void setNumAvailableRooms(int numAvailableRooms) {
         this.numAvailableRooms = numAvailableRooms;
-    }
-
-    // Convert object to map
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("name", name);
-        map.put("location", location);
-        map.put("roomCount", roomCount);
-        map.put("numAvailableRooms", numAvailableRooms);
-        map.put("propertyTax", propertyTax);
-        map.put("size", size);
-        map.put("rating", rating);
-        return map;
-    }
-
-    // Convert map to object
-    public static Hotel fromMap(Map<String, Object> map) {
-        int id = ((Number)(map.get("id"))).intValue();
-        String name = (String) map.get("name");
-        String location = (String) map.get("location");
-        int roomCount = ((Number)(map.get("roomCount"))).intValue();
-        int numAvailableRooms = ((Number)(map.get("numAvailableRooms"))).intValue();
-        double propertyTax = (Double) map.get("propertyTax");
-        double size = (Double) map.get("size");
-        double rating = (Double) map.get("rating");
-        return new Hotel(id, name, location, roomCount, propertyTax, size, rating, numAvailableRooms);
     }
 }

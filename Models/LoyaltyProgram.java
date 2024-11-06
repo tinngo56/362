@@ -1,6 +1,6 @@
 package Models;
 
-public class LoyaltyProgram {
+public class LoyaltyProgram extends Mappable<LoyaltyProgram> {
     private int id;
     private String tier;
     private int pointsAccumulated;
@@ -11,6 +11,10 @@ public class LoyaltyProgram {
         this.tier = tier;
         this.pointsAccumulated = pointsAccumulated;
         this.rewardsAvailable = rewardsAvailable;
+    }
+
+    public LoyaltyProgram() {
+        super();
     }
 
     // Getters and setters
