@@ -3,21 +3,21 @@ package Models;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Customer {
+public class Customer extends Person {
     private int id;
-    private String name;
-    private String contactInfo;
     private String loyaltyProgramLevel;
     private String paymentMethod;
     private int numberOfStays;
 
     public Customer(int id, String name, String contactInfo, String loyaltyProgramLevel, String paymentMethod, int numberOfStays) {
-        this.id = id;
-        this.name = name;
-        this.contactInfo = contactInfo;
+        super(id, name, contactInfo);
         this.loyaltyProgramLevel = loyaltyProgramLevel;
         this.paymentMethod = paymentMethod;
         this.numberOfStays = numberOfStays;
+    }
+
+    public Customer() {
+        super();
     }
 
     // Getters and setters
@@ -67,28 +67,5 @@ public class Customer {
 
     public void setNumberOfStays(int numberOfStays) {
         this.numberOfStays = numberOfStays;
-    }
-
-    // Convert object to map
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("name", name);
-        map.put("contactInfo", contactInfo);
-        map.put("loyaltyProgramLevel", loyaltyProgramLevel);
-        map.put("paymentMethod", paymentMethod);
-        map.put("numberOfStays", numberOfStays);
-        return map;
-    }
-
-    // Convert map to object
-    public static Customer fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String loyaltyProgramLevel = (String) map.get("loyaltyProgramLevel");
-        String paymentMethod = (String) map.get("paymentMethod");
-        int numberOfStays = (Integer) map.get("numberOfStays");
-        return new Customer(id, name, contactInfo, loyaltyProgramLevel, paymentMethod, numberOfStays);
     }
 }

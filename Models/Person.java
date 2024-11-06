@@ -3,7 +3,7 @@ package Models;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class Person {
+public abstract class Person extends Mappable<Person> {
     protected int id;
     protected String name;
     protected String contactInfo;
@@ -12,6 +12,10 @@ public abstract class Person {
         this.id = id;
         this.name = name;
         this.contactInfo = contactInfo;
+    }
+    
+    public Person() {
+        super();
     }
 
     // Getters and Setters
@@ -37,22 +41,5 @@ public abstract class Person {
 
     public void setContactInfo(String contactInfo) {
         this.contactInfo = contactInfo;
-    }
-
-    // Convert object to map
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("name", name);
-        map.put("contactInfo", contactInfo);
-        return map;
-    }
-
-    // Convert map to object
-    public static Person fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        return new Person(id, name, contactInfo) {};
     }
 }

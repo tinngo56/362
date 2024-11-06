@@ -3,7 +3,7 @@ package Models;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PaymentMethod {
+public class PaymentMethod extends Mappable<PaymentMethod> {
     private int id;
     private String type;
     private String cardNumber;
@@ -16,6 +16,10 @@ public class PaymentMethod {
         this.cardNumber = cardNumber;
         this.expiryDate = expiryDate;
         this.paymentStatus = paymentStatus;
+    }
+
+    public PaymentMethod() {
+        super();
     }
 
     // Getters and setters
@@ -57,26 +61,5 @@ public class PaymentMethod {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
-    }
-
-    // Convert object to map
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", id);
-        map.put("type", type);
-        map.put("cardNumber", cardNumber);
-        map.put("expiryDate", expiryDate);
-        map.put("paymentStatus", paymentStatus);
-        return map;
-    }
-
-    // Convert map to object
-    public static PaymentMethod fromMap(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String type = (String) map.get("type");
-        String cardNumber = (String) map.get("cardNumber");
-        String expiryDate = (String) map.get("expiryDate");
-        String paymentStatus = (String) map.get("paymentStatus");
-        return new PaymentMethod(id, type, cardNumber, expiryDate, paymentStatus);
     }
 }

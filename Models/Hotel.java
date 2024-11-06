@@ -24,7 +24,7 @@ public class Hotel extends Mappable<Hotel> {
         this.numAvailableRooms = numAvailableRooms;
     }
     public Hotel() {
-        
+        super();
     }
 
     // Getters and setters

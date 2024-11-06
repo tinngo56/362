@@ -20,7 +20,7 @@ public class PaymentController {
 
     public PaymentMethod getPaymentMethod(int id) throws IOException {
         Map<String, Object> data = storageHelper.getStore("payment_methods").load(String.valueOf(id));
-        return data != null ? PaymentMethod.fromMap(data) : null;
+        return data != null ? new PaymentMethod().fromMap(data) : null;
     }
 
     public void updatePaymentMethod(PaymentMethod paymentMethod) throws IOException {

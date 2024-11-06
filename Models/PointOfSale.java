@@ -1,6 +1,6 @@
 package Models;
 
-public class PointOfSale {
+public class PointOfSale extends Mappable<PointOfSale> {
     private int id;
     private String operator;
     private double totalSales;
