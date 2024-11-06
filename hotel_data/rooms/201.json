@@ -1,9 +1,9 @@
 {
   "roomNumber": 201,
-  "currentGuest": "Bob",
-  "lastModified": "2024-11-05_20-11-39",
+  "currentGuest": "",
+  "lastModified": "2024-11-06_11-35-03",
   "lastCleaned": "",
   "roomType": "Standard",
   "pricePerNight": 125.0,
-  "status": "OCCUPIED"
+  "status": "AVAILABLE"
 }

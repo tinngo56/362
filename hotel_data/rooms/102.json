@@ -1,9 +1,9 @@
 {
   "roomNumber": 102,
   "currentGuest": "",
-  "lastModified": "2024-11-05_20-08-30",
+  "lastModified": "2024-11-06_11-34-31",
   "lastCleaned": "",
   "roomType": "Standard",
   "pricePerNight": 100.0,
-  "status": "NEEDS CLEANING"
+  "status": "AVAILABLE"
 }

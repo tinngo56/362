@@ -88,12 +88,18 @@ public class UseCases {
                 System.out.print("There is a room for $" + room.getPricePerNight() + " per night. " +
                         "Purchase? (y/n) ");
                 char answer = scanner.next().charAt(0);
+
+                 // ---- PURCHASE ROOM ----
                 if(answer == 'y') {
                     System.out.print("How many nights? ");
-                    int nights = scanner.nextInt();
+                    int nights;
+                    try {
+                        nights = scanner.nextInt();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid nights!");
+                        return;
+                    }
                     LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-
-                    System.out.println("");
 
                     room.setStatus("OCCUPIED");
                     room.setCurrentGuest("Bob");
@@ -103,12 +109,13 @@ public class UseCases {
                             checkoutDate.toString(), room.getPricePerNight() * nights, "Complete",
                             room.getRoomNumber(), false);
 
+                    // ---- UPDATE DATABASE ----
                     bookingController.createBooking(booking);
                     roomController.updateRoom(room);
                     hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
                     hotelController.updateHotel(hotel);
 
-                    System.out.println("Booking complete! Your booking ID is " + booking + ". Please remember this for checkout. " +
+                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. " +
                             "Checkout date: " + checkoutDate);
                     didBook = true;
                     break;
@@ -142,6 +149,7 @@ public class UseCases {
 
         Room room = roomController.getRoom(booking.getRoomNum());
 
+        // ---- EXTEND STAY? ----
         System.out.print("\nWould you like to extend your stay? (y/n) ");
         char extend = scanner.next().charAt(0);
         if(extend == 'y') {
@@ -155,22 +163,23 @@ public class UseCases {
             return;
         }
 
-        if(!Objects.equals(booking.getCheckOutDate(), LocalDate.now().toString())) {
+        // ---- IF EARLY CHECK OUT ----
+        if(LocalDate.parse(booking.getCheckOutDate()).isAfter(LocalDate.now())) {
             System.out.println("WARNING: You are checking out early (booking checkout date is " + booking.getCheckOutDate() + "). " +
                     "You will still be required to pay your remaining nights.");
             System.out.print("Do you want to do this? (y/n) ");
             char answer = scanner.next().charAt(0);
-            if(answer == 'y') {
-
-                room.setStatus("NEEDS CLEANING");
-                room.setCurrentGuest("");
-                hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() + 1);
-                roomController.updateRoom(room);
-                bookingController.deleteBooking(bookingId);
-                hotelController.updateHotel(hotel);
-                System.out.println("Successfully checked out. Thanks for staying at " + hotel.getName());
-            }
+            if(answer == 'n') return;
         }
+
+        // ---- UPDATE ROOM AND HOTEL, DELETE BOOKING ----
+        room.setStatus("NEEDS CLEANING");
+        room.setCurrentGuest("");
+        hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() + 1);
+        roomController.updateRoom(room);
+        bookingController.deleteBooking(bookingId);
+        hotelController.updateHotel(hotel);
+        System.out.println("Successfully checked out. Thanks for staying at " + hotel.getName());
 
     }
 
