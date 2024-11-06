@@ -186,64 +186,64 @@ public class UseCases {
 
     }
 
-    // Use Case 11
+    // Use case 11 (core profit cycle)
     private void demonstrateProfitCycle() throws IOException {
         Scanner scanner = new Scanner(System.in);
-
-    Hotel hotel = hotelController.getHotel(1);
-    List<Room> rooms = roomController.getAllRooms();
-
-    System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
-    if (hotel.getNumAvailableRooms() <= 0) {
-        System.out.println("Hotel is sold out!");
-        return;
-    }
-
-    boolean didBook = false;
-
-    System.out.print("What room type? (Standard, Deluxe or Suite):  ");
-    String roomType = scanner.next();
-
-    for (Room room : rooms) {
-        if (room.getRoomType().equals(roomType) && Objects.equals(room.getStatus(), "AVAILABLE")) {
-            System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
-            char answer = scanner.next().charAt(0);
-
-            if (answer == 'y') {
-                System.out.print("How many nights? ");
-                int nights;
-                try {
-                    nights = scanner.nextInt();
-                } catch (InputMismatchException e) {
-                    System.out.println("Invalid nights!");
-                    return;
+    
+        Hotel hotel = hotelController.getHotel(1);
+        List<Room> rooms = roomController.getAllRooms();
+    
+        System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
+        if (hotel.getNumAvailableRooms() <= 0) {
+            System.out.println("Hotel is sold out!");
+            return;
+        }
+    
+        boolean didBook = false;
+    
+        System.out.print("What room type? (Standard, Deluxe or Suite):  ");
+        String roomType = scanner.next();
+    
+        for (Room room : rooms) {
+            if (room.getRoomType().equals(roomType) && Objects.equals(room.getStatus(), "AVAILABLE")) {
+                System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
+                char answer = scanner.next().charAt(0);
+    
+                if (answer == 'y') {
+                    System.out.print("How many nights? ");
+                    int nights;
+                    try {
+                        nights = scanner.nextInt();
+                    } catch (InputMismatchException e) {
+                        System.out.println("Invalid nights!");
+                        return;
+                    }
+    
+                    LocalDate checkoutDate = LocalDate.now().plusDays(nights);
+                    room.setStatus("OCCUPIED");
+                    room.setCurrentGuest("Bob");
+                    int bookingId = bookingController.getNumOfBookings() + 1;
+                    Booking booking = new Booking(bookingId, LocalDate.now().toString(), checkoutDate.toString(), room.getPricePerNight() * nights, "Complete", room.getRoomNumber(), false);
+    
+                    bookingController.createBooking(booking);
+                    roomController.updateRoom(room);
+                    hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
+                    hotelController.updateHotel(hotel);
+    
+                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. Checkout date: " + checkoutDate);
+                    didBook = true;
+    
+                    double franchiseOwnerPay = bookingController.getFranchiseOwnerPay();
+                    double ceoPay = bookingController.getCEOPay();
+    
+                    System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
+                    System.out.println("CEO's Pay: $" + ceoPay);
+    
+                    break;
                 }
-
-                LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-                room.setStatus("OCCUPIED");
-                room.setCurrentGuest("Bob");
-                int bookingId = bookingController.getNumOfBookings() + 1;
-                Booking booking = new Booking(bookingId, LocalDate.now().toString(), checkoutDate.toString(), room.getPricePerNight() * nights, "Complete", room.getRoomNumber(), false);
-
-                bookingController.createBooking(booking);
-                roomController.updateRoom(room);
-                hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
-                hotelController.updateHotel(hotel);
-
-                System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. Checkout date: " + checkoutDate);
-                didBook = true;
-
-                double franchiseOwnerPay = franchiseOwner.getPay();
-                double ceoPay = ceo.getPay();
-
-                System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
-                System.out.println("CEO's Pay: $" + ceoPay);
-
-                break;
             }
         }
-    }
-
+    
         if (!didBook) {
             System.out.println("Could not find a room. Try again with different requirements.");
         }

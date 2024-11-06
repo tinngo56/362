@@ -10,6 +10,8 @@ import storage.StorageHelper;
 public class BookingController {
     private StorageHelper storageHelper;
     private final String STORE_NAME = "bookings";
+    private final String FRANCHISE_OWNER_PAY_KEY = "franchiseOwnerPay";
+    private final String CEO_PAY_KEY = "ceoPay";
     private FranchiseOwner franchiseOwner;
     private CEO ceo;
 
@@ -22,9 +24,9 @@ public class BookingController {
     public void createBooking(Booking booking) throws IOException {
         storageHelper.getStore(STORE_NAME).save(String.valueOf(booking.getId()), booking.toMap());
         double bookingAmount = booking.getTotalPrice();
-        franchiseOwner.addPay(bookingAmount);
+        addPayToFranchiseOwner(bookingAmount);
         double ceoFee = bookingAmount * 0.05;
-        ceo.addPay(ceoFee);
+        addPayToCEO(ceoFee);
     }
 
     public Booking getBooking(int id) throws IOException {
@@ -42,5 +44,25 @@ public class BookingController {
 
     public int getNumOfBookings() throws IOException {
         return storageHelper.getStore(STORE_NAME).loadAll().size();
+    }
+
+    private void addPayToFranchiseOwner(double amount) throws IOException {
+        double currentPay = getFranchiseOwnerPay();
+        storageHelper.getStore(STORE_NAME).save(FRANCHISE_OWNER_PAY_KEY, currentPay + amount);
+    }
+
+    private double getFranchiseOwnerPay() throws IOException {
+        Object pay = storageHelper.getStore(STORE_NAME).load(FRANCHISE_OWNER_PAY_KEY);
+        return pay != null ? (double) pay : 0.0;
+    }
+
+    private void addPayToCEO(double amount) throws IOException {
+        double currentPay = getCEOPay();
+        storageHelper.getStore(STORE_NAME).save(CEO_PAY_KEY, currentPay + amount);
+    }
+
+    private double getCEOPay() throws IOException {
+        Object pay = storageHelper.getStore(STORE_NAME).load(CEO_PAY_KEY);
+        return pay != null ? (double) pay : 0.0;
     }
 }
