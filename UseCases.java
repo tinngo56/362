@@ -252,7 +252,7 @@ public class UseCases {
             System.out.println("Could not find a room. Try again with different requirements.");
             }
         }
-
+    // Use case 12 (sign franchise agreement)
 private void signFranchiseAgreement() throws IOException {
     Scanner scanner = new Scanner(System.in);
 
