@@ -1,7 +1,5 @@
 package Models;
 
-import java.util.Map;
-
 public class HR extends Staff {
     private double wageBudget;
     private int numberOfEmployeesManaged;

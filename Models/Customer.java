@@ -1,8 +1,5 @@
 package Models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Customer extends Person {
     private int id;
     private String loyaltyProgramLevel;

@@ -1,8 +1,5 @@
 package Models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public abstract class Person extends Mappable<Person> {
     protected int id;
     protected String name;

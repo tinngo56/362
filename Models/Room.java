@@ -1,8 +1,5 @@
 package Models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Room extends Mappable<Room> {
     private int roomNumber;
     private String roomType;

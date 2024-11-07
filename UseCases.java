@@ -15,7 +15,8 @@ public class UseCases {
     private final HotelController hotelController;
 
     public UseCases(String baseDirectory) throws IOException {
-        this.bookingController = new BookingController(baseDirectory);
+        CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
+        this.bookingController = new BookingController(baseDirectory, ceo);
         this.customerController = new CustomerController(baseDirectory);
         this.hotelController = new HotelController(baseDirectory);
         this.paymentController = new PaymentController(baseDirectory);
@@ -55,7 +56,10 @@ public class UseCases {
                 getPaymentMethod();
                 break;
             case 11:
-                demonstrateProfitCycle();
+                    demonstrateProfitCycle();
+                    break;
+                case 12:
+                    signFranchiseAgreement();
                 break;
             default:
                 System.out.println("Invalid use case number.");
@@ -230,14 +234,14 @@ public class UseCases {
                     hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
                     hotelController.updateHotel(hotel);
     
-                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. Checkout date: " + checkoutDate);
+                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. Checkout date: " + checkoutDate + '\n');
                     didBook = true;
     
                     double franchiseOwnerPay = bookingController.getFranchiseOwnerPay();
                     double ceoPay = bookingController.getCEOPay();
     
                     System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
-                    System.out.println("CEO's Pay: $" + ceoPay);
+                    System.out.println("CEO's Pay: $" + ceoPay + '\n');
     
                     break;
                 }
@@ -246,21 +250,65 @@ public class UseCases {
     
         if (!didBook) {
             System.out.println("Could not find a room. Try again with different requirements.");
+            }
+        }
+
+private void signFranchiseAgreement() throws IOException {
+    Scanner scanner = new Scanner(System.in);
+
+    System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
+
+    System.out.print("Enter start date (YYYY-MM-DD): ");
+    String startDate = scanner.next();
+
+    System.out.print("Enter end date (YYYY-MM-DD): ");
+    String endDate = scanner.next();
+
+    double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
+    System.out.println("Franchise fee: " + fees + "%");
+
+    System.out.println("Select conditions from the list below:");
+    String[] conditionsList = {
+        "Maintain brand standards",
+        "Participate in marketing campaigns",
+        "Adhere to pricing guidelines",
+        "Undergo regular inspections",
+        "Provide regular financial reports",
+        "Attend training sessions",
+        "Use approved suppliers",
+        "Pay royalties on time",
+        "Maintain customer satisfaction",
+        "Follow operational procedures"
+    };
+
+    for (int i = 0; i < conditionsList.length; i++) {
+        System.out.println((i + 1) + ". " + conditionsList[i]);
+    }
+
+    System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
+    String[] selectedConditionsIndices = scanner.next().split(",");
+    StringBuilder selectedConditions = new StringBuilder();
+    for (String index : selectedConditionsIndices) {
+        int conditionIndex = Integer.parseInt(index.trim()) - 1;
+        if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
+            selectedConditions.append(conditionsList[conditionIndex]).append("\n");
         }
     }
 
-    private void createBooking() throws IOException {
+    String conditions = selectedConditions.toString();
 
-    }
+    System.out.println("You have agreed to the following conditions:");
+    System.out.println(conditions);
 
-    private void getBooking() throws IOException {
-        Booking booking = bookingController.getBooking(1);
-        if (booking != null) {
-            System.out.println("Booking details: " + booking.toMap());
-        } else {
-            System.out.println("Booking not found.");
-        }
-    }
+    FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
+    int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
+    FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
+
+    franchiseAgreementController.createFranchiseAgreement(agreement);
+
+    System.out.println("Franchise agreement signed successfully!");
+    System.out.println("Agreement ID: " + agreementId);
+}
 
     private void updateBooking() throws IOException {
 
@@ -329,6 +377,7 @@ public class UseCases {
                 System.out.println("9. Create Payment Method");
                 System.out.println("10. Get Payment Method");
                 System.out.println("11. Demonstrate Profit Cycle");
+                System.out.println("12. Sign Franchise Agreement");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();

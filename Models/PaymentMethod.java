@@ -1,8 +1,5 @@
 package Models;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class PaymentMethod extends Mappable<PaymentMethod> {
     private int id;
     private String type;

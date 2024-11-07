@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import Models.Hotel;
-import storage.StorageHelper;
+import Storage.StorageHelper;
 
 public class HotelController {
     private StorageHelper storageHelper;

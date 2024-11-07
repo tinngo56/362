@@ -1,7 +1,5 @@
 package Models;
 
-import java.util.Map;
-
 public abstract class Staff extends Person {
     protected String role;
     protected String status;

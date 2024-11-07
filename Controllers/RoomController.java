@@ -1,8 +1,7 @@
 package Controllers;
 
-import Models.Hotel;
 import Models.Room;
-import storage.StorageHelper;
+import Storage.StorageHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;

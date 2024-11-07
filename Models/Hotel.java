@@ -1,7 +1,5 @@
 package Models;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class Hotel extends Mappable<Hotel> {
     private int id;

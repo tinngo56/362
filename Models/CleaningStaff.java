@@ -1,7 +1,5 @@
 package Models;
 
-import java.util.Map;
-
 public class CleaningStaff extends Staff {
     private double wage;
     private String shiftHours;
