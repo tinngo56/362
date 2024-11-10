@@ -35,7 +35,7 @@ public class PoolMaintenanceController {
         return maxId + 1;
     }
 
-    public PoolEquipmentInspection makePoolEquipmentInspectionFromInput(Scanner scanner) throws IOException {
+    public void makeAndSavePoolEquipmentInspectionFromInput(Scanner scanner) throws IOException {
         System.out.println("=== Create New Pool Equipment Inspection ===");
 
         int id = nextId++;
@@ -54,7 +54,7 @@ public class PoolMaintenanceController {
 
         PoolEquipmentInspection inspection = new PoolEquipmentInspection(id, date.toString(), pump, filter, heater);
 
-        return inspection;
+        createPoolEquipmentInspection(inspection);
     }
 
     private boolean getBooleanInput(Scanner scanner, String prompt) {

@@ -121,7 +121,7 @@ public class UseCases {
     }
 
     private void completeNewPoolInspection(Scanner scanner) throws IOException {
-        poolMaintenanceController.makePoolEquipmentInspectionFromInput(scanner);
+        poolMaintenanceController.makeAndSavePoolEquipmentInspectionFromInput(scanner);
     }
 
 
