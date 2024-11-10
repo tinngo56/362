@@ -1,11 +1,9 @@
 import Controllers.*;
 import Models.*;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class UseCases {
     private final BookingController bookingController;
@@ -13,6 +11,8 @@ public class UseCases {
     private final PaymentController paymentController;
     private final RoomController roomController;
     private final HotelController hotelController;
+    private final PoolMaintenanceController poolMaintenanceController;
+    private final PoolChemicalsController poolChemicalsController;
 
     public UseCases(String baseDirectory) throws IOException {
         CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
@@ -21,7 +21,109 @@ public class UseCases {
         this.hotelController = new HotelController(baseDirectory);
         this.paymentController = new PaymentController(baseDirectory);
         this.roomController = new RoomController(baseDirectory);
+        this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
+        this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
     }
+
+    public void runUseCaseByActor(int actor) throws IOException{
+        Scanner scnr = new Scanner(System.in);
+        switch (actor){
+            case 1:
+                //Should have access to most use cases
+                managerUseCases(scnr);
+                break;
+            case 2:
+                maintenanceEmployeeUseCases(scnr);
+                break;
+            case 3:
+                managerUseCases(scnr);
+                break;
+            case 4:
+                managerUseCases(scnr);
+                break;
+            default:
+
+        }
+    }
+
+    private void maintenanceEmployeeUseCases(Scanner scnr) {
+        System.out.println("Select a use case to run:");
+    }
+
+    private void managerUseCases(Scanner scnr) throws IOException {
+        while (true) { // Loop to allow multiple operations until the manager chooses to exit
+            System.out.println("\nChoose what to run:");
+            System.out.println("1. Complete New Pool Inspection");
+            System.out.println("2. View All Pool Inspections");
+            System.out.println("3. Complete New Chemical Reading");
+            System.out.println("4. View All Chemical Readings and current Chemical Inventory");
+            System.out.println("5. Add to Chemical Inventory");
+            System.out.println("6. Subtract from Chemical Inventory");
+            System.out.println("7. Set Chemical Inventory");
+            System.out.println("0. Exit to change your Actor choice");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine(); // Consume the remaining newline
+
+            switch (choice) {
+                case 0:
+                    return; // Exit the manager use cases
+                case 1:
+                    completeNewPoolInspection(scnr);
+                    break;
+                case 2:
+                    viewPoolInspections();
+                    break;
+                case 3:
+                    completeNewChemicalReading(scnr);
+                    break;
+                case 4:
+                    viewChemicalReadings();
+                    break;
+                case 5:
+                    addToChemicalInventory(scnr);
+                    break;
+                case 6:
+                    subtractFromChemicalInventory(scnr);
+                    break;
+                case 7:
+                    setChemicalInventory(scnr);
+                    break;
+                default:
+                    System.out.println("Invalid use case number. Please try again.");
+            }
+        }
+    }
+
+    private void addToChemicalInventory(Scanner scnr) throws IOException {
+        poolChemicalsController.addToChemicalInventory(scnr);
+    }
+
+    private void subtractFromChemicalInventory(Scanner scnr) throws IOException {
+        poolChemicalsController.subtractFromChemicalInventory(scnr);
+    }
+
+    private void setChemicalInventory(Scanner scnr) throws IOException {
+        poolChemicalsController.setChemicalInventory(scnr);
+    }
+
+    private void completeNewChemicalReading(Scanner scanner) throws IOException {
+        poolChemicalsController.completePoolChemicalReview(scanner);
+    }
+
+    private void viewChemicalReadings() throws IOException {
+        poolChemicalsController.printAll();
+    }
+
+    private void viewPoolInspections() throws IOException {
+        poolMaintenanceController.printAll();
+    }
+
+    private void completeNewPoolInspection(Scanner scanner) throws IOException {
+        poolMaintenanceController.makePoolEquipmentInspectionFromInput(scanner);
+    }
+
 
     public void runUseCase(int useCaseNumber) throws IOException {
         switch (useCaseNumber) {
@@ -56,10 +158,10 @@ public class UseCases {
                 getPaymentMethod();
                 break;
             case 11:
-                    demonstrateProfitCycle();
-                    break;
-                case 12:
-                    signFranchiseAgreement();
+                demonstrateProfitCycle();
+                break;
+            case 12:
+                signFranchiseAgreement();
                 break;
             default:
                 System.out.println("Invalid use case number.");
@@ -365,26 +467,36 @@ private void signFranchiseAgreement() throws IOException {
             UseCases useCases = new UseCases("hotel_data");
 
             while (true) {
-                System.out.println("Select a use case to run:");
-                System.out.println("1. Book Hotel Room");
-                System.out.println("2. Check Out Of Hotel Room");
-                System.out.println("3. Update Booking");
-                System.out.println("4. Delete Booking");
-                System.out.println("5. Create Customer");
-                System.out.println("6. Get Customer");
-                System.out.println("7. Update Customer");
-                System.out.println("8. Delete Customer");
-                System.out.println("9. Create Payment Method");
-                System.out.println("10. Get Payment Method");
-                System.out.println("11. Demonstrate Profit Cycle");
-                System.out.println("12. Sign Franchise Agreement");
+//                System.out.println("Select a use case to run:");
+//                System.out.println("1. Book Hotel Room");
+//                System.out.println("2. Check Out Of Hotel Room");
+//                System.out.println("3. Update Booking");
+//                System.out.println("4. Delete Booking");
+//                System.out.println("5. Create Customer");
+//                System.out.println("6. Get Customer");
+//                System.out.println("7. Update Customer");
+//                System.out.println("8. Delete Customer");
+//                System.out.println("9. Create Payment Method");
+//                System.out.println("10. Get Payment Method");
+//                System.out.println("11. Demonstrate Profit Cycle");
+//                System.out.println("12. Sign Franchise Agreement");
+//                System.out.println("0. Exit");
+//                System.out.print("Enter your choice: ");
+//                int useCaseNumber = scanner.nextInt();
+//                if (useCaseNumber == 0) {
+//                    break;
+//                }
+//                useCases.runUseCase(useCaseNumber);
+                System.out.println("Select a actor to run:");
+                System.out.println("1. Manager");
+                System.out.println("2. Maintenance Employee");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();
                 if (useCaseNumber == 0) {
                     break;
                 }
-                useCases.runUseCase(useCaseNumber);
+                useCases.runUseCaseByActor(useCaseNumber);
             }
         }
     }

@@ -2,7 +2,7 @@ package Models.PoolMaintenance;
 
 import Models.Mappable;
 
-public class ChemicalReading extends Mappable<ChemicalReading> {
+public class ChemicalReading extends Mappable<PoolEquipmentInspection> {
     private int id;
     private String maintainedDate;
     private double phLevel;

@@ -4,7 +4,6 @@ import Models.PoolMaintenance.ChemicalAdition;
 import Models.PoolMaintenance.ChemicalReading;
 import Storage.StorageHelper;
 import Storage.StorageHelper.DataStore;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,19 +13,27 @@ import java.util.*;
 bakingSoda increases alkalinity
 sodaAsh increases pH
 poolChlorine increases chlorine
+
+store = folder
+key = specific save similar to id
 */
 public class PoolChemicalsController {
 
     private StorageHelper storageHelper;
-    private final String CHEMICAL_READING_STORE_NAME = "poolChemicalReadings"; // the store name
-    private final String CHEMICAL_STORAGE_KEY = "chemicalStorage"; // the key within the store for inventory
+    private StorageHelper inventoryStorageHelper;
+    private final String CHEMICAL_READING_STORE_NAME = "poolChemicalReadings";
+    private final String INVENTORY_STORE_NAME = "inventory";
+    private final String CHEMICAL_STORAGE_KEY = "chemicalStorage";
     private int nextId;
 
     public PoolChemicalsController(String baseDirectory) throws IOException {
         this.storageHelper = new StorageHelper(baseDirectory, CHEMICAL_READING_STORE_NAME);
+        this.inventoryStorageHelper = new StorageHelper(baseDirectory, INVENTORY_STORE_NAME);
         this.nextId = determineNextId();
         initializeChemicalInventory();
     }
+
+//---------------------------store manging stuff--------------------------- TODO only to find section
 
     private int determineNextId() throws IOException {
         List<Map<String, Object>> allReadings = storageHelper.getStore(CHEMICAL_READING_STORE_NAME).loadAll();
@@ -44,7 +51,7 @@ public class PoolChemicalsController {
     }
 
     private void initializeChemicalInventory() throws IOException {
-        DataStore<?> store = storageHelper.getStore(CHEMICAL_READING_STORE_NAME);
+        DataStore<?> store = inventoryStorageHelper.getStore(INVENTORY_STORE_NAME);
         Map<String, Object> inventoryData = store.load(CHEMICAL_STORAGE_KEY);
         if (inventoryData == null || !(inventoryData instanceof Map)) {
             Map<String, Object> initialInventory = new HashMap<>();
@@ -54,31 +61,6 @@ public class PoolChemicalsController {
             store.save(CHEMICAL_STORAGE_KEY, initialInventory);
             System.out.println("Initialized chemical inventory with default stock.");
         }
-    }
-
-    private ChemicalReading makeChemicalReadingFromInput(Scanner scanner) throws IOException {
-        System.out.println("Enter the following details for a new chemical reading:");
-
-        int id = nextId++;
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String date = LocalDate.now().format(formatter);
-
-        System.out.print("pH Level: ");
-        double phLevel = scanner.nextDouble();
-
-        System.out.print("Alkalinity: ");
-        double alkalinity = scanner.nextDouble();
-
-        System.out.print("Chlorine Level: ");
-        double chlorine = scanner.nextDouble();
-        scanner.nextLine(); // Consume the remaining newline
-
-        ChemicalReading newReading = new ChemicalReading(id, date, phLevel, alkalinity, chlorine);
-
-        System.out.println("New Chemical Reading Created: " + newReading);
-
-        return newReading;
     }
 
     public void createChemicalReading(ChemicalReading reading) throws IOException {
@@ -121,7 +103,7 @@ public class PoolChemicalsController {
     }
 
     private Map<String, Object> getChemicalInventory() throws IOException {
-        Map<String, Object> inventoryData = storageHelper.getStore(CHEMICAL_READING_STORE_NAME).load(CHEMICAL_STORAGE_KEY);
+        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).load(CHEMICAL_STORAGE_KEY);
         if (inventoryData instanceof Map) {
             return (Map<String, Object>) inventoryData;
         } else {
@@ -129,6 +111,63 @@ public class PoolChemicalsController {
                     (inventoryData != null ? inventoryData.getClass().getName() : "null"));
             return null;
         }
+    }
+
+    private Map<String, Object> convertReadingToMap(ChemicalReading reading) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", reading.getId());
+        map.put("date", reading.getMaintainedDate());
+        map.put("phLevel", reading.getphLevel());
+        map.put("alkalinity", reading.getAlkalinity());
+        map.put("chlorine", reading.getChlorine());
+        return map;
+    }
+
+    public ChemicalReading convertMapToReading(Map<String, Object> map) {
+        Number idNumber = (Number) map.get("id");
+        int id = idNumber != null ? idNumber.intValue() : 0;
+
+        String date = (String) map.get("date");
+
+        Number phNumber = (Number) map.get("phLevel");
+        double ph = phNumber != null ? phNumber.doubleValue() : 0.0;
+        Number alkalinityNumber = (Number) map.get("alkalinity");
+        double alkalinity = alkalinityNumber != null ? alkalinityNumber.doubleValue() : 0.0;
+        Number chlorineNumber = (Number) map.get("chlorine");
+        double chlorine = chlorineNumber != null ? chlorineNumber.doubleValue() : 0.0;
+
+        return new ChemicalReading(id, date, ph, alkalinity, chlorine);
+    }
+
+    public List<Map<String, Object>> getAllChemicalReadings() throws IOException {
+        return storageHelper.getStore(CHEMICAL_READING_STORE_NAME).loadAll();
+    }
+
+//---------------------------interactive print stuff--------------------------- TODO only to find section
+
+    private ChemicalReading makeChemicalReadingFromInput(Scanner scanner) throws IOException {
+        System.out.println("Enter the following details for a new chemical reading:");
+
+        int id = nextId++;
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = LocalDate.now().format(formatter);
+
+        System.out.print("pH Level: ");
+        double phLevel = scanner.nextDouble();
+
+        System.out.print("Alkalinity: ");
+        double alkalinity = scanner.nextDouble();
+
+        System.out.print("Chlorine Level: ");
+        double chlorine = scanner.nextDouble();
+        scanner.nextLine(); // Consume the remaining newline
+
+        ChemicalReading newReading = new ChemicalReading(id, date, phLevel, alkalinity, chlorine);
+
+        System.out.println("New Chemical Reading Created: " + newReading);
+
+        return newReading;
     }
 
     public void printChemicalEffects() {
@@ -152,6 +191,7 @@ public class PoolChemicalsController {
 
     public ChemicalAdition[] completePoolChemicalReview(Scanner scanner) throws IOException {
         ChemicalReading newReading = makeChemicalReadingFromInput(scanner);
+        System.out.println("=== Complete New Chemical Reading ===");
 
         double minPhLevel = 7.2;
         double minAlkalinity = 80.0;
@@ -263,7 +303,7 @@ public class PoolChemicalsController {
         Map<String, Object> inventoryMap = getChemicalInventory();
         if (inventoryMap != null) {
             inventoryMap.put("sodaAsh", newSodaAshStock);
-            storageHelper.getStore(CHEMICAL_READING_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventoryMap);
+            inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventoryMap);
         }
 
         System.out.println("Soda Ash successfully added.");
@@ -271,13 +311,6 @@ public class PoolChemicalsController {
         System.out.printf("Remaining Soda Ash Stock: %.2f units%n", newSodaAshStock);
     }
 
-    /**
-     * Adds Pool Chlorine to increase chlorine level.
-     *
-     * @param reading        the ChemicalReading object to update.
-     * @param gallonsOfWater the volume of water in the pool.
-     * @throws IOException if an I/O error occurs.
-     */
     public void addPoolChlorine(ChemicalReading reading, double gallonsOfWater) throws IOException {
         double currentChlorineLevel = reading.getChlorine();
         double currentPoolChlorineStock = getPoolChlorineAmount();
@@ -302,7 +335,7 @@ public class PoolChemicalsController {
         Map<String, Object> inventoryMap = getChemicalInventory();
         if (inventoryMap != null) {
             inventoryMap.put("poolChlorine", newPoolChlorineStock);
-            storageHelper.getStore(CHEMICAL_READING_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventoryMap);
+            inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventoryMap);
         }
 
         System.out.println("Pool Chlorine successfully added.");
@@ -310,31 +343,216 @@ public class PoolChemicalsController {
         System.out.printf("Remaining Pool Chlorine Stock: %.2f units%n", newPoolChlorineStock);
     }
 
-    private Map<String, Object> convertReadingToMap(ChemicalReading reading) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", reading.getId());
-        map.put("date", reading.getMaintainedDate());
-        map.put("phLevel", reading.getphLevel());
-        map.put("alkalinity", reading.getAlkalinity());
-        map.put("chlorine", reading.getChlorine());
-        return map;
+    public void printChemicalInventory() throws IOException {
+        Map<String, Object> inventory = getChemicalInventory();
+
+        if (inventory == null || inventory.isEmpty()) {
+            System.out.println("No chemical inventory available.");
+            return;
+        }
+
+        System.out.println("Current Chemical Inventory:");
+        System.out.println("----------------------------");
+
+        for (Map.Entry<String, Object> entry : inventory.entrySet()) {
+            String chemical = entry.getKey();
+            if(entry.getKey().equals("lastModified")) {
+                continue;
+            }
+            String unit = "kg";
+            if(entry.getKey().equals("poolChlorine")) {
+                unit = "liters";
+            }
+            double amount = ((Number) entry.getValue()).doubleValue();
+            System.out.printf("%s: %.2f %s%n", capitalize(chemical), amount, unit);
+        }
+        System.out.println("----------------------------");
     }
 
-    private ChemicalReading convertMapToReading(Map<String, Object> map) {
-        Number idNumber = (Number) map.get("id");
-        int id = idNumber != null ? idNumber.intValue() : 0;
+    private String capitalize(String str) {
+        if (str == null || str.isEmpty()) {
+            return str;
+        }
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
 
-        String date = (String) map.get("date");
+    public void printAll() throws IOException {
+        List<Map<String, Object>> allReadings = getAllChemicalReadings();
 
-        Number phNumber = (Number) map.get("phLevel");
-        double ph = phNumber != null ? phNumber.doubleValue() : 0.0;
+        if (allReadings.isEmpty()) {
+            System.out.println("No chemical readings available.");
+            return;
+        }
 
-        Number alkalinityNumber = (Number) map.get("alkalinity");
-        double alkalinity = alkalinityNumber != null ? alkalinityNumber.doubleValue() : 0.0;
+        System.out.println("All Chemical Readings:");
+        System.out.println("----------------------");
 
-        Number chlorineNumber = (Number) map.get("chlorine");
-        double chlorine = chlorineNumber != null ? chlorineNumber.doubleValue() : 0.0;
+        for (Map<String, Object> readingMap : allReadings) {
+            ChemicalReading reading = convertMapToReading(readingMap);
+            System.out.println("ID: " + reading.getId());
+            System.out.println("Date: " + reading.getMaintainedDate());
+            System.out.println("pH Level: " + reading.getphLevel());
+            System.out.println("Alkalinity: " + reading.getAlkalinity());
+            System.out.println("Chlorine Level: " + reading.getChlorine());
+            System.out.println("----------------------");
+        }
 
-        return new ChemicalReading(id, date, ph, alkalinity, chlorine);
+        printChemicalInventory();
+    }
+
+    public void addToChemicalInventory(Scanner scnr) throws IOException {
+        System.out.println("=== Add to Chemical Inventory ===");
+        Map<String, Object> inventory = getChemicalInventory();
+
+        if (inventory == null || inventory.isEmpty()) {
+            System.out.println("Chemical inventory is empty or not initialized.");
+            return;
+        }
+
+        String chemical = selectChemical(scnr, inventory.keySet());
+        if (chemical == null) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        System.out.print("Enter amount to add: ");
+        double amountToAdd = scnr.nextDouble();
+        scnr.nextLine(); // Consume newline
+
+        if (amountToAdd <= 0) {
+            System.out.println("Amount to add must be positive.");
+            return;
+        }
+
+        double currentAmount = ((Number) inventory.get(chemical)).doubleValue();
+        double newAmount = currentAmount + amountToAdd;
+        inventory.put(chemical, newAmount);
+
+        // Update the inventory in storage
+        inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventory);
+
+
+        System.out.printf("Successfully added %.2f %s to %s.%n", amountToAdd, getChemicalUnit(chemical), capitalize(chemical));
+        System.out.printf("New %s Stock: %.2f %s%n", capitalize(chemical), newAmount, getChemicalUnit(chemical));
+    }
+
+    public void subtractFromChemicalInventory(Scanner scnr) throws IOException {
+        System.out.println("=== Subtract from Chemical Inventory ===");
+        Map<String, Object> inventory = getChemicalInventory();
+
+        if (inventory == null || inventory.isEmpty()) {
+            System.out.println("Chemical inventory is empty or not initialized.");
+            return;
+        }
+
+        String chemical = selectChemical(scnr, inventory.keySet());
+        if (chemical == null) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        System.out.print("Enter amount to subtract: ");
+        double amountToSubtract = scnr.nextDouble();
+        scnr.nextLine(); // Consume newline
+
+        if (amountToSubtract <= 0) {
+            System.out.println("Amount to subtract must be positive.");
+            return;
+        }
+
+        double currentAmount = ((Number) inventory.get(chemical)).doubleValue();
+        if (amountToSubtract > currentAmount) {
+            System.out.println("Insufficient stock. Operation aborted.");
+            return;
+        }
+
+        double newAmount = currentAmount - amountToSubtract;
+        inventory.put(chemical, newAmount);
+
+        // Update the inventory in storage
+        inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventory);
+
+        System.out.printf("Successfully subtracted %.2f %s from %s.%n", amountToSubtract, getChemicalUnit(chemical), capitalize(chemical));
+        System.out.printf("New %s Stock: %.2f %s%n", capitalize(chemical), newAmount, getChemicalUnit(chemical));
+    }
+
+    public void setChemicalInventory(Scanner scnr) throws IOException {
+        System.out.println("=== Set Chemical Inventory ===");
+        Map<String, Object> inventory = getChemicalInventory();
+
+        if (inventory == null || inventory.isEmpty()) {
+            System.out.println("Chemical inventory is empty or not initialized.");
+            return;
+        }
+
+        String chemical = selectChemical(scnr, inventory.keySet());
+        if (chemical == null) {
+            System.out.println("Operation cancelled.");
+            return;
+        }
+
+        System.out.printf("Current amount of %s: %.2f %s%n", capitalize(chemical), ((Number) inventory.get(chemical)).doubleValue(), getChemicalUnit(chemical));
+        System.out.print("Enter new amount: ");
+        double newAmount = scnr.nextDouble();
+        scnr.nextLine(); // Consume newline
+
+        if (newAmount < 0) {
+            System.out.println("Amount cannot be negative.");
+            return;
+        }
+
+        inventory.put(chemical, newAmount);
+
+        // Update the inventory in storage
+        inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(CHEMICAL_STORAGE_KEY, inventory);
+
+        System.out.printf("Successfully set %s to %.2f %s.%n", capitalize(chemical), newAmount, getChemicalUnit(chemical));
+    }
+
+    private String selectChemical(Scanner scnr, Set<String> chemicals) {
+        List<String> chemicalList = new ArrayList<>(chemicals);
+        System.out.println("Available Chemicals:");
+        for (int i = 0; i < chemicalList.size(); i++) {
+            if(chemicalList.get(i).equals("lastModified")){
+                continue;
+            }
+            System.out.printf("%d. %s%n", i + 1, capitalize(chemicalList.get(i)));
+        }
+        System.out.println("0. Cancel");
+        System.out.print("Select a chemical by number: ");
+
+        int selection;
+        try {
+            selection = scnr.nextInt();
+            scnr.nextLine(); // Consume newline
+        } catch (InputMismatchException e) {
+            scnr.nextLine(); // Clear invalid input
+            System.out.println("Invalid input. Operation cancelled.");
+            return null;
+        }
+
+        if (selection == 0) {
+            return null; // Operation cancelled
+        }
+
+        if (selection < 1 || selection > chemicalList.size()) {
+            System.out.println("Invalid selection. Operation cancelled.");
+            return null;
+        }
+
+        return chemicalList.get(selection - 1);
+    }
+
+    private String getChemicalUnit(String chemical) {
+        switch (chemical.toLowerCase()) {
+            case "bakingsoda":
+                return "kg";
+            case "sodaash":
+                return "kg";
+            case "poolchlorine":
+                return "liters";
+            default:
+                return "units";
+        }
     }
 }
