@@ -7,14 +7,17 @@ public class Room extends Mappable<Room> {
     private String status;
     private String currentGuest;
     private String lastCleaned;
+    private int hotelId;
 
-    public Room(int roomNumber, String roomType, double pricePerNight, String status, String currentGuest, String lastCleaned) {
+    public Room(int roomNumber, String roomType, double pricePerNight, String status, String currentGuest, String lastCleaned,
+    int hotelId) {
         this.roomNumber = roomNumber;
         this.roomType = roomType;
         this.pricePerNight = pricePerNight;
         this.status = status;
         this.currentGuest = currentGuest;
         this.lastCleaned = lastCleaned;
+        this.hotelId = hotelId;
     }
 
     public Room() { 
@@ -68,5 +71,13 @@ public class Room extends Mappable<Room> {
 
     public void setLastCleaned(String lastCleaned) {
         this.lastCleaned = lastCleaned;
+    }
+
+    public int getHotelId() {
+        return hotelId;
+    }
+
+    public void setHotelId(int hotelId) {
+        this.hotelId = hotelId;
     }
 }

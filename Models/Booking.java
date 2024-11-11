@@ -9,17 +9,13 @@ public class Booking extends Mappable<Booking> {
     private String paymentStatus;
     private int roomNum;
 
-    private boolean canCheckOutEarly;
-
-    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, int roomNum,
-                   boolean canCheckOutEarly) {
+    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, int roomNum) {
         this.id = id;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.totalPrice = totalPrice;
         this.paymentStatus = paymentStatus;
         this.roomNum = roomNum;
-        this.canCheckOutEarly = canCheckOutEarly;
     }
 
     public Booking() {
@@ -73,13 +69,5 @@ public class Booking extends Mappable<Booking> {
 
     public void setRoomNum(int roomNum) {
         this.roomNum = roomNum;
-    }
-
-    public boolean isCanCheckOutEarly() {
-        return canCheckOutEarly;
-    }
-
-    public void setCanCheckOutEarly(boolean canCheckOutEarly) {
-        this.canCheckOutEarly = canCheckOutEarly;
     }
 }

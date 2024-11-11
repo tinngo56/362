@@ -29,4 +29,12 @@ public class HotelController {
     public void deleteHotel(int id) throws IOException {
         storageHelper.getStore("hotels").delete(String.valueOf(id));
     }
+
+    public boolean isHotelSoldOut(Hotel hotel) {
+        return hotel.getNumAvailableRooms() <= 0;
+    }
+
+    public boolean hasRoomsCheckedOut(Hotel hotel) {
+        return hotel.getNumAvailableRooms() != hotel.getRoomCount();
+    }
 }
