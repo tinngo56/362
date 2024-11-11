@@ -33,7 +33,7 @@ public class PoolChemicalsController {
         initializeChemicalInventory();
     }
 
-//---------------------------store manging stuff--------------------------- TODO only to find section
+//---------------------------store managing stuff--------------------------- TODO only to find section
 
     private int determineNextId() throws IOException {
         List<Map<String, Object>> allReadings = storageHelper.getStore(CHEMICAL_READING_STORE_NAME).loadAll();

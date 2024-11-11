@@ -13,6 +13,7 @@ public class UseCases {
     private final HotelController hotelController;
     private final PoolMaintenanceController poolMaintenanceController;
     private final PoolChemicalsController poolChemicalsController;
+    private final CookBreakfastController cookBreakfastController;
 
     public UseCases(String baseDirectory) throws IOException {
         CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
@@ -23,6 +24,7 @@ public class UseCases {
         this.roomController = new RoomController(baseDirectory);
         this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
+        this.cookBreakfastController = new CookBreakfastController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -36,23 +38,71 @@ public class UseCases {
                 maintenanceEmployeeUseCases(scnr);
                 break;
             case 3:
-                managerUseCases(scnr);
+                kitchenStaffUseCases(scnr);
                 break;
-            case 4:
-                managerUseCases(scnr);
-                break;
+            //case 4:
+                //otherUseCases(scnr);
+                //break;
             default:
-
+                System.out.println("Invalid actor number. Please try again.");
         }
     }
 
-    private void maintenanceEmployeeUseCases(Scanner scnr) {
-        System.out.println("Select a use case to run:");
+    private void kitchenStaffUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nKitchen staff choose what to run:");
+            System.out.println("==========Breakfast actions==========");
+            System.out.println("1. Make Breakfast");
+            System.out.println("2. Add Ingredient");
+            System.out.println("3. Subtract Ingredient (do not use for normal breakfast cooking)");
+            System.out.println("4. Set Ingredient Amount (do not use for normal breakfast cooking)");
+            System.out.println("5. View All Breakfast Reports");
+            System.out.println("6. Delete a Breakfast Report");
+            System.out.println("7. View current Ingredient stock");
+            System.out.println("8. Check Ingredient stock for gusts");
+            System.out.println("0. Exit to change your Actor choice");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    cookBreakfastController.makeBreakfast(scnr);
+                    break;
+                case 2:
+                    cookBreakfastController.addIngredient(scnr);
+                    break;
+                case 3:
+                    cookBreakfastController.subtractIngredient(scnr);
+                    break;
+                case 4:
+                    cookBreakfastController.setIngredientAmount(scnr);
+                    break;
+                case 5:
+                    cookBreakfastController.viewAllReports();
+                    break;
+                case 6:
+                    cookBreakfastController.deleteReport(scnr);
+                    break;
+                case 7:
+                    cookBreakfastController.viewStock();
+                    break;
+                case 8:
+                    checkIngredients(scnr);
+                    break;
+                default:
+                    System.out.println("Invalid action number. Please try again.");
+            }
+        }
     }
 
-    private void managerUseCases(Scanner scnr) throws IOException {
-        while (true) { // Loop to allow multiple operations until the manager chooses to exit
-            System.out.println("\nChoose what to run:");
+    private void maintenanceEmployeeUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nMaintenance staff choose what to run:");
+            System.out.println("==========Pool Actions==========");
             System.out.println("1. Complete New Pool Inspection");
             System.out.println("2. View All Pool Inspections");
             System.out.println("3. Complete New Chemical Reading");
@@ -60,15 +110,20 @@ public class UseCases {
             System.out.println("5. Add to Chemical Inventory");
             System.out.println("6. Subtract from Chemical Inventory");
             System.out.println("7. Set Chemical Inventory");
+            System.out.println("==========Breakfast actions==========");
+            System.out.println("8. Add Ingredient");
+            System.out.println("9. Subtract Ingredient (do not use for normal breakfast cooking)");
+            System.out.println("10. Set Ingredient Amount (do not use for normal breakfast cooking)");
+            System.out.println("11. View current Ingredient stock");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
-            scnr.nextLine(); // Consume the remaining newline
+            scnr.nextLine();
 
             switch (choice) {
                 case 0:
-                    return; // Exit the manager use cases
+                    return;
                 case 1:
                     completeNewPoolInspection(scnr);
                     break;
@@ -90,10 +145,107 @@ public class UseCases {
                 case 7:
                     setChemicalInventory(scnr);
                     break;
+                case 8:
+                    cookBreakfastController.addIngredient(scnr);
+                    break;
+                case 10:
+                    cookBreakfastController.subtractIngredient(scnr);
+                    break;
+                case 11:
+                    cookBreakfastController.setIngredientAmount(scnr);
+                    break;
+                case 12:
+                    cookBreakfastController.viewStock();
+                    break;
                 default:
-                    System.out.println("Invalid use case number. Please try again.");
+                    System.out.println("Invalid action number. Please try again.");
+            }
+        }    }
+
+    private void managerUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nManager choose what to run:");
+            System.out.println("==========Pool Actions==========");
+            System.out.println("1. Complete New Pool Inspection");
+            System.out.println("2. View All Pool Inspections");
+            System.out.println("3. Complete New Chemical Reading");
+            System.out.println("4. View All Chemical Readings and current Chemical Inventory");
+            System.out.println("5. Add to Chemical Inventory");
+            System.out.println("6. Subtract from Chemical Inventory");
+            System.out.println("7. Set Chemical Inventory");
+            System.out.println("==========Breakfast actions==========");
+            System.out.println("8. Make Breakfast");
+            System.out.println("9. Add Ingredient");
+            System.out.println("10. Subtract Ingredient (do not use for normal breakfast cooking)");
+            System.out.println("11. Set Ingredient Amount (do not use for normal breakfast cooking)");
+            System.out.println("12. View All Breakfast Reports");
+            System.out.println("13. Delete a Breakfast Report");
+            System.out.println("14. View current Ingredient stock");
+            System.out.println("15. Check Ingredient stock for gusts");
+            System.out.println("0. Exit to change your Actor choice");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    completeNewPoolInspection(scnr);
+                    break;
+                case 2:
+                    viewPoolInspections();
+                    break;
+                case 3:
+                    completeNewChemicalReading(scnr);
+                    break;
+                case 4:
+                    viewChemicalReadings();
+                    break;
+                case 5:
+                    addToChemicalInventory(scnr);
+                    break;
+                case 6:
+                    subtractFromChemicalInventory(scnr);
+                    break;
+                case 7:
+                    setChemicalInventory(scnr);
+                    break;
+                case 8:
+                    cookBreakfastController.makeBreakfast(scnr);
+                    break;
+                case 9:
+                    cookBreakfastController.addIngredient(scnr);
+                    break;
+                case 10:
+                    cookBreakfastController.subtractIngredient(scnr);
+                    break;
+                case 11:
+                    cookBreakfastController.setIngredientAmount(scnr);
+                    break;
+                case 12:
+                    cookBreakfastController.viewAllReports();
+                    break;
+                case 13:
+                    cookBreakfastController.deleteReport(scnr);
+                    break;
+                case 14:
+                    cookBreakfastController.viewStock();
+                    break;
+                case 15:
+                    checkIngredients(scnr);
+                    break;
+                default:
+                    System.out.println("Invalid action number. Please try again.");
             }
         }
+    }
+
+    private void checkIngredients(Scanner scnr) throws IOException {
+        System.out.println("How many guests will need breakfast?");
+        int guest = scnr.nextInt()/2;
+        cookBreakfastController.checkIngredients(guest);
     }
 
     private void addToChemicalInventory(Scanner scnr) throws IOException {
@@ -487,9 +639,11 @@ private void signFranchiseAgreement() throws IOException {
 //                    break;
 //                }
 //                useCases.runUseCase(useCaseNumber);
+
                 System.out.println("Select a actor to run:");
                 System.out.println("1. Manager");
-                System.out.println("2. Maintenance Employee");
+                System.out.println("2. Maintenance Staff");
+                System.out.println("3. Kitchen Staff");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();

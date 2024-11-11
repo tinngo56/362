@@ -10,15 +10,6 @@ public class ChemicalReading extends Mappable<PoolEquipmentInspection> {
     private double chlorine;
     private ChemicalAdition[] addedChemicals = new ChemicalAdition[2];
 
-    public ChemicalReading(int id, String maintainedDate, double phLevel, double alkalinity, double chlorine, ChemicalAdition[] addedChemicals) {
-        this.id = id;
-        this.maintainedDate = maintainedDate;
-        this.phLevel = phLevel;
-        this.alkalinity = alkalinity;
-        this.chlorine = chlorine;
-        this.addedChemicals = addedChemicals;
-    }
-
     public ChemicalReading(int id, String maintainedDate, double phLevel, double alkalinity, double chlorine) {
         this.id = id;
         this.maintainedDate = maintainedDate;
