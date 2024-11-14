@@ -24,6 +24,7 @@ public class Menu extends Mappable<Menu> {
         this.pancakes = pancakes;
         this.syrup = syrup;
         this.yogurt = yogurt;
+        this.guests = guests;
     }
 
     public Menu(int id) {

@@ -3,11 +3,11 @@
   "eggs": true,
   "yogurt": true,
   "waffles": true,
-  "guests": 0,
-  "sausage": false,
+  "guests": 1,
+  "sausage": true,
   "syrup": true,
   "id": 1,
   "pancakes": true,
-  "lastModified": "2024-11-10_23-28-21",
-  "issues": "I dropped a spatula"
+  "lastModified": "2024-11-14_13-47-36",
+  "issues": "n"
 }

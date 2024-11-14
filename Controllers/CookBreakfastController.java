@@ -4,6 +4,7 @@ import Models.CookFood.Menu;
 import Models.CookFood.Units;
 import Storage.StorageHelper;
 import Storage.StorageHelper.DataStore;
+
 import java.io.IOException;
 import java.util.*;
 
@@ -72,7 +73,7 @@ public class CookBreakfastController {
         if (inventoryData instanceof Map) {
             return (Map<String, Object>) inventoryData;
         } else {
-            System.err.println("Expected inventory data to be a Map but found: " +
+            System.out.println("Expected inventory data to be a Map but found: " +
                     (inventoryData != null ? inventoryData.getClass().getName() : "null"));
             return null;
         }
@@ -312,7 +313,6 @@ public class CookBreakfastController {
     }
 
     //---------------------------Interactive Print Stuff---------------------------TODO
-
     private Menu makeCookBreakfastReportFromInput(Scanner scanner) throws IOException {
         System.out.println("Enter the following details for a new Breakfast Report:");
 
@@ -331,32 +331,30 @@ public class CookBreakfastController {
             return null;
         }
 
-        //todo
-        System.out.print("Are there any issues?: ");
-        boolean areIssues = nextBoolean(scanner);
-        String issues = "";
-        if (areIssues) {
-            System.out.println("What are the issues?");
-            issues = scanner.nextLine();
-        } else {
-            issues = "No issues";
-        }
-
-
         Map<String, Map<String, Double>> recipes = getRecipes();
-
-        Map<String, Double> totalIngredientsNeeded = calculateTotalIngredients(recipes, guests);
-
         Map<String, Double> availableInventory = getAvailableIngredients();
 
-        int possibleGuests = determineMaxGuests(totalIngredientsNeeded, availableInventory, guests);
+        // Determine the maximum number of guests based on available inventory
+        int possibleGuests = determineMaxGuests(recipes, availableInventory);
 
-        if (possibleGuests < guests) {
-            System.out.printf("Not enough ingredients for %d guests. Creating report for %d guests.%n", guests, possibleGuests);
-            guests = possibleGuests;
+
+
+        if (guests == 0) {
+            System.out.println("Cannot create a breakfast report with 0 guests.");
+            return null;
         }
 
-        deductIngredients(totalIngredientsNeeded, guests);
+        // Now calculate the total ingredients needed based on the adjusted number of guests
+        Map<String, Double> totalIngredientsNeeded = calculateTotalIngredients(recipes, guests);
+
+        // Deduct the ingredients or just print what is missing
+        deductIngredients(totalIngredientsNeeded);
+
+        if (possibleGuests < guests) {
+            System.out.printf("Not enough ingredients for %d guests. The max amount of guest that can be served is: %d guests.%n", guests, possibleGuests);
+            //guests = possibleGuests;
+            return null;
+        }
 
         System.out.print("Success cooking sausage?: ");
         boolean sausage = nextBoolean(scanner);
@@ -370,7 +368,7 @@ public class CookBreakfastController {
         System.out.print("Success cooking waffles?: ");
         boolean waffles = nextBoolean(scanner);
 
-        System.out.print("Success cooking pancakes?): ");
+        System.out.print("Success cooking pancakes?: ");
         boolean pancakes = nextBoolean(scanner);
 
         System.out.print("Success setting up syrup?: ");
@@ -379,12 +377,96 @@ public class CookBreakfastController {
         System.out.print("Success setting up yogurt?: ");
         boolean yogurt = nextBoolean(scanner);
 
+
+        System.out.print("Were there any issues?: ");
+        boolean areIssues = nextBoolean(scanner);
+        String issues = "";
+        if (areIssues) {
+            System.out.println("What were the issues?");
+            issues = scanner.nextLine();
+        } else {
+            issues = "No issues";
+        }
+
         int id = nextId++;
         Menu menu = new Menu(id, issues, sausage, bacon, eggs, waffles, pancakes, syrup, yogurt, guests);
         System.out.println("New Breakfast Report Created: " + menu);
 
         return menu;
     }
+
+//    private Menu makeCookBreakfastReportFromInput(Scanner scanner) throws IOException {
+//        System.out.println("Enter the following details for a new Breakfast Report:");
+//
+//        System.out.print("Number of guests: ");
+//        int guests;
+//        try {
+//            guests = scanner.nextInt();
+//            scanner.nextLine();
+//            if (guests <= 0) {
+//                System.out.println("Number of guests must be positive.");
+//                return null;
+//            }
+//        } catch (InputMismatchException e) {
+//            scanner.nextLine();
+//            System.out.println("Invalid input. Operation cancelled.");
+//            return null;
+//        }
+//
+//        //todo
+//        System.out.print("Are there any issues?: ");
+//        boolean areIssues = nextBoolean(scanner);
+//        String issues = "";
+//        if (areIssues) {
+//            System.out.println("What are the issues?");
+//            issues = scanner.nextLine();
+//        } else {
+//            issues = "No issues";
+//        }
+//
+//
+//        Map<String, Map<String, Double>> recipes = getRecipes();
+//
+//        Map<String, Double> totalIngredientsNeeded = calculateTotalIngredients(recipes, guests);
+//
+//        Map<String, Double> availableInventory = getAvailableIngredients();
+//
+//        int possibleGuests = determineMaxGuests(totalIngredientsNeeded, availableInventory, guests);
+//
+//        if (possibleGuests < guests) {
+//            System.out.printf("Not enough ingredients for %d guests. Creating report for %d guests.%n", guests, possibleGuests);
+//            guests = possibleGuests;
+//        }
+//
+//        deductIngredients(totalIngredientsNeeded, guests);
+//
+//        System.out.print("Success cooking sausage?: ");
+//        boolean sausage = nextBoolean(scanner);
+//
+//        System.out.print("Success cooking bacon?: ");
+//        boolean bacon = nextBoolean(scanner);
+//
+//        System.out.print("Success cooking eggs?: ");
+//        boolean eggs = nextBoolean(scanner);
+//
+//        System.out.print("Success cooking waffles?: ");
+//        boolean waffles = nextBoolean(scanner);
+//
+//        System.out.print("Success cooking pancakes?): ");
+//        boolean pancakes = nextBoolean(scanner);
+//
+//        System.out.print("Success setting up syrup?: ");
+//        boolean syrup = nextBoolean(scanner);
+//
+//        System.out.print("Success setting up yogurt?: ");
+//        boolean yogurt = nextBoolean(scanner);
+//
+//        int id = nextId++;
+//        Menu menu = new Menu(id, issues, sausage, bacon, eggs, waffles, pancakes, syrup, yogurt, guests);
+//        System.out.println("New Breakfast Report Created: " + menu);
+//
+//        return menu;
+//    }
 
     public void viewStock() throws IOException {
         Map<String, Object> inventory = getIngredientInventory();
@@ -411,7 +493,6 @@ public class CookBreakfastController {
             }
 
             double quantity = ((Number) entry.getValue()).doubleValue();
-
 
 
             String unit = getUnit(ingredient);
@@ -447,7 +528,7 @@ public class CookBreakfastController {
         Map<String, Double> available = new HashMap<>();
         if (inventoryData != null) {
             for (Map.Entry<String, Object> entry : inventoryData.entrySet()) {
-                if(entry.getKey().equals("lastModified")){
+                if (entry.getKey().equals("lastModified")) {
                     continue;
                 }
                 available.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
@@ -456,36 +537,106 @@ public class CookBreakfastController {
         return available;
     }
 
-    private int determineMaxGuests(Map<String, Double> required, Map<String, Double> available, int requestedGuests) {
-        int maxGuests = requestedGuests;
-        for (Map.Entry<String, Double> entry : required.entrySet()) {
-            String ingredient = entry.getKey();
-            double needed = entry.getValue();
-            double availableAmount = available.getOrDefault(ingredient, 0.0);
-            if (needed == 0) continue;
-            int possible = (int) Math.floor(availableAmount / (needed / requestedGuests));
-            if (possible < maxGuests) {
-                maxGuests = possible;
+    private int determineMaxGuests(Map<String, Map<String, Double>> recipes, Map<String, Double> available) {
+        int maxGuests = Integer.MAX_VALUE;
+
+        for (Map.Entry<String, Map<String, Double>> recipeEntry : recipes.entrySet()) {
+            String dish = recipeEntry.getKey();
+            Map<String, Double> ingredients = recipeEntry.getValue();
+
+            for (Map.Entry<String, Double> ingredientEntry : ingredients.entrySet()) {
+                String ingredient = ingredientEntry.getKey();
+                double amountPerGuest = ingredientEntry.getValue();
+
+                if (amountPerGuest <= 0) {
+                    continue;
+                }
+
+                double availableAmount = available.getOrDefault(ingredient, 0.0);
+                int possibleForThisIngredient = (int) Math.floor(availableAmount / amountPerGuest);
+
+                if (possibleForThisIngredient < maxGuests) {
+                    maxGuests = possibleForThisIngredient;
+                }
+
+                //cant have any guests
+                if (maxGuests == 0) {
+                    return 0;
+                }
             }
         }
-        return maxGuests;
+
+        return maxGuests == Integer.MAX_VALUE ? 0 : maxGuests;
     }
 
-    private void deductIngredients(Map<String, Double> totalNeeded, int guests) throws IOException {
+//    private int determineMaxGuests(Map<String, Double> required, Map<String, Double> available, int requestedGuests) {
+//        int maxGuests = requestedGuests;
+//        for (Map.Entry<String, Double> entry : required.entrySet()) {
+//            String ingredient = entry.getKey();
+//            double needed = entry.getValue();
+//            double availableAmount = available.getOrDefault(ingredient, 0.0);
+//            if (needed == 0) continue;
+//            int possible = (int) Math.floor(availableAmount / (needed / requestedGuests));
+//            if (possible < maxGuests) {
+//                maxGuests = possible;
+//            }
+//        }
+//        return maxGuests;
+//    }
+
+//    private void deductIngredients(Map<String, Double> totalNeeded, int guests) throws IOException {
+//        Map<String, Object> inventoryData = getIngredientInventory();
+//        if (inventoryData == null) {
+//            System.out.println("Ingredient inventory is not available.");
+//            return;
+//        }
+//
+//        for (Map.Entry<String, Double> entry : totalNeeded.entrySet()) {
+//            String ingredient = entry.getKey();
+//            double totalAmountNeeded = entry.getValue();
+//            double amountPerGuest = totalAmountNeeded / guests;
+//            double totalToDeduct = amountPerGuest * guests;
+//            double currentAmount = ((Number) inventoryData.getOrDefault(ingredient, 0.0)).doubleValue();
+//            inventoryData.put(ingredient, currentAmount - totalToDeduct);
+//        }
+//        inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(INGREDIENTS_STORAGE_KEY, inventoryData);
+//    }
+
+    private void deductIngredients(Map<String, Double> totalNeeded) throws IOException {
         Map<String, Object> inventoryData = getIngredientInventory();
         if (inventoryData == null) {
             System.out.println("Ingredient inventory is not available.");
+        }
+
+        boolean missingIngredient = false;
+        // Check for all insufficient ingredients
+        for (Map.Entry<String, Double> entry : totalNeeded.entrySet()) {
+            String ingredient = entry.getKey();
+            double amountToDeduct = entry.getValue();
+            double currentAmount = ((Number) inventoryData.getOrDefault(ingredient, 0.0)).doubleValue();
+
+            if (currentAmount < amountToDeduct) {
+                missingIngredient = true;
+                double shortage = amountToDeduct - currentAmount;
+                System.out.printf("Insufficient %s. Required: %.2f, Available: %.2f, Need: %.2f%n",
+                        capitalize(ingredient), amountToDeduct, currentAmount, shortage);
+            }
+        }
+
+        if (missingIngredient) {
+            System.out.println("Missing ingredeint so not deducting ingredients from inventory");
             return;
         }
 
+
+        // Proceed with deduction since all ingredients are sufficient
         for (Map.Entry<String, Double> entry : totalNeeded.entrySet()) {
             String ingredient = entry.getKey();
-            double totalAmountNeeded = entry.getValue();
-            double amountPerGuest = totalAmountNeeded / guests;
-            double totalToDeduct = amountPerGuest * guests;
+            double amountToDeduct = entry.getValue();
             double currentAmount = ((Number) inventoryData.getOrDefault(ingredient, 0.0)).doubleValue();
-            inventoryData.put(ingredient, currentAmount - totalToDeduct);
+            inventoryData.put(ingredient, currentAmount - amountToDeduct);
         }
+
         inventoryStorageHelper.getStore(INVENTORY_STORE_NAME).save(INGREDIENTS_STORAGE_KEY, inventoryData);
     }
 
@@ -539,11 +690,12 @@ public class CookBreakfastController {
         return recipes;
     }
 
-    private int determineMaxGuestsBasedOnIngredients(Map<String, Map<String, Double>> recipes, int guests) throws IOException {
-        Map<String, Double> totalIngredientsNeeded = calculateTotalIngredients(recipes, guests);
-        Map<String, Double> availableInventory = getAvailableIngredients();
-        return determineMaxGuests(totalIngredientsNeeded, availableInventory, guests);
-    }
+    //unused
+//    private int determineMaxGuestsBasedOnIngredients(Map<String, Map<String, Double>> recipes, int guests) throws IOException {
+//        Map<String, Double> totalIngredientsNeeded = calculateTotalIngredients(recipes, guests);
+//        Map<String, Double> availableInventory = getAvailableIngredients();
+//        return determineMaxGuests(totalIngredientsNeeded, availableInventory, guests);
+//    }
 
     public List<Map<String, Object>> getAllCookingReportsReadings() throws IOException {
         return storageHelper.getStore(COOK_BREAKFAST_STORE_NAME).loadAll();
