@@ -27,7 +27,6 @@ public class StorageHelper {
     }
 
     private void initializeStores(String storeName) throws IOException {
-        // Initialize core stores
         registerStore(new BasicStore<>(storeName));
     }
 
@@ -264,18 +263,5 @@ public class StorageHelper {
                     .replace("\\r", "\r")
                     .replace("\\t", "\t");
         }
-    }
-
-    // Query interface
-    public interface Query<T> {
-        boolean matches(Map<String, Object> record);
-    }
-
-    // Query execution method
-    public <T> List<Map<String, Object>> query(String storeName, Query<T> query) throws IOException {
-        DataStore<T> store = getStore(storeName);
-        return store.loadAll().stream()
-                .filter(query::matches)
-                .collect(Collectors.toList());
     }
 }
