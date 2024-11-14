@@ -1,28 +1,30 @@
 package Controllers;
 
-import Models.Booking;
-import Models.CEO;
-import Models.Room;
+import Models.*;
 import Storage.StorageHelper;
+
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 public class BookingController {
-    private StorageHelper storageHelper;
+    private StorageHelper bookingStorageHelper;
+    private StorageHelper salaryStorageHelper;
     private final String STORE_NAME = "bookings";
+    private final String SALARY_NAME = "salaries";
     private final String FRANCHISE_OWNER_PAY_KEY = "franchiseOwnerPay";
     private final String CEO_PAY_KEY = "ceoPay";
     private CEO ceo;
 
     public BookingController(String baseDirectory, CEO ceo) throws IOException {
-        this.storageHelper = new StorageHelper(baseDirectory, STORE_NAME);
+        this.bookingStorageHelper = new StorageHelper(baseDirectory, STORE_NAME);
+        this.salaryStorageHelper = new StorageHelper(baseDirectory, SALARY_NAME);
         this.ceo = ceo;
     }
 
     public void createBooking(Booking booking) throws IOException {
-        Map<String, Object> bookingMap = convertBookingToMap(booking);
-        storageHelper.getStore(STORE_NAME).save(String.valueOf(booking.getId()), bookingMap);
+        bookingStorageHelper.getStore(STORE_NAME).save(String.valueOf(booking.getId()), booking.toMap());
         double bookingAmount = booking.getTotalPrice();
         addPayToFranchiseOwner(bookingAmount);
         double ceoFee = bookingAmount * 0.05;
@@ -30,30 +32,29 @@ public class BookingController {
     }
 
     public Booking getBooking(int id) throws IOException {
-        Map<String, Object> data = storageHelper.getStore(STORE_NAME).load(String.valueOf(id));
-        return data != null ? convertMapToBooking(data) : null;
+        Map<String, Object> data = bookingStorageHelper.getStore(STORE_NAME).load(String.valueOf(id));
+        return data != null ? new Booking().fromMap(data) : null;
     }
 
     public void updateBooking(Booking booking) throws IOException {
-        Map<String, Object> bookingMap = convertBookingToMap(booking);
-        storageHelper.getStore(STORE_NAME).save(String.valueOf(booking.getId()), bookingMap);
+        bookingStorageHelper.getStore(STORE_NAME).save(String.valueOf(booking.getId()), booking.toMap());
     }
 
     public void deleteBooking(int id) throws IOException {
-        storageHelper.getStore(STORE_NAME).delete(String.valueOf(id));
+        bookingStorageHelper.getStore(STORE_NAME).delete(String.valueOf(id));
     }
 
     public int getNumOfBookings() throws IOException {
-        return storageHelper.getStore(STORE_NAME).loadAll().size();
+        return bookingStorageHelper.getStore(STORE_NAME).loadAll().size();
     }
 
     public double getFranchiseOwnerPay() throws IOException {
-        Map<String, Object> data = storageHelper.getStore(STORE_NAME).load(FRANCHISE_OWNER_PAY_KEY);
+        Map<String, Object> data = salaryStorageHelper.getStore(SALARY_NAME).load(FRANCHISE_OWNER_PAY_KEY);
         return data != null ? (double) data.get("pay") : 0.0;
     }
 
     public double getCEOPay() throws IOException {
-        Map<String, Object> data = storageHelper.getStore(STORE_NAME).load(CEO_PAY_KEY);
+        Map<String, Object> data = salaryStorageHelper.getStore(SALARY_NAME).load(CEO_PAY_KEY);
         return data != null ? (double) data.get("pay") : 0.0;
     }
 
@@ -61,14 +62,44 @@ public class BookingController {
         double currentPay = getFranchiseOwnerPay();
         Map<String, Object> payMap = new HashMap<>();
         payMap.put("pay", currentPay + amount);
-        storageHelper.getStore(STORE_NAME).save(FRANCHISE_OWNER_PAY_KEY, payMap);
+        salaryStorageHelper.getStore(SALARY_NAME).save(FRANCHISE_OWNER_PAY_KEY, payMap);
     }
 
     public void addPayToCEO(double amount) throws IOException {
         double currentPay = getCEOPay();
         Map<String, Object> payMap = new HashMap<>();
         payMap.put("pay", currentPay + amount);
-        storageHelper.getStore(STORE_NAME).save(CEO_PAY_KEY, payMap);
+        salaryStorageHelper.getStore(SALARY_NAME).save(CEO_PAY_KEY, payMap);
+    }
+
+    public Booking bookRoom(Room room, int numNights, Customer customer) throws IOException {
+        if(numNights <= 0 || room == null) return null;
+        LocalDate checkoutDate = LocalDate.now().plusDays(numNights);
+        int bookingId = getNumOfBookings() + 1;
+
+        Booking booking = new Booking(bookingId, LocalDate.now().toString(),
+                checkoutDate.toString(), room.getPricePerNight() * numNights, "Complete",
+                room.getRoomNumber());
+
+        createBooking(booking);
+        return booking;
+    }
+
+    public Booking extendStay(Booking booking, Room room, int numNights, Customer customer) throws IOException {
+        if(numNights <= 0 || booking == null) return null;
+        LocalDate checkoutDate = LocalDate.now().plusDays(numNights);
+        booking.setCheckOutDate(checkoutDate.toString());
+        booking.setTotalPrice(booking.getTotalPrice() + (room.getPricePerNight() * numNights));
+        updateBooking(booking);
+        return booking;
+    }
+
+    public boolean isEarlyCheckout(Booking booking) {
+        return LocalDate.parse(booking.getCheckOutDate()).isAfter(LocalDate.now());
+    }
+
+    public void checkOut(Booking booking) throws IOException {
+        deleteBooking(booking.getId());
     }
 
     private Map<String, Object> convertBookingToMap(Booking booking) {
@@ -89,7 +120,7 @@ public class BookingController {
         double totalPrice = (Double) map.get("totalPrice");
         String paymentStatus = (String) map.get("paymentStatus");
         int roomNumber = (Integer) map.get("room");
-        Room room = new Room(roomNumber, "UNKNOWN", 0.0, "UNKNOWN", null, null); // Simplified for example
-        return new Booking(id, checkInDate, checkOutDate, totalPrice, paymentStatus, roomNumber, false);
+        Room room = new Room(roomNumber, "UNKNOWN", 0.0, "UNKNOWN", null, null, 0); // Simplified for example
+        return new Booking(id, checkInDate, checkOutDate, totalPrice, paymentStatus, roomNumber);
     }
 }

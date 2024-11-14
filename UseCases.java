@@ -1,6 +1,7 @@
 import Controllers.*;
 import Models.*;
 
+import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -15,8 +16,11 @@ public class UseCases {
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
 
+    private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
+
     public UseCases(String baseDirectory) throws IOException {
         CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
+
         this.bookingController = new BookingController(baseDirectory, ceo);
         this.customerController = new CustomerController(baseDirectory);
         this.hotelController = new HotelController(baseDirectory);
@@ -40,9 +44,9 @@ public class UseCases {
             case 3:
                 kitchenStaffUseCases(scnr);
                 break;
-            //case 4:
-                //otherUseCases(scnr);
-                //break;
+            case 4:
+                customerUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
         }
@@ -183,6 +187,9 @@ public class UseCases {
             System.out.println("14. View current Ingredient stock");
             System.out.println("15. Check Ingredient stock for gusts");
             System.out.println("0. Exit to change your Actor choice");
+            System.out.println("==========Franchise actions==========");
+            System.out.println("16. Demonstrate Profit Cycle");
+            System.out.println("17. Sign Franchise Agreement");
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
@@ -236,6 +243,38 @@ public class UseCases {
                 case 15:
                     checkIngredients(scnr);
                     break;
+                case 16:
+                    demonstrateProfitCycle();
+                    break;
+                case 17:
+                    signFranchiseAgreement(scnr);
+                    break;
+                default:
+                    System.out.println("Invalid action number. Please try again.");
+            }
+        }
+    }
+
+    private void customerUseCases(Scanner scnr) throws IOException {
+        while(true) {
+            System.out.println("\nCustomer choose what to run:");
+            System.out.println("1. Book Hotel Room");
+            System.out.println("2. Check out of Hotel Room");
+            System.out.println("0. Exit to change your Actor choice");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    BookHotelRoom(scnr);
+                    break;
+                case 2:
+                    CheckOutOfHotelRoom(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -276,126 +315,68 @@ public class UseCases {
         poolMaintenanceController.makeAndSavePoolEquipmentInspectionFromInput(scanner);
     }
 
-
-    public void runUseCase(int useCaseNumber) throws IOException {
-        switch (useCaseNumber) {
-            case 1:
-                BookHotelRoom();
-                break;
-            case 2:
-                CheckOutOfHotelRoom();
-                break;
-            case 3:
-                updateBooking();
-                break;
-            case 4:
-                deleteBooking();
-                break;
-            case 5:
-                createCustomer();
-                break;
-            case 6:
-                getCustomer();
-                break;
-            case 7:
-                updateCustomer();
-                break;
-            case 8:
-                deleteCustomer();
-                break;
-            case 9:
-                createPaymentMethod();
-                break;
-            case 10:
-                getPaymentMethod();
-                break;
-            case 11:
-                demonstrateProfitCycle();
-                break;
-            case 12:
-                signFranchiseAgreement();
-                break;
-            default:
-                System.out.println("Invalid use case number.");
-        }
-    }
-
-    // Use Case 1
-    private void BookHotelRoom() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-
+    /**
+     * Books a hotel room
+     * Nathan Turnis
+     * @param scanner Scanner used for I/O
+     * @throws IOException thrown if storage communication fails
+     */
+    private void BookHotelRoom(Scanner scanner) throws IOException {
         Hotel hotel = hotelController.getHotel(1);
-        List<Room> rooms = roomController.getAllRooms();
-//        rooms.add(new Room(101, "Deluxe", 150.0, "AVAILABLE", "", ""));
-//        rooms.add(new Room(102, "Standard", 100.0, "AVAILABLE", "", ""));
-//        rooms.add(new Room(201, "Standard", 125.0, "AVAILABLE", "", ""));
-//        rooms.add(new Room(301, "Suite", 300.0, "AVAILABLE", "", ""));
-//        rooms.add(new Room(202, "Standard", 150.0, "AVAILABLE", "", ""));
 
         System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
-        if(hotel.getNumAvailableRooms() <= 0) {
+        if(hotelController.isHotelSoldOut(hotel)) {
             System.out.println("Hotel is sold out!");
             return;
         }
 
-        boolean didBook = false;
-
         System.out.print("What room type? (Standard, Deluxe or Suite):  ");
         String roomType = scanner.next();
 
-        for(Room room : rooms) {
-            // if room is found matching request
-            if(room.getRoomType().equals(roomType) && Objects.equals(room.getStatus(), "AVAILABLE")) {
-                System.out.print("There is a room for $" + room.getPricePerNight() + " per night. " +
-                        "Purchase? (y/n) ");
-                char answer = scanner.next().charAt(0);
-
-                 // ---- PURCHASE ROOM ----
-                if(answer == 'y') {
-                    System.out.print("How many nights? ");
-                    int nights;
-                    try {
-                        nights = scanner.nextInt();
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid nights!");
-                        return;
-                    }
-                    LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-
-                    room.setStatus("OCCUPIED");
-                    room.setCurrentGuest("Bob");
-
-                    int bookingId = bookingController.getNumOfBookings() + 1;
-                    Booking booking = new Booking(bookingId, LocalDate.now().toString(),
-                            checkoutDate.toString(), room.getPricePerNight() * nights, "Complete",
-                            room.getRoomNumber(), false);
-
-                    // ---- UPDATE DATABASE ----
-                    bookingController.createBooking(booking);
-                    roomController.updateRoom(room);
-                    hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
-                    hotelController.updateHotel(hotel);
-
-                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. " +
-                            "Checkout date: " + checkoutDate);
-                    didBook = true;
-                    break;
-                }
-            }
-        }
-        if(!didBook) {
+        Room room = roomController.isARoomAvailableFromRequirements(roomType);
+        if(room == null) {
             System.out.println("Could not find a room. Try again with different requirements.");
+            return;
+        }
+
+        System.out.print("There is a room for $" + room.getPricePerNight() + " per night. " +
+                "Purchase? (y/n) ");
+        char answer = scanner.next().charAt(0);
+
+        if(answer == 'y') {
+            System.out.print("How many nights? ");
+            int nights;
+            try {
+                nights = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid nights!");
+                return;
+            }
+
+            Booking booking = bookingController.bookRoom(room, nights, customer);
+            if(booking == null) return;
+            room.setStatus("OCCUPIED");
+            room.setCurrentGuest(customer.getName());
+            roomController.updateRoom(room);
+            hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
+            hotelController.updateHotel(hotel);
+
+            System.out.println("Booking complete! Your booking ID is " + booking.getId() + ". Please remember this for checkout. " +
+                    "Checkout date: " + booking.getCheckOutDate());
         }
     }
 
-    // Use Case 2
-    private void CheckOutOfHotelRoom() throws IOException {
-        Scanner scanner = new Scanner(System.in);
+    /**
+     * Checks out of a hotel room
+     * @param scanner Scanner used for I/O
+     * @throws IOException thrown if storage communication fails
+     */
+    private void CheckOutOfHotelRoom(Scanner scanner) throws IOException {
         Hotel hotel = hotelController.getHotel(1);
 
         System.out.println("\n\n----- CHECK OUT -----\n");
-        if(hotel.getNumAvailableRooms() >= hotel.getRoomCount()) {
-            System.out.println("All rooms are not checked in.");
+        if(!hotelController.hasRoomsCheckedOut(hotel)) {
+            System.out.println("There are no rooms checked out at this hotel. (" + hotel.getName() + ")");
             return;
         }
 
@@ -416,16 +397,17 @@ public class UseCases {
         if(extend == 'y') {
             System.out.print("How many nights? ");
             int nights = scanner.nextInt();
-            LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-            booking.setCheckOutDate(checkoutDate.toString());
-            booking.setTotalPrice(booking.getTotalPrice() + (room.getPricePerNight() * nights));
-            bookingController.updateBooking(booking);
-            System.out.println("Your stay has been extended to " + checkoutDate);
+            booking = bookingController.extendStay(booking, room, nights, customer);
+            if(booking == null) {
+                System.out.println("Failed to extend stay.");
+                return;
+            }
+            System.out.println("Your stay has been extended to " + booking.getCheckOutDate());
             return;
         }
 
         // ---- IF EARLY CHECK OUT ----
-        if(LocalDate.parse(booking.getCheckOutDate()).isAfter(LocalDate.now())) {
+        if(bookingController.isEarlyCheckout(booking)) {
             System.out.println("WARNING: You are checking out early (booking checkout date is " + booking.getCheckOutDate() + "). " +
                     "You will still be required to pay your remaining nights.");
             System.out.print("Do you want to do this? (y/n) ");
@@ -438,7 +420,7 @@ public class UseCases {
         room.setCurrentGuest("");
         hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() + 1);
         roomController.updateRoom(room);
-        bookingController.deleteBooking(bookingId);
+        bookingController.checkOut(booking);
         hotelController.updateHotel(hotel);
         System.out.println("Successfully checked out. Thanks for staying at " + hotel.getName());
 
@@ -446,70 +428,21 @@ public class UseCases {
 
     // Use case 11 (core profit cycle)
     private void demonstrateProfitCycle() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-    
-        Hotel hotel = hotelController.getHotel(1);
-        List<Room> rooms = roomController.getAllRooms();
-    
         System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
-        if (hotel.getNumAvailableRooms() <= 0) {
-            System.out.println("Hotel is sold out!");
+        if(bookingController.getNumOfBookings() <= 0) {
+            System.out.println("A booking must be placed first.");
             return;
         }
     
-        boolean didBook = false;
+        double franchiseOwnerPay = bookingController.getFranchiseOwnerPay();
+        double ceoPay = bookingController.getCEOPay();
     
-        System.out.print("What room type? (Standard, Deluxe or Suite):  ");
-        String roomType = scanner.next();
-    
-        for (Room room : rooms) {
-            if (room.getRoomType().equals(roomType) && Objects.equals(room.getStatus(), "AVAILABLE")) {
-                System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
-                char answer = scanner.next().charAt(0);
-    
-                if (answer == 'y') {
-                    System.out.print("How many nights? ");
-                    int nights;
-                    try {
-                        nights = scanner.nextInt();
-                    } catch (InputMismatchException e) {
-                        System.out.println("Invalid nights!");
-                        return;
-                    }
-    
-                    LocalDate checkoutDate = LocalDate.now().plusDays(nights);
-                    room.setStatus("OCCUPIED");
-                    room.setCurrentGuest("Bob");
-                    int bookingId = bookingController.getNumOfBookings() + 1;
-                    Booking booking = new Booking(bookingId, LocalDate.now().toString(), checkoutDate.toString(), room.getPricePerNight() * nights, "Complete", room.getRoomNumber(), false);
-    
-                    bookingController.createBooking(booking);
-                    roomController.updateRoom(room);
-                    hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
-                    hotelController.updateHotel(hotel);
-    
-                    System.out.println("Booking complete! Your booking ID is " + bookingId + ". Please remember this for checkout. Checkout date: " + checkoutDate + '\n');
-                    didBook = true;
-    
-                    double franchiseOwnerPay = bookingController.getFranchiseOwnerPay();
-                    double ceoPay = bookingController.getCEOPay();
-    
-                    System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
-                    System.out.println("CEO's Pay: $" + ceoPay + '\n');
-    
-                    break;
-                }
-            }
+        System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
+        System.out.println("CEO's Pay: $" + ceoPay + '\n');
         }
-    
-        if (!didBook) {
-            System.out.println("Could not find a room. Try again with different requirements.");
-            }
-        }
-    // Use case 12 (sign franchise agreement)
-private void signFranchiseAgreement() throws IOException {
-    Scanner scanner = new Scanner(System.in);
 
+    // Use case 12 (sign franchise agreement)
+private void signFranchiseAgreement(Scanner scanner) throws IOException {
     System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
 
     System.out.print("Enter start date (YYYY-MM-DD): ");
@@ -619,31 +552,11 @@ private void signFranchiseAgreement() throws IOException {
             UseCases useCases = new UseCases("hotel_data");
 
             while (true) {
-//                System.out.println("Select a use case to run:");
-//                System.out.println("1. Book Hotel Room");
-//                System.out.println("2. Check Out Of Hotel Room");
-//                System.out.println("3. Update Booking");
-//                System.out.println("4. Delete Booking");
-//                System.out.println("5. Create Customer");
-//                System.out.println("6. Get Customer");
-//                System.out.println("7. Update Customer");
-//                System.out.println("8. Delete Customer");
-//                System.out.println("9. Create Payment Method");
-//                System.out.println("10. Get Payment Method");
-//                System.out.println("11. Demonstrate Profit Cycle");
-//                System.out.println("12. Sign Franchise Agreement");
-//                System.out.println("0. Exit");
-//                System.out.print("Enter your choice: ");
-//                int useCaseNumber = scanner.nextInt();
-//                if (useCaseNumber == 0) {
-//                    break;
-//                }
-//                useCases.runUseCase(useCaseNumber);
-
                 System.out.println("Select a actor to run:");
                 System.out.println("1. Manager");
                 System.out.println("2. Maintenance Staff");
                 System.out.println("3. Kitchen Staff");
+                System.out.println("4. Customer");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();

@@ -32,6 +32,21 @@ public class RoomController {
         storageHelper.getStore("rooms").delete(String.valueOf(id));
     }
 
+    public boolean isRoomAvailable(Room room) {
+        return room.getStatus().equals("AVAILABLE");
+    }
+
+    public Room isARoomAvailableFromRequirements(String roomType) throws IOException {
+        List<Room> rooms = getAllRooms();
+        for(Room room : rooms) {
+            if(room.getRoomType().equals(roomType) && isRoomAvailable(room)) {
+                return room;
+            }
+        }
+
+        return null;
+    }
+
     public List<Room> getAllRooms() throws IOException {
         List<Map<String, Object>> data = storageHelper.getStore("rooms").loadAll();
         if (data == null || data.isEmpty()) return null;

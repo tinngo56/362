@@ -1,9 +1,10 @@
 {
   "roomNumber": 101,
-  "currentGuest": "Bob",
-  "lastModified": "2024-11-07_00-41-02",
+  "currentGuest": "",
+  "hotelId": 1,
+  "lastModified": "2024-11-11_17-16-17",
   "lastCleaned": "",
   "roomType": "Deluxe",
   "pricePerNight": 150.0,
-  "status": "OCCUPIED"
+  "status": "AVAILABLE"
 }
