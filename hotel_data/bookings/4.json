@@ -1,0 +1,10 @@
+{
+  "canCheckOutEarly": false,
+  "checkOutDate": "2025-12-11",
+  "roomNum": 101,
+  "totalPrice": 60000.0,
+  "id": 4,
+  "lastModified": "2024-11-06_10-18-59",
+  "checkInDate": "2024-11-06",
+  "paymentStatus": "Complete"
+}

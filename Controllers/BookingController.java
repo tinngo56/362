@@ -101,26 +101,4 @@ public class BookingController {
     public void checkOut(Booking booking) throws IOException {
         deleteBooking(booking.getId());
     }
-
-    private Map<String, Object> convertBookingToMap(Booking booking) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", booking.getId());
-        map.put("checkInDate", booking.getCheckInDate());
-        map.put("checkOutDate", booking.getCheckOutDate());
-        map.put("totalPrice", booking.getTotalPrice());
-        map.put("paymentStatus", booking.getPaymentStatus());
-        map.put("room", booking.getRoomNum());
-        return map;
-    }
-
-    private Booking convertMapToBooking(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String checkInDate = (String) map.get("checkInDate");
-        String checkOutDate = (String) map.get("checkOutDate");
-        double totalPrice = (Double) map.get("totalPrice");
-        String paymentStatus = (String) map.get("paymentStatus");
-        int roomNumber = (Integer) map.get("room");
-        Room room = new Room(roomNumber, "UNKNOWN", 0.0, "UNKNOWN", null, null, 0); // Simplified for example
-        return new Booking(id, checkInDate, checkOutDate, totalPrice, paymentStatus, roomNumber);
-    }
 }
