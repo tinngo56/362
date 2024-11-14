@@ -1,0 +1,8 @@
+{
+  "expiryDate": "12/23",
+  "id": 1,
+  "lastModified": "2024-11-06_10-24-39",
+  "type": "CREDIT_CARD",
+  "cardNumber": "1234567890123456",
+  "paymentStatus": "ACTIVE"
+}

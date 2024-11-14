@@ -47,8 +47,39 @@ public class UseCases {
             case 4:
                 customerUseCases(scnr);
                 break;
+            case 5:
+                cleaningStaffUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
+        }
+    }
+
+    private void cleaningStaffUseCases(Scanner scnr) throws IOException {
+        CleaningStaffController cleaningStaffController = new CleaningStaffController("hotel_data");
+        CleaningStaff cleaningStaff = cleaningStaffController.getAvailableCleaningStaff();
+
+        System.out.println("Cleaning Staff: " + cleaningStaff.getName());
+        System.out.println("Status: " + cleaningStaff.getStatus());
+
+        System.out.println("\nCleaning staff choose what to run:");
+        System.out.println("1. Clean Room");
+        System.out.println("0. Exit to change your Actor choice");
+        System.out.print("Enter your choice: ");
+
+        int choice = scnr.nextInt();
+        scnr.nextLine();
+
+        switch (choice) {
+            case 0:
+                return;
+            case 1:
+                System.out.println("Enter room number: ");
+                String room = scnr.nextLine();
+                cleaningStaffController.cleanRoom(room, cleaningStaff);
+                break;
+            default:
+                System.out.println("Invalid choice. Please try again.");
         }
     }
 
@@ -557,6 +588,7 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
                 System.out.println("2. Maintenance Staff");
                 System.out.println("3. Kitchen Staff");
                 System.out.println("4. Customer");
+                System.out.println("5. Cleaning Staff");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();
