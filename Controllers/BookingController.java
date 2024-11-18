@@ -87,7 +87,7 @@ public class BookingController {
 
     public Booking extendStay(Booking booking, Room room, int numNights, Customer customer) throws IOException {
         if(numNights <= 0 || booking == null) return null;
-        LocalDate checkoutDate = LocalDate.now().plusDays(numNights);
+        LocalDate checkoutDate = LocalDate.parse(booking.getCheckOutDate()).plusDays(numNights);
         booking.setCheckOutDate(checkoutDate.toString());
         booking.setTotalPrice(booking.getTotalPrice() + (room.getPricePerNight() * numNights));
         updateBooking(booking);

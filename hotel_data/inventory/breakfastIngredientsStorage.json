@@ -1,15 +1,15 @@
 {
-  "eggs": 197.0,
-  "yogurt": 4.6000000000000005,
-  "butter": 120.0,
+  "eggs": 194.0,
+  "yogurt": 4.500000000000001,
+  "butter": 75.0,
   "salt": 200.0,
-  "bakingPowder": 80.0,
-  "milk": 3.4,
-  "sausage": 96.0,
-  "syrup": 1.7999999999999998,
+  "bakingPowder": 75.0,
+  "milk": 3.0,
+  "sausage": 95.0,
+  "syrup": 1.7499999999999998,
   "water": 10.0,
-  "bacon": 92.0,
-  "flour": 200.0,
-  "lastModified": "2024-11-14_13-47-30",
-  "sugar": 420.0
+  "bacon": 90.0,
+  "flour": 0.0,
+  "lastModified": "2024-11-14_17-12-56",
+  "sugar": 400.0
 }
