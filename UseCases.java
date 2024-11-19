@@ -1,5 +1,8 @@
 import Controllers.*;
 import Models.*;
+import Models.Vending.VendingMachine;
+import Models.Vending.VendingMachineItem;
+import Models.Vending.VendingMachineSlot;
 
 import java.awt.print.Book;
 import java.io.IOException;
@@ -15,6 +18,7 @@ public class UseCases {
     private final PoolMaintenanceController poolMaintenanceController;
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
+    private final VendingController vendingController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -29,6 +33,7 @@ public class UseCases {
         this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
+        this.vendingController = new VendingController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -291,6 +296,7 @@ public class UseCases {
             System.out.println("\nCustomer choose what to run:");
             System.out.println("1. Book Hotel Room");
             System.out.println("2. Check out of Hotel Room");
+            System.out.println("3. Vending");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -305,6 +311,9 @@ public class UseCases {
                     break;
                 case 2:
                     CheckOutOfHotelRoom(scnr);
+                    break;
+                case 3:
+                    testVending(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -473,110 +482,79 @@ public class UseCases {
         }
 
     // Use case 12 (sign franchise agreement)
-private void signFranchiseAgreement(Scanner scanner) throws IOException {
-    System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
+    private void signFranchiseAgreement(Scanner scanner) throws IOException {
+        System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
 
-    System.out.print("Enter start date (YYYY-MM-DD): ");
-    String startDate = scanner.next();
+        System.out.print("Enter start date (YYYY-MM-DD): ");
+        String startDate = scanner.next();
 
-    System.out.print("Enter end date (YYYY-MM-DD): ");
-    String endDate = scanner.next();
+        System.out.print("Enter end date (YYYY-MM-DD): ");
+        String endDate = scanner.next();
 
-    double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
-    System.out.println("Franchise fee: " + fees + "%");
+        double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
+        System.out.println("Franchise fee: " + fees + "%");
 
-    System.out.println("Select conditions from the list below:");
-    String[] conditionsList = {
-        "Maintain brand standards",
-        "Participate in marketing campaigns",
-        "Adhere to pricing guidelines",
-        "Undergo regular inspections",
-        "Provide regular financial reports",
-        "Attend training sessions",
-        "Use approved suppliers",
-        "Pay royalties on time",
-        "Maintain customer satisfaction",
-        "Follow operational procedures"
-    };
+        System.out.println("Select conditions from the list below:");
+        String[] conditionsList = {
+            "Maintain brand standards",
+            "Participate in marketing campaigns",
+            "Adhere to pricing guidelines",
+            "Undergo regular inspections",
+            "Provide regular financial reports",
+            "Attend training sessions",
+            "Use approved suppliers",
+            "Pay royalties on time",
+            "Maintain customer satisfaction",
+            "Follow operational procedures"
+        };
 
-    for (int i = 0; i < conditionsList.length; i++) {
-        System.out.println((i + 1) + ". " + conditionsList[i]);
-    }
-
-    System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
-    String[] selectedConditionsIndices = scanner.next().split(",");
-    StringBuilder selectedConditions = new StringBuilder();
-    for (String index : selectedConditionsIndices) {
-        int conditionIndex = Integer.parseInt(index.trim()) - 1;
-        if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
-            selectedConditions.append(conditionsList[conditionIndex]).append("\n");
+        for (int i = 0; i < conditionsList.length; i++) {
+            System.out.println((i + 1) + ". " + conditionsList[i]);
         }
-    }
 
-    String conditions = selectedConditions.toString();
-
-    System.out.println("You have agreed to the following conditions:");
-    System.out.println(conditions);
-
-    FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
-    int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
-    FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
-
-    franchiseAgreementController.createFranchiseAgreement(agreement);
-
-    System.out.println("Franchise agreement signed successfully!");
-    System.out.println("Agreement ID: " + agreementId);
-}
-
-    private void updateBooking() throws IOException {
-
-    }
-
-    private void deleteBooking() throws IOException {
-        bookingController.deleteBooking(1);
-        System.out.println("Booking deleted successfully.");
-    }
-
-    private void createCustomer() throws IOException {
-        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "GOLD", "CREDIT_CARD", 5);
-        customerController.createCustomer(customer);
-        System.out.println("Customer created successfully.");
-    }
-
-    private void getCustomer() throws IOException {
-        Customer customer = customerController.getCustomer(1);
-        if (customer != null) {
-            System.out.println("Customer details: " + customer.toMap());
-        } else {
-            System.out.println("Customer not found.");
+        System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
+        String[] selectedConditionsIndices = scanner.next().split(",");
+        StringBuilder selectedConditions = new StringBuilder();
+        for (String index : selectedConditionsIndices) {
+            int conditionIndex = Integer.parseInt(index.trim()) - 1;
+            if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
+                selectedConditions.append(conditionsList[conditionIndex]).append("\n");
+            }
         }
+
+        String conditions = selectedConditions.toString();
+
+        System.out.println("You have agreed to the following conditions:");
+        System.out.println(conditions);
+
+        FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
+        int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
+        FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
+
+        franchiseAgreementController.createFranchiseAgreement(agreement);
+
+        System.out.println("Franchise agreement signed successfully!");
+        System.out.println("Agreement ID: " + agreementId);
     }
 
-    private void updateCustomer() throws IOException {
-        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "PLATINUM", "CREDIT_CARD", 10);
-        customerController.updateCustomer(customer);
-        System.out.println("Customer updated successfully.");
+    private void testVending(Scanner scanner) throws IOException {
+        VendingMachine machine = vendingController.getHotelVendingMachine();
+        System.out.println("---- VENDING MACHINE ----\n");
+
+        System.out.print("Please insert between $0.00 and $50.00. Any unused money will be returned at the end" +
+                "of this transaction.\n$");
+
+        double money = scanner.nextDouble();
+        vendingController.addMoney(machine, money);
+
+        System.out.println("Choose a slot: ");
+        machine.displaySlots();
+        System.out.print("Choice: ");
+
+        int key = scanner.nextInt();
+        vendingController.purchaseItem(key, machine);
     }
 
-    private void deleteCustomer() throws IOException {
-        customerController.deleteCustomer(1);
-        System.out.println("Customer deleted successfully.");
-    }
-
-    private void createPaymentMethod() throws IOException {
-        PaymentMethod paymentMethod = new PaymentMethod(1, "CREDIT_CARD", "1234567890123456", "12/23", "ACTIVE");
-        paymentController.createPaymentMethod(paymentMethod);
-        System.out.println("Payment method created successfully.");
-    }
-
-    private void getPaymentMethod() throws IOException {
-        PaymentMethod paymentMethod = paymentController.getPaymentMethod(1);
-        if (paymentMethod != null) {
-            System.out.println("Payment method details: " + paymentMethod.toMap());
-        } else {
-            System.out.println("Payment method not found.");
-        }
-    }
 
     public static void main(String[] args) throws IOException {
         try (Scanner scanner = new Scanner(System.in)) {
