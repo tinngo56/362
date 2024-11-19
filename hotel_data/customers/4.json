@@ -1,0 +1,9 @@
+{
+  "numberOfStays": 8,
+  "paymentMethod": "CREDIT_CARD",
+  "loyaltyProgramLevel": "BRONZE",
+  "id": 4,
+  "lastModified": "2024-11-06_10-24-38",
+  "pointsAccumulated": 300,
+  "rewardsAvailable": 150.0
+}

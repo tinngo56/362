@@ -1,0 +1,9 @@
+{
+  "numberOfStays": 5,
+  "paymentMethod": "CREDIT_CARD",
+  "loyaltyProgramLevel": "SILVER",
+  "id": 1,
+  "lastModified": "2024-11-06_10-24-38",
+  "pointsAccumulated": 600,
+  "rewardsAvailable": 300.0
+}
