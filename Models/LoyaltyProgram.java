@@ -1,16 +1,17 @@
+// Models/LoyaltyProgram.java
 package Models;
 
-public class LoyaltyProgram extends Mappable<LoyaltyProgram> {
+public class LoyaltyProgram {
     private int id;
     private String tier;
     private int pointsAccumulated;
-    private String rewardsAvailable;
+    private double rewardsAvailable;
 
-    public LoyaltyProgram(int id, String tier, int pointsAccumulated, String rewardsAvailable) {
+    public LoyaltyProgram(int id, String tier, int pointsAccumulated) {
         this.id = id;
         this.tier = tier;
         this.pointsAccumulated = pointsAccumulated;
-        this.rewardsAvailable = rewardsAvailable;
+        this.rewardsAvailable = calculateRewards(pointsAccumulated);
     }
 
     public LoyaltyProgram() {
@@ -40,13 +41,29 @@ public class LoyaltyProgram extends Mappable<LoyaltyProgram> {
 
     public void setPointsAccumulated(int pointsAccumulated) {
         this.pointsAccumulated = pointsAccumulated;
+        this.rewardsAvailable = calculateRewards(pointsAccumulated);
+        updateTier();
     }
 
-    public String getRewardsAvailable() {
+    public double getRewardsAvailable() {
         return rewardsAvailable;
     }
 
-    public void setRewardsAvailable(String rewardsAvailable) {
-        this.rewardsAvailable = rewardsAvailable;
+    private double calculateRewards(int points) {
+        return points * 0.5;
+    }
+
+    private void updateTier() {
+        if (pointsAccumulated >= 2000) {
+            tier = "Diamond";
+        } else if (pointsAccumulated >= 1500) {
+            tier = "Platinum";
+        } else if (pointsAccumulated >= 1000) {
+            tier = "Gold";
+        } else if (pointsAccumulated >= 500) {
+            tier = "Silver";
+        } else {
+            tier = "Bronze";
+        }
     }
 }

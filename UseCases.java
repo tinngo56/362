@@ -1,5 +1,6 @@
 import Controllers.*;
 import Models.*;
+import Storage.StorageHelper;
 
 import java.awt.print.Book;
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class UseCases {
+    private final RewardsController rewardsController;
     private final BookingController bookingController;
     private final CustomerController customerController;
     private final PaymentController paymentController;
@@ -21,6 +23,7 @@ public class UseCases {
     public UseCases(String baseDirectory) throws IOException {
         CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
 
+        this.rewardsController = new RewardsController(baseDirectory);
         this.bookingController = new BookingController(baseDirectory, ceo);
         this.customerController = new CustomerController(baseDirectory);
         this.hotelController = new HotelController(baseDirectory);
@@ -291,6 +294,7 @@ public class UseCases {
             System.out.println("\nCustomer choose what to run:");
             System.out.println("1. Book Hotel Room");
             System.out.println("2. Check out of Hotel Room");
+            System.out.println("3. Book Room with Rewards");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -305,6 +309,9 @@ public class UseCases {
                     break;
                 case 2:
                     CheckOutOfHotelRoom(scnr);
+                    break;
+                case 3:
+                    bookRoomWithRewards();
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -457,6 +464,95 @@ public class UseCases {
 
     }
 
+
+    public void bookRoomWithRewards() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+
+        Hotel hotel = hotelController.getHotel(1);
+
+        System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
+        if (hotelController.isHotelSoldOut(hotel)) {
+            System.out.println("Hotel is sold out!");
+            return;
+        }
+
+        System.out.print("What room type? (Standard, Deluxe or Suite): ");
+        String roomType = scanner.next();
+
+        Room room = roomController.isARoomAvailableFromRequirements(roomType);
+        if (room == null) {
+            System.out.println("Could not find a room. Try again with different requirements.");
+            return;
+        }
+
+        System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
+        char answer = scanner.next().charAt(0);
+
+        if (answer == 'y') {
+            System.out.print("How many nights? ");
+            int nights;
+            try {
+                nights = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid nights!");
+                return;
+            }
+
+            double totalPrice = nights * room.getPricePerNight();
+            double finalPrice = totalPrice;
+            double rewardsUsed = 0.0;
+
+            System.out.print("Is the customer a rewards member? (yes/no): ");
+            String isRewardsMember = scanner.next();
+
+            if (isRewardsMember.equalsIgnoreCase("yes")) {
+                System.out.print("Enter customer ID: ");
+                int customerId = scanner.nextInt();
+
+                StorageHelper.DataStore<Map<String, Object>> loyaltyStore = rewardsController.getStorageHelper().getStore("loyaltyPrograms");
+                Map<String, Object> loyaltyData = loyaltyStore.load(String.valueOf(customerId));
+
+                if (loyaltyData != null && loyaltyData.containsKey("rewardsAvailable")) {
+                    double rewardsAvailable = (double) loyaltyData.get("rewardsAvailable");
+
+                    System.out.print("Do they want to redeem their rewards? (yes/no): ");
+                    String redeemRewards = scanner.next();
+
+                    if (redeemRewards.equalsIgnoreCase("yes")) {
+                        rewardsUsed = Math.min(rewardsAvailable, totalPrice);
+                        finalPrice = totalPrice - rewardsUsed;
+
+                        // Update the loyalty program with the new points
+                        int pointsAccumulated = (int) loyaltyData.get("pointsAccumulated");
+                        int pointsUsed = (int) (rewardsUsed / 0.5);
+                        loyaltyData.put("pointsAccumulated", pointsAccumulated - pointsUsed);
+                        loyaltyData.put("rewardsAvailable", (pointsAccumulated - pointsUsed) * 0.5);
+
+                        loyaltyStore.save(String.valueOf(customerId), loyaltyData);
+                    }
+                } else {
+                    System.out.println("Customer is not a rewards member.");
+                }
+            }
+
+            System.out.println("Final price after rewards: $" + finalPrice);
+            System.out.println("Rewards used: $" + rewardsUsed);
+            System.out.println("Total price: $" + totalPrice);
+
+            Booking booking = bookingController.bookRoom(room, nights, customer);
+            if (booking == null) return;
+            room.setStatus("OCCUPIED");
+            room.setCurrentGuest(customer.getName());
+            roomController.updateRoom(room);
+            hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
+            hotelController.updateHotel(hotel);
+
+            System.out.println("Booking confirmed for customer ID: " + customer.getId());
+            System.out.println("Booking ID: " + booking.getId());
+            System.out.println("Check-out date: " + booking.getCheckOutDate());
+        }
+    }
+
     // Use case 11 (core profit cycle)
     private void demonstrateProfitCycle() throws IOException {
         System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
@@ -596,6 +692,9 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
                     break;
                 }
                 useCases.runUseCaseByActor(useCaseNumber);
+                if (useCaseNumber == 4) {
+                    useCases.bookRoomWithRewards();
+                }
             }
         }
     }

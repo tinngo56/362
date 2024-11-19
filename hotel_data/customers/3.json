@@ -1,0 +1,9 @@
+{
+  "numberOfStays": 20,
+  "paymentMethod": "DEBIT_CARD",
+  "loyaltyProgramLevel": "DIAMOND",
+  "id": 3,
+  "lastModified": "2024-11-06_10-24-38",
+  "pointsAccumulated": 2500,
+  "rewardsAvailable": 1250.0
+}
