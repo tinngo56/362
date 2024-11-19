@@ -1,12 +1,8 @@
 import Controllers.*;
 import Models.*;
 import Models.Vending.VendingMachine;
-import Models.Vending.VendingMachineItem;
-import Models.Vending.VendingMachineSlot;
 
-import java.awt.print.Book;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 
 public class UseCases {
@@ -222,10 +218,13 @@ public class UseCases {
             System.out.println("13. Delete a Breakfast Report");
             System.out.println("14. View current Ingredient stock");
             System.out.println("15. Check Ingredient stock for gusts");
-            System.out.println("0. Exit to change your Actor choice");
             System.out.println("==========Franchise actions==========");
             System.out.println("16. Demonstrate Profit Cycle");
             System.out.println("17. Sign Franchise Agreement");
+            System.out.println("==========Vending actions==========");
+            System.out.println("18. Add Item to Vending Machine");
+            System.out.println("19. Restock the Vending Machine");
+            System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
@@ -285,6 +284,12 @@ public class UseCases {
                 case 17:
                     signFranchiseAgreement(scnr);
                     break;
+                case 18:
+                    vendingController.addItemToVendingMachine();
+                    break;
+                case 19:
+                    vendingController.restockVendingMachine();
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -313,7 +318,7 @@ public class UseCases {
                     CheckOutOfHotelRoom(scnr);
                     break;
                 case 3:
-                    testVending(scnr);
+                    useVendingMachine(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -537,7 +542,8 @@ public class UseCases {
         System.out.println("Agreement ID: " + agreementId);
     }
 
-    private void testVending(Scanner scanner) throws IOException {
+    // Use case Vending Machine
+    private void useVendingMachine(Scanner scanner) throws IOException {
         VendingMachine machine = vendingController.getHotelVendingMachine();
         System.out.println("---- VENDING MACHINE ----\n");
 
@@ -547,12 +553,28 @@ public class UseCases {
         double money = scanner.nextDouble();
         vendingController.addMoney(machine, money);
 
-        System.out.println("Choose a slot: ");
-        machine.displaySlots();
-        System.out.print("Choice: ");
+        while(true) {
+            System.out.println("Current balance: $" + machine.getBalance());
+            System.out.println("Choose a slot: ");
+            machine.displaySlots();
+            System.out.println("0. Exit");
+            System.out.print("Choice: ");
 
-        int key = scanner.nextInt();
-        vendingController.purchaseItem(key, machine);
+            int key;
+            try {
+                key = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("ERROR: Must enter a number.\n\n");
+                scanner.nextLine();
+                continue;
+            }
+            if(key == 0) {
+                break;
+            }
+            vendingController.purchaseItem(key, machine);
+        }
+
+        System.out.println("Thanks for using! Returning $" + machine.getClass());
     }
 
 

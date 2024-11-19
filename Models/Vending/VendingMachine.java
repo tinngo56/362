@@ -1,6 +1,7 @@
 package Models.Vending;
 
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +49,7 @@ public class VendingMachine {
             balance += amount;
             System.out.println("Inserted: $" + amount + ". Current balance: $" + balance);
         } else {
-            System.out.println("Invalid amount inserted.");
+            System.out.println("ERROR: Invalid amount inserted.\n");
         }
     }
 
@@ -56,12 +57,12 @@ public class VendingMachine {
     public VendingMachineItem dispenseItem(int slotNumber) {
         VendingMachineSlot slot = slots.get(slotNumber);
         if (slot == null) {
-            System.out.println("Invalid slot number.");
+            System.out.println("ERROR: Invalid slot number.\n");
             return null;
         }
 
         if (slot.isEmpty()) {
-            System.out.println("Slot " + slotNumber + " is empty.");
+            System.out.println("ERROR: Slot " + slotNumber + " is empty.\n");
             return null;
         }
 
@@ -71,10 +72,10 @@ public class VendingMachine {
                 balance -= item.getPrice();
                 System.out.println("Dispensed: " + item.getName() + ". Remaining balance: $" + balance);
             } else {
-                System.out.println("Failed to dispense item.");
+                System.out.println("ERROR: Failed to dispense item.\n");
             }
         } else {
-            System.out.println("Insufficient balance. Please insert more money.");
+            System.out.println("ERROR: Insufficient balance. Please insert more money.\n");
         }
         return item;
     }

@@ -1,16 +1,12 @@
 package Controllers;
 
-import Models.Booking;
 import Models.Vending.VendingMachine;
 import Models.Vending.VendingMachineItem;
 import Models.Vending.VendingMachineSlot;
 import Storage.StorageHelper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VendingController {
     private StorageHelper vendingStorageHelper;
@@ -55,6 +51,15 @@ public class VendingController {
         return slots;
     }
 
+    public List<VendingMachineItem> getAllItems() throws IOException {
+        List<VendingMachineItem> items = new ArrayList<>();
+        List<Map<String, Object>> data = vendingStorageHelper.getStore(ITEMS_STORE_NAME).loadAll();
+        for (Map<String, Object> map : data) {
+            items.add(new VendingMachineItem().fromMap(map));
+        }
+        return items;
+    }
+
     public VendingMachine getHotelVendingMachine() throws IOException {
         return new VendingMachine(getAllSlots());
     }
@@ -75,7 +80,51 @@ public class VendingController {
 
     public void purchaseItem(int slotNumber, VendingMachine machine) throws IOException {
         VendingMachineItem item = machine.dispenseItem(slotNumber);
+        if(item == null) return;
         createUpdateVendingItem(item);
+    }
+
+    public void addItemToVendingMachine() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        String itemName;
+        double price;
+        int quantity;
+
+        System.out.print("Enter item name: ");
+        itemName = scanner.nextLine();
+        System.out.print("Enter price: $");
+        try {
+            price = scanner.nextDouble();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input");
+            return;
+        }
+        System.out.print("Enter initial quantity <= 20: ");
+        try {
+            quantity = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input");
+            return;
+        }
+
+        if(quantity > 20) {
+            System.out.println("Must enter 20 or less for quantity.");
+            return;
+        }
+
+        VendingMachineItem item = new VendingMachineItem(itemName, price, quantity);
+        createUpdateVendingItem(item);
+        addSlot(item);
+    }
+
+    public void restockVendingMachine() throws IOException {
+        List<VendingMachineItem> items = getAllItems();
+        int MAX_QUANTITY = 20;
+        for(VendingMachineItem item : items) {
+            item.restock(MAX_QUANTITY - item.getQuantity());
+            createUpdateVendingItem(item);
+            System.out.println("Restocked " + item.getName() + " to " + MAX_QUANTITY);
+        }
     }
 
 
