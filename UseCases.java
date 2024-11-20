@@ -17,6 +17,7 @@ public class UseCases {
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
     private final VendingController vendingController;
+    private final KeyCardController keyCardController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -33,6 +34,7 @@ public class UseCases {
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
         this.vendingController = new VendingController(baseDirectory);
+        this.keyCardController = new KeyCardController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -407,6 +409,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if(booking == null) return;
+            keyCardController.newKeyCard(booking);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -555,6 +558,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if (booking == null) return;
+            keyCardController.newKeyCard(booking);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);

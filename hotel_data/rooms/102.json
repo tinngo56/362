@@ -1,10 +1,10 @@
 {
   "roomNumber": 102,
-  "currentGuest": "",
+  "currentGuest": "Bob Smith",
   "hotelId": 1,
-  "lastModified": "2024-11-14_13-18-39",
+  "lastModified": "2024-11-19_21-59-41",
   "lastCleaned": "Tin",
   "roomType": "Standard",
   "pricePerNight": 100.0,
-  "status": "AVAILABLE"
+  "status": "OCCUPIED"
 }

@@ -79,7 +79,7 @@ public class BookingController {
 
         Booking booking = new Booking(bookingId, LocalDate.now().toString(),
                 checkoutDate.toString(), room.getPricePerNight() * numNights, "Complete",
-                room.getRoomNumber());
+                room.getRoomNumber(), customer.getId());
 
         createBooking(booking);
         return booking;
