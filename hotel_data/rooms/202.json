@@ -1,10 +1,11 @@
 {
   "roomNumber": 202,
   "currentGuest": "",
+  "accessLevel": "ROOM",
   "hotelId": 1,
-  "lastModified": "2024-11-14_14-02-22",
+  "lastModified": "2024-11-20_15-34-38",
   "lastCleaned": "",
   "roomType": "Standard",
-  "pricePerNight": 150.0,
+  "pricePerNight": 125.0,
   "status": "AVAILABLE"
 }

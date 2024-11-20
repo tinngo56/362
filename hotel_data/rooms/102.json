@@ -1,9 +1,22 @@
 {
   "roomNumber": 102,
   "currentGuest": "Bob Smith",
+  "accessLevel": "ROOM",
+  "instances": [
+  "Models.Room@27f8302d",
+  "Models.Room@4d76f3f8",
+  "Models.Room@2d8e6db6",
+  "Models.Room@23ab930d",
+  "Models.Room@4534b60d",
+  "Models.Room@3fa77460",
+  "Models.Room@619a5dff",
+  "Models.Room@1ed6993a",
+  "Models.Room@7e32c033",
+  "Models.Room@7ab2bfe1"
+],
   "hotelId": 1,
-  "lastModified": "2024-11-19_21-59-41",
-  "lastCleaned": "Tin",
+  "lastModified": "2024-11-20_16-29-17",
+  "lastCleaned": "",
   "roomType": "Standard",
   "pricePerNight": 100.0,
   "status": "OCCUPIED"

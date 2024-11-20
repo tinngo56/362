@@ -18,6 +18,7 @@ public class UseCases {
     private final CookBreakfastController cookBreakfastController;
     private final VendingController vendingController;
     private final KeyCardController keyCardController;
+    private final FacilityController facilityController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -35,6 +36,7 @@ public class UseCases {
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
         this.vendingController = new VendingController(baseDirectory);
         this.keyCardController = new KeyCardController(baseDirectory);
+        this.facilityController = new FacilityController();
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -229,6 +231,8 @@ public class UseCases {
             System.out.println("==========Vending actions==========");
             System.out.println("18. Add Item to Vending Machine");
             System.out.println("19. Restock the Vending Machine");
+            System.out.println("=========Other actions========");
+            System.out.println("20. Access Facility");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -295,6 +299,8 @@ public class UseCases {
                 case 19:
                     vendingController.restockVendingMachine();
                     break;
+                case 20:
+                    accessFacility(scnr, true);
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -308,6 +314,7 @@ public class UseCases {
             System.out.println("2. Check out of Hotel Room");
             System.out.println("3. Book Room with Rewards");
             System.out.println("4. Vending");
+            System.out.println("5. Access Facility");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -328,6 +335,9 @@ public class UseCases {
                     break;
                 case 4:
                     useVendingMachine(scnr);
+                    break;
+                case 5:
+                    accessFacility(scnr, false);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -409,7 +419,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if(booking == null) return;
-            keyCardController.newKeyCard(booking);
+            KeyCard card = keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -417,7 +427,8 @@ public class UseCases {
             hotelController.updateHotel(hotel);
 
             System.out.println("Booking complete! Your booking ID is " + booking.getId() + ". Please remember this for checkout. " +
-                    "Checkout date: " + booking.getCheckOutDate());
+                    "Checkout date: " + booking.getCheckOutDate() + "Room number: " + room.getRoomNumber());
+            System.out.println("Your access level is " + card.getAccessLevel());
         }
     }
 
@@ -558,7 +569,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if (booking == null) return;
-            keyCardController.newKeyCard(booking);
+            keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -675,6 +686,56 @@ public class UseCases {
         }
 
         System.out.println("Thanks for using! Returning $" + machine.getClass());
+    }
+
+    public void accessFacility(Scanner scanner, boolean isManager) throws IOException {
+        System.out.println("\n----- ACCESS FACILITY -----\n");
+
+        System.out.print("Enter booking ID: ");
+        int id = scanner.nextInt();
+        Booking booking = bookingController.getBooking(id);
+        if(booking == null) {
+            System.out.println("No booking found.");
+            return;
+        }
+        KeyCard keyCard = keyCardController.getKeyCardFromBooking(booking.getId());
+
+        System.out.println("Choose facility/room:");
+        System.out.println("1. Room");
+        System.out.println("2. Vending");
+        System.out.println("3. Staff Room");
+
+        System.out.print("Choice: ");
+        int choice = scanner.nextInt();
+
+        Facility facility = null;
+
+        if(isManager) {
+            System.out.println("Access granted!");
+            return;
+        }
+
+        switch(choice) {
+            case 1:
+                System.out.println("Enter room number to access: ");
+                int roomNum = scanner.nextInt();
+                facility = roomController.getRoom(roomNum);
+                break;
+            case 2:
+                facility = vendingController.getHotelVendingMachine();
+                break;
+            case 3:
+                System.out.println("Access denied.");
+            default:
+                System.out.println("Invalid action.");
+        }
+
+        if(facilityController.checkAccessLevel(facility, keyCard, booking)) {
+            System.out.println("Access granted!");
+        } else {
+            System.out.println("Access denied.");
+        }
+
     }
 
 

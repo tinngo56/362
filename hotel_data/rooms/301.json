@@ -1,10 +1,11 @@
 {
   "roomNumber": 301,
   "currentGuest": "",
+  "accessLevel": "ROOM",
   "hotelId": 1,
-  "lastModified": "2024-11-14_17-02-36",
+  "lastModified": "2024-11-20_15-34-38",
   "lastCleaned": "",
   "roomType": "Suite",
-  "pricePerNight": 300.0,
+  "pricePerNight": 200.0,
   "status": "AVAILABLE"
 }

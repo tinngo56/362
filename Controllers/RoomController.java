@@ -21,7 +21,7 @@ public class RoomController {
 
     public Room getRoom(int id) throws IOException {
         Map<String, Object> data = storageHelper.getStore("rooms").load(String.valueOf(id));
-        return data != null ? new Room().fromMap(data) : null;
+        return data != null ? (Room) new Room().fromMap(data) : null;
     }
 
     public void updateRoom(Room room) throws IOException {
@@ -30,6 +30,20 @@ public class RoomController {
 
     public void deleteRoom(int id) throws IOException {
         storageHelper.getStore("rooms").delete(String.valueOf(id));
+    }
+
+    public void initializeRooms() throws IOException {
+        Room room1 = new Room(101, "Deluxe", 150.0, "AVAILABLE", "", "", 1);
+        Room room2 = new Room(102, "Standard", 100.0, "AVAILABLE", "", "", 1);
+        Room room3 = new Room(201, "Standard", 125.0, "AVAILABLE", "", "", 1);
+        Room room4 = new Room(202, "Standard", 125.0, "AVAILABLE", "", "", 1);
+        Room room5 = new Room(301, "Suite", 200.0, "AVAILABLE", "", "", 1);
+
+        createRoom(room1);
+        createRoom(room2);
+        createRoom(room3);
+        createRoom(room4);
+        createRoom(room5);
     }
 
     public boolean isRoomAvailable(Room room) {
@@ -52,7 +66,7 @@ public class RoomController {
         if (data == null || data.isEmpty()) return null;
         List<Room> rooms = new ArrayList<>();
         for (Map<String, Object> room : data) {
-            rooms.add(new Room().fromMap(room));
+            rooms.add((Room) new Room().fromMap(room));
         }
        return rooms;
     }

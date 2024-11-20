@@ -1,6 +1,6 @@
 package Models;
 
-public class Room extends Mappable<Room> {
+public class Room extends Facility {
     private int roomNumber;
     private String roomType;
     private double pricePerNight;
@@ -18,6 +18,7 @@ public class Room extends Mappable<Room> {
         this.currentGuest = currentGuest;
         this.lastCleaned = lastCleaned;
         this.hotelId = hotelId;
+        super.setAccessLevel(AccessLevels.ROOM);
     }
 
     public Room() { 

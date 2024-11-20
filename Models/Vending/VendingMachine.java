@@ -1,11 +1,14 @@
 package Models.Vending;
 
+import Models.AccessLevels;
+import Models.Facility;
+
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 
-public class VendingMachine {
+public class VendingMachine extends Facility {
 
     private Map<Integer, VendingMachineSlot> slots; // Slot number to slot mapping
     private double balance; // Balance inserted by the user
@@ -13,6 +16,7 @@ public class VendingMachine {
     public VendingMachine() {
         this.slots = new HashMap<>();
         this.balance = 0.0;
+        super.setAccessLevel(AccessLevels.BASIC);
     }
 
     public VendingMachine(List<VendingMachineSlot> slots) {
@@ -21,6 +25,7 @@ public class VendingMachine {
             this.slots.put(slot.getSlotNumber(), slot);
         }
         this.balance = 0.0;
+        super.setAccessLevel(AccessLevels.BASIC);
     }
 
     /**
