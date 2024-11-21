@@ -301,6 +301,7 @@ public class UseCases {
                     break;
                 case 20:
                     accessFacility(scnr, true);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -691,11 +692,17 @@ public class UseCases {
     public void accessFacility(Scanner scanner, boolean isManager) throws IOException {
         System.out.println("\n----- ACCESS FACILITY -----\n");
 
-        System.out.print("Enter booking ID: ");
-        int id = scanner.nextInt();
-        Booking booking = bookingController.getBooking(id);
-        if(booking == null) {
-            System.out.println("No booking found.");
+        Booking booking;
+        if(!isManager) {
+            System.out.print("Enter booking ID: ");
+            int id = scanner.nextInt();
+            booking = bookingController.getBooking(id);
+            if (booking == null) {
+                System.out.println("No booking found.");
+                return;
+            }
+        } else {
+            System.out.println("Access granted!");
             return;
         }
         KeyCard keyCard = keyCardController.getKeyCardFromBooking(booking.getId());
@@ -709,11 +716,6 @@ public class UseCases {
         int choice = scanner.nextInt();
 
         Facility facility = null;
-
-        if(isManager) {
-            System.out.println("Access granted!");
-            return;
-        }
 
         switch(choice) {
             case 1:
@@ -757,9 +759,6 @@ public class UseCases {
                     break;
                 }
                 useCases.runUseCaseByActor(useCaseNumber);
-                if (useCaseNumber == 4) {
-                    useCases.bookRoomWithRewards();
-                }
             }
         }
     }
