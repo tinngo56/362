@@ -70,4 +70,14 @@ public class RoomController {
         }
        return rooms;
     }
+
+    public boolean isRoomOccupied(int roomNumber) {
+        try {
+            Room room = getRoom(roomNumber);
+            return room != null && !room.isOccupied();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

@@ -13,6 +13,7 @@ public class Room extends Facility {
     private String currentGuest;
     private String lastCleaned;
     private int hotelId;
+    private boolean isOccupied;
     
     // Inventory properties
     private Map<String, Integer> consumables;
@@ -131,5 +132,13 @@ public class Room extends Facility {
 
     public void setInventoryUpdatedBy(String updatedBy) {
         this.inventoryUpdatedBy = updatedBy;
+    }
+
+    public void isOccupied(boolean isOccupied) {
+        this.isOccupied = isOccupied;
+    }
+
+    public boolean isOccupied() {
+        return isOccupied;
     }
 }

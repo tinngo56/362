@@ -19,5 +19,6 @@
     "pillowcases": 4.0,
     "towels": 4.0,
     "bed_sheets": 2.0
-  }
+  },
+  "isOccupied": false
 }

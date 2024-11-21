@@ -19,6 +19,9 @@ public class UseCases {
     private final VendingController vendingController;
     private final KeyCardController keyCardController;
     private final FacilityController facilityController;
+    private final RoomServiceController roomServiceController;
+    private final KitchenController kitchenController;
+    private final RoomServiceStaffController roomServiceStaffController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -37,6 +40,9 @@ public class UseCases {
         this.vendingController = new VendingController(baseDirectory);
         this.keyCardController = new KeyCardController(baseDirectory);
         this.facilityController = new FacilityController();
+        this.roomServiceController = new RoomServiceController(baseDirectory);
+        this.kitchenController = new KitchenController(baseDirectory);
+        this.roomServiceStaffController = new RoomServiceStaffController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -315,6 +321,7 @@ public class UseCases {
             System.out.println("3. Book Room with Rewards");
             System.out.println("4. Vending");
             System.out.println("5. Access Facility");
+            System.out.println("6. Room Service");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -339,10 +346,48 @@ public class UseCases {
                 case 5:
                     accessFacility(scnr, false);
                     break;
+                case 6:
+                    roomService(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
         }
+    }
+
+    private void roomService(Scanner scnr) throws IOException {
+        System.out.println("\n----- ROOM SERVICE -----\n");
+        
+        // Get room number
+        System.out.print("Enter room number: ");
+        int roomNumber = scnr.nextInt();
+        scnr.nextLine();
+        
+        // Validate room
+        if (!roomController.isRoomOccupied(roomNumber)) {
+            System.out.println("Room is not occupied.");
+            return;
+        }
+        
+        // Display menu and create order
+        System.out.println("----- MENU -----");
+        roomServiceController.printMenu();
+        
+        RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
+        
+        // // Process with kitchen
+        // if (kitchenController.prepareOrder(order.getOrderId(), scnr)) {
+        //     System.out.println("Order is being prepared...");
+            
+        //     // Assign delivery staff
+        //     RoomServiceStaff staff = roomServiceStaffController.getAvailableStaff();
+        //     if (staff != null) {
+        //         roomServiceStaffController.assignOrder(staff.getId(), order.getOrderId());
+        //         System.out.println("Staff assigned for delivery: " + staff.getName());
+        //     }
+        // } else {
+        //     System.out.println("Unable to process order. Please try again later.");
+        // }
     }
 
     private void checkIngredients(Scanner scnr) throws IOException {
