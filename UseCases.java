@@ -1,5 +1,6 @@
 import Controllers.*;
 import Models.*;
+import Models.Vending.VendingMachine;
 import Storage.StorageHelper;
 
 import java.awt.print.Book;
@@ -18,6 +19,9 @@ public class UseCases {
     private final PoolMaintenanceController poolMaintenanceController;
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
+    private final VendingController vendingController;
+    private final KeyCardController keyCardController;
+    private final FacilityController facilityController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -34,6 +38,9 @@ public class UseCases {
         this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
+        this.vendingController = new VendingController(baseDirectory);
+        this.keyCardController = new KeyCardController(baseDirectory);
+        this.facilityController = new FacilityController();
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -226,6 +233,12 @@ public class UseCases {
             System.out.println("==========Franchise actions==========");
             System.out.println("16. Demonstrate Profit Cycle");
             System.out.println("17. Sign Franchise Agreement");
+            System.out.println("==========Vending actions==========");
+            System.out.println("18. Add Item to Vending Machine");
+            System.out.println("19. Restock the Vending Machine");
+            System.out.println("=========Other actions========");
+            System.out.println("20. Access Facility");
+            System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
@@ -285,6 +298,15 @@ public class UseCases {
                 case 17:
                     signFranchiseAgreement(scnr);
                     break;
+                case 18:
+                    vendingController.addItemToVendingMachine();
+                    break;
+                case 19:
+                    vendingController.restockVendingMachine();
+                    break;
+                case 20:
+                    accessFacility(scnr, true);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -297,6 +319,8 @@ public class UseCases {
             System.out.println("1. Book Hotel Room");
             System.out.println("2. Check out of Hotel Room");
             System.out.println("3. Book Room with Rewards");
+            System.out.println("4. Vending");
+            System.out.println("5. Access Facility");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -314,6 +338,12 @@ public class UseCases {
                     break;
                 case 3:
                     bookRoomWithRewards();
+                    break;
+                case 4:
+                    useVendingMachine(scnr);
+                    break;
+                case 5:
+                    accessFacility(scnr, false);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -395,6 +425,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if(booking == null) return;
+            KeyCard card = keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -402,7 +433,8 @@ public class UseCases {
             hotelController.updateHotel(hotel);
 
             System.out.println("Booking complete! Your booking ID is " + booking.getId() + ". Please remember this for checkout. " +
-                    "Checkout date: " + booking.getCheckOutDate());
+                    "Checkout date: " + booking.getCheckOutDate() + "Room number: " + room.getRoomNumber());
+            System.out.println("Your access level is " + card.getAccessLevel());
         }
     }
 
@@ -545,6 +577,7 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if (booking == null) return;
+            keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -651,55 +684,92 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
         System.out.println("Mass email sent successfully!");
     }
 
-    private void updateBooking() throws IOException {
+    // Use case Vending Machine
+    private void useVendingMachine(Scanner scanner) throws IOException {
+        VendingMachine machine = vendingController.getHotelVendingMachine();
+        System.out.println("---- VENDING MACHINE ----\n");
 
-    }
+        System.out.print("Please insert between $0.00 and $50.00. Any unused money will be returned at the end" +
+                "of this transaction.\n$");
 
-    private void deleteBooking() throws IOException {
-        bookingController.deleteBooking(1);
-        System.out.println("Booking deleted successfully.");
-    }
+        double money = scanner.nextDouble();
+        vendingController.addMoney(machine, money);
 
-    private void createCustomer() throws IOException {
-        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "GOLD", "CREDIT_CARD", 5);
-        customerController.createCustomer(customer);
-        System.out.println("Customer created successfully.");
-    }
+        while(true) {
+            System.out.println("Current balance: $" + machine.getBalance());
+            System.out.println("Choose a slot: ");
+            machine.displaySlots();
+            System.out.println("0. Exit");
+            System.out.print("Choice: ");
 
-    private void getCustomer() throws IOException {
-        Customer customer = customerController.getCustomer(1);
-        if (customer != null) {
-            System.out.println("Customer details: " + customer.toMap());
-        } else {
-            System.out.println("Customer not found.");
+            int key;
+            try {
+                key = scanner.nextInt();
+            } catch (InputMismatchException e) {
+                System.out.println("ERROR: Must enter a number.\n\n");
+                scanner.nextLine();
+                continue;
+            }
+            if(key == 0) {
+                break;
+            }
+            vendingController.purchaseItem(key, machine);
         }
+
+        System.out.println("Thanks for using! Returning $" + machine.getBalance());
     }
 
-    private void updateCustomer() throws IOException {
-        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "PLATINUM", "CREDIT_CARD", 10);
-        customerController.updateCustomer(customer);
-        System.out.println("Customer updated successfully.");
-    }
+    public void accessFacility(Scanner scanner, boolean isManager) throws IOException {
+        System.out.println("\n----- ACCESS FACILITY -----\n");
 
-    private void deleteCustomer() throws IOException {
-        customerController.deleteCustomer(1);
-        System.out.println("Customer deleted successfully.");
-    }
-
-    private void createPaymentMethod() throws IOException {
-        PaymentMethod paymentMethod = new PaymentMethod(1, "CREDIT_CARD", "1234567890123456", "12/23", "ACTIVE");
-        paymentController.createPaymentMethod(paymentMethod);
-        System.out.println("Payment method created successfully.");
-    }
-
-    private void getPaymentMethod() throws IOException {
-        PaymentMethod paymentMethod = paymentController.getPaymentMethod(1);
-        if (paymentMethod != null) {
-            System.out.println("Payment method details: " + paymentMethod.toMap());
+        Booking booking;
+        if(!isManager) {
+            System.out.print("Enter booking ID: ");
+            int id = scanner.nextInt();
+            booking = bookingController.getBooking(id);
+            if (booking == null) {
+                System.out.println("No booking found.");
+                return;
+            }
         } else {
-            System.out.println("Payment method not found.");
+            System.out.println("Access granted!");
+            return;
         }
+        KeyCard keyCard = keyCardController.getKeyCardFromBooking(booking.getId());
+
+        System.out.println("Choose facility/room:");
+        System.out.println("1. Room");
+        System.out.println("2. Vending");
+        System.out.println("3. Staff Room");
+
+        System.out.print("Choice: ");
+        int choice = scanner.nextInt();
+
+        Facility facility = null;
+
+        switch(choice) {
+            case 1:
+                System.out.println("Enter room number to access: ");
+                int roomNum = scanner.nextInt();
+                facility = roomController.getRoom(roomNum);
+                break;
+            case 2:
+                facility = vendingController.getHotelVendingMachine();
+                break;
+            case 3:
+                System.out.println("Access denied.");
+            default:
+                System.out.println("Invalid action.");
+        }
+
+        if(facilityController.checkAccessLevel(facility, keyCard, booking)) {
+            System.out.println("Access granted!");
+        } else {
+            System.out.println("Access denied.");
+        }
+
     }
+
 
     public static void main(String[] args) throws IOException {
         try (Scanner scanner = new Scanner(System.in)) {
@@ -719,9 +789,6 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
                     break;
                 }
                 useCases.runUseCaseByActor(useCaseNumber);
-                if (useCaseNumber == 4) {
-                    useCases.bookRoomWithRewards();
-                }
             }
         }
     }
