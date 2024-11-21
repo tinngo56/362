@@ -5,17 +5,21 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import Models.*;
+import Models.Charge.ChargeType;
 import Models.RoomServiceOrder.OrderStatus;
 import Storage.StorageHelper;
 
 public class RoomServiceController {
     private static final String DATA_ORDER_NAME = "room_service_orders";
+    private static final String DATA_CHARGE_NAME = "charges";
     private final StorageHelper orderStorageHelper;
     private final StorageHelper menuStorageHelper;
+    private final StorageHelper chargeStorageHelper;
 
     public RoomServiceController(String baseDirectory) throws IOException {
         this.orderStorageHelper = new StorageHelper(baseDirectory, DATA_ORDER_NAME);
         this.menuStorageHelper = new StorageHelper(baseDirectory, "room_service_menu");
+        this.chargeStorageHelper = new StorageHelper(baseDirectory, DATA_CHARGE_NAME);
     }
 
     @SuppressWarnings("unchecked")
@@ -42,8 +46,20 @@ public class RoomServiceController {
         }
 
         RoomServiceOrder order = createOrderFromItems(roomNumber, selectedItems, scanner);
+        // Create and save charge
+        Charge charge = new Charge(
+            order.getTotalAmount(),
+            String.valueOf(roomNumber),
+            ChargeType.ROOM_SERVICE,
+            "G" + String.format("%03d", roomNumber)
+        );
+        chargeStorageHelper.getStore(DATA_CHARGE_NAME)
+            .save(roomNumber + "_" + order.getOrderId(), charge.toMap());
+        
         printOrderSummary(selectedItems, order.getTotalAmount());
-        orderStorageHelper.getStore(DATA_ORDER_NAME).save(roomNumber + "_" + order.getOrderId(), order.toMap());
+        orderStorageHelper.getStore(DATA_ORDER_NAME)
+            .save(roomNumber + "_" + order.getOrderId(), order.toMap());
+            
         return order;
     }
 
