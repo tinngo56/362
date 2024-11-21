@@ -1,0 +1,14 @@
+{
+  "damageDetails": "carpet",
+  "maintenanceIssues": "broken sink",
+  "roomNumber": "102",
+  "needsMaintenance": true,
+  "hasDamage": true,
+  "inspectionTime": "2024-11-20T23:34:44.246223",
+  "missingItems": [
+    "Phone",
+    "Charger"
+  ],
+  "lastModified": "2024-11-20_23-35-04",
+  "inspectedBy": "HIGH"
+}

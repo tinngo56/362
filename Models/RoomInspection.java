@@ -10,7 +10,6 @@ public class RoomInspection extends Mappable<RoomInspection> {
     private String roomNumber;
     private boolean hasDamage;
     private boolean needsMaintenance;
-    private boolean hasMissingItems;
     private String damageDetails;
     private String maintenanceIssues;
     private List<String> missingItems;
@@ -89,7 +88,4 @@ public class RoomInspection extends Mappable<RoomInspection> {
         this.missingItems = missingItems;
     }
     
-    public boolean isHasMissingItems() {
-        return hasMissingItems;
-    }
 }
