@@ -9,16 +9,16 @@
     "toilet_paper": 3.0
   },
   "hotelId": 1,
-  "lastCleaned": "2024-11-21_07-41-55",
-  "lastInventoryUpdate": "2024-11-21_07-41-55",
-  "lastModified": "2024-11-21_07-41-55",
+  "lastCleaned": "2024-11-21_10-56-13",
+  "isOccupied": false,
+  "lastInventoryUpdate": "2024-11-21_10-56-13",
+  "lastModified": "2024-11-21_10-56-13",
   "roomType": "Standard",
   "pricePerNight": 100.0,
-  "status": "CLEAN",
+  "status": "NEEDS_SUPPLIES",
   "linens": {
     "pillowcases": 4.0,
     "towels": 4.0,
-    "bed_sheets": 2.0
-  },
-  "isOccupied": false
+    "bed_sheets": 0.0
+  }
 }

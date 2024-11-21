@@ -1,0 +1,11 @@
+{
+    "shiftHours": "24/7",
+    "role": "ROOM_SERVICE",
+    "contactInfo": "Tin",
+    "name": "Tin",
+    "id": 1,
+    "lastModified": "2024-11-21_07-46-13",
+    "experience": 10,
+    "wage": 15.0,
+    "status": "AVAILABLE"
+}

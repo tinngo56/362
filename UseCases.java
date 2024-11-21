@@ -374,20 +374,16 @@ public class UseCases {
         roomServiceController.printMenu();
         
         RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
-        
-        // // Process with kitchen
-        // if (kitchenController.prepareOrder(order.getOrderId(), scnr)) {
-        //     System.out.println("Order is being prepared...");
-            
-        //     // Assign delivery staff
-        //     RoomServiceStaff staff = roomServiceStaffController.getAvailableStaff();
-        //     if (staff != null) {
-        //         roomServiceStaffController.assignOrder(staff.getId(), order.getOrderId());
-        //         System.out.println("Staff assigned for delivery: " + staff.getName());
-        //     }
-        // } else {
-        //     System.out.println("Unable to process order. Please try again later.");
-        // }
+
+        RoomServiceStaff staff = roomServiceStaffController.getAvailableRoomServiceStaff();
+
+        roomServiceStaffController.assignOrder(staff, order.getOrderId());
+
+        roomServiceStaffController.requestOrder(order, staff);
+
+        kitchenController.prepareOrder(order, scnr);
+
+        roomServiceStaffController.deliverOrder(order, staff);
     }
 
     private void checkIngredients(Scanner scnr) throws IOException {

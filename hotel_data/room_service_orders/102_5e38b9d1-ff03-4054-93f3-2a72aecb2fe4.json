@@ -1,0 +1,12 @@
+{
+  "totalAmount": 7.98,
+  "roomNumber": 102,
+  "orderTime": "2024-11-21T10:46:04.309819",
+  "orderId": "5e38b9d1-ff03-4054-93f3-2a72aecb2fe4",
+  "lastModified": "2024-11-21_10-46-06",
+  "items": [
+    "Soft Drinks          $3.99 - Beverages",
+    "Soft Drinks          $3.99 - Beverages"
+  ],
+  "status": "RECEIVED"
+}
