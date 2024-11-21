@@ -16,6 +16,7 @@ public class CleaningStaffController {
     private StorageHelper inventoryStorageHelper;
     private StorageHelper maintenanceStorageHelper;
     private StorageHelper lostAndFoundStorageHelper;
+    private StorageHelper supplyRequestStorageHelper;
 
     private final String DATA_STAFF_NAME = "cleaning_staff";
     private final String DATA_ROOM_NAME = "rooms";
@@ -23,6 +24,7 @@ public class CleaningStaffController {
     private final String DATA_INVENTORY_NAME = "inventory";
     private final String DATA_MAINTENANCE_NAME = "maintenance";
     private final String DATA_LOST_FOUND_NAME = "lost_found";
+    private final String DATA_SUPPLY_REQUEST = "supply_requests";
 
     private final String STATUS_AVAILABLE = "AVAILABLE";
     private final String STATUS_CLEANING = "CLEANING";
@@ -38,6 +40,8 @@ public class CleaningStaffController {
         inventoryStorageHelper = new StorageHelper(baseDirectory, DATA_INVENTORY_NAME);
         maintenanceStorageHelper = new StorageHelper(baseDirectory, DATA_MAINTENANCE_NAME);
         lostAndFoundStorageHelper = new StorageHelper(baseDirectory, DATA_LOST_FOUND_NAME);
+        supplyRequestStorageHelper = new StorageHelper(baseDirectory, DATA_SUPPLY_REQUEST);
+
     }
 
     public CleaningStaff getAvailableCleaningStaff() throws IOException {
@@ -47,15 +51,12 @@ public class CleaningStaffController {
                 .filter(staff -> staff.get("status").equals(STATUS_AVAILABLE))
                 .collect(Collectors.toList());
         if (availableStaff.isEmpty()) {
-                
-                
+
             throw new IOException("No available cleaning staff");
         }
         return cleaningStaff = (CleaningStaff) new CleaningStaff().fromMap(availableStaff.get(0));
     }
-                
 
-                
     public void cleanRoom(String roomNumber, CleaningStaff cleaningStaff, Scanner scanner) throws IOException {
         try {
             // Update staff status to busy
@@ -88,7 +89,8 @@ public class CleaningStaffController {
         }
     }
 
-    private RoomInspection performInspection(String roomNumber, CleaningStaff staff, Scanner scanner) throws IOException {
+    private RoomInspection performInspection(String roomNumber, CleaningStaff staff, Scanner scanner)
+            throws IOException {
         RoomInspection inspection = new RoomInspection();
         inspection.setRoomNumber(roomNumber);
         inspection.setInspectedBy(staff.getName());
@@ -135,7 +137,7 @@ public class CleaningStaffController {
         request.setRequestId(roomNumber + "_" + System.currentTimeMillis());
         request.setRequestId(UUID.randomUUID().toString());
         request.setRoomNumber(roomNumber);
-        request.setIssueDescription(String.format("Maintenance Issues: %s%nDamage Details: %s", 
+        request.setIssueDescription(String.format("Maintenance Issues: %s%nDamage Details: %s",
                 inspection.getMaintenanceIssues(), inspection.getDamageDetails()));
         request.setReportedBy(staff.getName());
 
@@ -175,56 +177,58 @@ public class CleaningStaffController {
         // Load room data
         Map<String, Object> roomData = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
         Map<String, Object> room = new Room().fromMap(roomData).toMap();
-        
+
         // Load main inventory data and convert to Inventory object
         Map<String, Object> inventoryData = inventoryStorageHelper.getStore(DATA_INVENTORY_NAME).load("room_inventory");
         Inventory mainInventory = new Inventory().fromMap(inventoryData);
-        
+
         // Prepare new quantities for room
         Map<String, Double> roomConsumables = (Map<String, Double>) room.get("consumables");
         Map<String, Double> roomLinens = (Map<String, Double>) room.get("linens");
-        
+
         // Calculate needs
-        double soapNeeded = 2 - roomConsumables.getOrDefault("soap", 0.0);
-        double shampooNeeded = 2 - roomConsumables.getOrDefault("shampoo", 0.0);
-        double toiletPaperNeeded = 3 - roomConsumables.getOrDefault("toilet_paper", 0.0);
-        double towelsNeeded = 4 - roomLinens.getOrDefault("towels", 0.0);
-        double bedSheetsNeeded = 2 - roomLinens.getOrDefault("bed_sheets", 0.0);
-        double pillowcasesNeeded = 4 - roomLinens.getOrDefault("pillowcases", 0.0);
-        
-        // Update room consumables
-        roomConsumables.put("soap", 2.0);
-        roomConsumables.put("shampoo", 2.0);
-        roomConsumables.put("toilet_paper", 3.0);
-        
-        // Update room linens
-        roomLinens.put("towels", 4.0);
-        roomLinens.put("bed_sheets", 2.0);
-        roomLinens.put("pillowcases", 4.0);
-        
-        // Update main inventory quantities
-        mainInventory.updateConsumableQuantity("soap", 
-            mainInventory.getConsumableQuantity("soap") - soapNeeded);
-        mainInventory.updateConsumableQuantity("shampoo", 
-            mainInventory.getConsumableQuantity("shampoo") - shampooNeeded);
-        mainInventory.updateConsumableQuantity("toilet_paper", 
-            mainInventory.getConsumableQuantity("toilet_paper") - toiletPaperNeeded);
-        mainInventory.updateLinenQuantity("towels", 
-            mainInventory.getLinenQuantity("towels") - towelsNeeded);
-        mainInventory.updateLinenQuantity("bed_sheets", 
-            mainInventory.getLinenQuantity("bed_sheets") - bedSheetsNeeded);
-        mainInventory.updateLinenQuantity("pillowcases", 
-            mainInventory.getLinenQuantity("pillowcases") - pillowcasesNeeded);
-        
+        // Calculate needs and available stock
+        double soapStock = mainInventory.getConsumableQuantity("soap");
+        double shampooStock = mainInventory.getConsumableQuantity("shampoo");
+        double toiletPaperStock = mainInventory.getConsumableQuantity("toilet_paper");
+        double towelsStock = mainInventory.getLinenQuantity("towels");
+        double bedSheetsStock = mainInventory.getLinenQuantity("bed_sheets");
+        double pillowcasesStock = mainInventory.getLinenQuantity("pillowcases");
+
+        // Set room quantities based on available stock
+        roomConsumables.put("soap", Math.min(2.0, soapStock));
+        roomConsumables.put("shampoo", Math.min(2.0, shampooStock));
+        roomConsumables.put("toilet_paper", Math.min(3.0, toiletPaperStock));
+
+        roomLinens.put("towels", Math.min(4.0, towelsStock));
+        roomLinens.put("bed_sheets", Math.min(2.0, bedSheetsStock));
+        roomLinens.put("pillowcases", Math.min(4.0, pillowcasesStock));
+
+        // Create supply requests for shortages
+        checkAndCreateRequest("soap", 2.0, soapStock, staff);
+        checkAndCreateRequest("shampoo", 2.0, shampooStock, staff);
+        checkAndCreateRequest("toilet_paper", 3.0, toiletPaperStock, staff);
+        checkAndCreateRequest("towels", 4.0, towelsStock, staff);
+        checkAndCreateRequest("bed_sheets", 2.0, bedSheetsStock, staff);
+        checkAndCreateRequest("pillowcases", 4.0, pillowcasesStock, staff);
+
+        // Update main inventory with actual used amounts
+        mainInventory.updateConsumableQuantity("soap", soapStock - roomConsumables.get("soap"));
+        mainInventory.updateConsumableQuantity("shampoo", shampooStock - roomConsumables.get("shampoo"));
+        mainInventory.updateConsumableQuantity("toilet_paper", toiletPaperStock - roomConsumables.get("toilet_paper"));
+        mainInventory.updateLinenQuantity("towels", towelsStock - roomLinens.get("towels"));
+        mainInventory.updateLinenQuantity("bed_sheets", bedSheetsStock - roomLinens.get("bed_sheets"));
+        mainInventory.updateLinenQuantity("pillowcases", pillowcasesStock - roomLinens.get("pillowcases"));
+
         // Update room data
         room.put("consumables", roomConsumables);
         room.put("linens", roomLinens);
         room.put("lastInventoryUpdate", LocalDateTime.now().format(DATE_FORMAT));
         room.put("lastUpdatedBy", staff.getName());
-        
+
         // Save updated room data
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
-        
+
         // Update main inventory status and save
         mainInventory.setLastUpdatedBy(staff.getName());
         mainInventory.setLastUpdateTime(LocalDateTime.now().format(DATE_FORMAT));
@@ -232,10 +236,24 @@ public class CleaningStaffController {
                 .save("room_inventory", mainInventory.toMap());
     }
 
+    private void checkAndCreateRequest(String item, double required, double available, CleaningStaff staff)
+            throws IOException {
+        if (available < required) {
+            SupplyRequest request = new SupplyRequest();
+            request.setRequestId(UUID.randomUUID().toString());
+            request.setItem(item);
+            request.setQuantityNeeded(required - available);
+            request.setRequestedBy(staff.getName());
+            request.setPriority("MEDIUM");
+            request.setStatus("PENDING");
+            supplyRequestStorageHelper.getStore(DATA_SUPPLY_REQUEST).save(request.getRequestId(), request.toMap());
+        }
+    }
+
     private void updateRoomStatus(String roomNumber, String status, CleaningStaff staff) throws IOException {
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
         room.put("status", status);
-        if(status.equals(STATUS_CLEAN)) {
+        if (status.equals(STATUS_CLEAN)) {
             room.put("lastCleaned", LocalDateTime.now().format(DATE_FORMAT));
         }
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
