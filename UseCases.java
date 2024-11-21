@@ -39,8 +39,7 @@ public class UseCases {
         this.facilityController = new FacilityController();
     }
 
-    public void runUseCaseByActor(int actor) throws IOException{
-        Scanner scnr = new Scanner(System.in);
+    public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
         switch (actor){
             case 1:
                 //Should have access to most use cases
@@ -84,7 +83,7 @@ public class UseCases {
             case 1:
                 System.out.println("Enter room number: ");
                 String room = scnr.nextLine();
-                cleaningStaffController.cleanRoom(room, cleaningStaff);
+                cleaningStaffController.cleanRoom(room, cleaningStaff, scnr);
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
@@ -758,7 +757,7 @@ public class UseCases {
                 if (useCaseNumber == 0) {
                     break;
                 }
-                useCases.runUseCaseByActor(useCaseNumber);
+                useCases.runUseCaseByActor(useCaseNumber, scanner);
             }
         }
     }

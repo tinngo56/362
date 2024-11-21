@@ -1,15 +1,15 @@
 {
   "lastUpdatedBy": "Tin",
   "consumables": {
-    "shampoo": 100.0,
-    "soap": 100.0,
-    "toilet_paper": 150.0
+    "shampoo": 92.0,
+    "soap": 92.0,
+    "toilet_paper": 138.0
   },
-  "lastModified": "2024-11-21_00-13-45",
+  "lastModified": "2024-11-21_07-49-41",
   "linens": {
-    "pillowcases": 198.0,
-    "towels": 200.0,
-    "bed_sheets": 100.0
+    "pillowcases": 182.0,
+    "towels": 184.0,
+    "bed_sheets": 92.0
   },
-  "lastUpdateTime": "2024-11-21_00-13-45"
+  "lastUpdateTime": "2024-11-21_07-49-41"
 }

@@ -56,13 +56,13 @@ public class CleaningStaffController {
                 
 
                 
-    public void cleanRoom(String roomNumber, CleaningStaff cleaningStaff) throws IOException {
+    public void cleanRoom(String roomNumber, CleaningStaff cleaningStaff, Scanner scanner) throws IOException {
         try {
             // Update staff status to busy
             updateStaffStatus(cleaningStaff, STATUS_CLEANING);
 
             // Perform initial inspection
-            RoomInspection inspection = performInspection(roomNumber, cleaningStaff);
+            RoomInspection inspection = performInspection(roomNumber, cleaningStaff, scanner);
 
             // Handle any maintenance issues if found
             if (inspection.isNeedsMaintenance()) {
@@ -88,13 +88,12 @@ public class CleaningStaffController {
         }
     }
 
-    private RoomInspection performInspection(String roomNumber, CleaningStaff staff) throws IOException {
+    private RoomInspection performInspection(String roomNumber, CleaningStaff staff, Scanner scanner) throws IOException {
         RoomInspection inspection = new RoomInspection();
         inspection.setRoomNumber(roomNumber);
         inspection.setInspectedBy(staff.getName());
         inspection.setInspectionTime(LocalDateTime.now());
 
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Is there any damage in the room? (yes/no): ");
         String hasDamage = scanner.nextLine();
         if (hasDamage.equalsIgnoreCase("yes")) {
@@ -121,7 +120,6 @@ public class CleaningStaffController {
             String items = scanner.nextLine();
             inspection.setLostAndFoundItems(Arrays.asList(items.split(",")));
         }
-        scanner.close();
 
         // Save inspection results
         inspectionStorageHelper.getStore(DATA_INSPECTION_NAME)
@@ -167,7 +165,6 @@ public class CleaningStaffController {
     }
 
     private void performCleaning(String roomNumber, CleaningStaff staff) throws IOException {
-        // Update room status to indicate cleaning in progress
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
         room.put("status", STATUS_CLEANING);
         room.put("cleanedBy", staff.getName());
