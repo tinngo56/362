@@ -1,9 +1,10 @@
 import Controllers.*;
 import Models.*;
-import Models.Vending.VendingMachine;
 import Storage.StorageHelper;
 
+import java.awt.print.Book;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class UseCases {
@@ -17,9 +18,6 @@ public class UseCases {
     private final PoolMaintenanceController poolMaintenanceController;
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
-    private final VendingController vendingController;
-    private final KeyCardController keyCardController;
-    private final FacilityController facilityController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -36,9 +34,6 @@ public class UseCases {
         this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
-        this.vendingController = new VendingController(baseDirectory);
-        this.keyCardController = new KeyCardController(baseDirectory);
-        this.facilityController = new FacilityController();
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -227,15 +222,10 @@ public class UseCases {
             System.out.println("13. Delete a Breakfast Report");
             System.out.println("14. View current Ingredient stock");
             System.out.println("15. Check Ingredient stock for gusts");
+            System.out.println("0. Exit to change your Actor choice");
             System.out.println("==========Franchise actions==========");
             System.out.println("16. Demonstrate Profit Cycle");
             System.out.println("17. Sign Franchise Agreement");
-            System.out.println("==========Vending actions==========");
-            System.out.println("18. Add Item to Vending Machine");
-            System.out.println("19. Restock the Vending Machine");
-            System.out.println("=========Other actions========");
-            System.out.println("20. Access Facility");
-            System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
@@ -295,15 +285,6 @@ public class UseCases {
                 case 17:
                     signFranchiseAgreement(scnr);
                     break;
-                case 18:
-                    vendingController.addItemToVendingMachine();
-                    break;
-                case 19:
-                    vendingController.restockVendingMachine();
-                    break;
-                case 20:
-                    accessFacility(scnr, true);
-                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -316,8 +297,6 @@ public class UseCases {
             System.out.println("1. Book Hotel Room");
             System.out.println("2. Check out of Hotel Room");
             System.out.println("3. Book Room with Rewards");
-            System.out.println("4. Vending");
-            System.out.println("5. Access Facility");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -335,12 +314,6 @@ public class UseCases {
                     break;
                 case 3:
                     bookRoomWithRewards();
-                    break;
-                case 4:
-                    useVendingMachine(scnr);
-                    break;
-                case 5:
-                    accessFacility(scnr, false);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -422,7 +395,6 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if(booking == null) return;
-            KeyCard card = keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -430,8 +402,7 @@ public class UseCases {
             hotelController.updateHotel(hotel);
 
             System.out.println("Booking complete! Your booking ID is " + booking.getId() + ". Please remember this for checkout. " +
-                    "Checkout date: " + booking.getCheckOutDate() + "Room number: " + room.getRoomNumber());
-            System.out.println("Your access level is " + card.getAccessLevel());
+                    "Checkout date: " + booking.getCheckOutDate());
         }
     }
 
@@ -574,7 +545,6 @@ public class UseCases {
 
             Booking booking = bookingController.bookRoom(room, nights, customer);
             if (booking == null) return;
-            keyCardController.newKeyCard(booking, room);
             room.setStatus("OCCUPIED");
             room.setCurrentGuest(customer.getName());
             roomController.updateRoom(room);
@@ -604,148 +574,132 @@ public class UseCases {
         System.out.println("CEO's Pay: $" + ceoPay + '\n');
         }
 
-    // Use case 12 (sign franchise agreement)
+    /*
+    * Signs a franchise agreement by creating a new FranchiseAgreement object and storing it in the database.
+    */
 private void signFranchiseAgreement(Scanner scanner) throws IOException {
     System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
 
-        System.out.print("Enter start date (YYYY-MM-DD): ");
-        String startDate = scanner.next();
+    System.out.print("Enter start date (YYYY-MM-DD): ");
+    String startDate = scanner.next();
 
-        System.out.print("Enter end date (YYYY-MM-DD): ");
-        String endDate = scanner.next();
+    System.out.print("Enter end date (YYYY-MM-DD): ");
+    String endDate = scanner.next();
 
-        double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
-        System.out.println("Franchise fee: " + fees + "%");
+    double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
+    System.out.println("Franchise fee: " + fees + "%");
 
-        System.out.println("Select conditions from the list below:");
-        String[] conditionsList = {
-            "Maintain brand standards",
-            "Participate in marketing campaigns",
-            "Adhere to pricing guidelines",
-            "Undergo regular inspections",
-            "Provide regular financial reports",
-            "Attend training sessions",
-            "Use approved suppliers",
-            "Pay royalties on time",
-            "Maintain customer satisfaction",
-            "Follow operational procedures"
-        };
+    System.out.println("Select conditions from the list below:");
+    String[] conditionsList = {
+        "Maintain brand standards",
+        "Participate in marketing campaigns",
+        "Adhere to pricing guidelines",
+        "Undergo regular inspections",
+        "Provide regular financial reports",
+        "Attend training sessions",
+        "Use approved suppliers",
+        "Pay royalties on time",
+        "Maintain customer satisfaction",
+        "Follow operational procedures"
+    };
 
-        for (int i = 0; i < conditionsList.length; i++) {
-            System.out.println((i + 1) + ". " + conditionsList[i]);
+    for (int i = 0; i < conditionsList.length; i++) {
+        System.out.println((i + 1) + ". " + conditionsList[i]);
+    }
+
+    System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
+    String[] selectedConditionsIndices = scanner.next().split(",");
+    StringBuilder selectedConditions = new StringBuilder();
+    for (String index : selectedConditionsIndices) {
+        int conditionIndex = Integer.parseInt(index.trim()) - 1;
+        if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
+            selectedConditions.append(conditionsList[conditionIndex]).append("\n");
         }
+    }
 
-        System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
-        String[] selectedConditionsIndices = scanner.next().split(",");
-        StringBuilder selectedConditions = new StringBuilder();
-        for (String index : selectedConditionsIndices) {
-            int conditionIndex = Integer.parseInt(index.trim()) - 1;
-            if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
-                selectedConditions.append(conditionsList[conditionIndex]).append("\n");
-            }
-        }
+    String conditions = selectedConditions.toString();
 
-        String conditions = selectedConditions.toString();
+    System.out.println("You have agreed to the following conditions:");
+    System.out.println(conditions);
 
-        System.out.println("You have agreed to the following conditions:");
-        System.out.println(conditions);
+    FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
+    int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
+    FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
 
-        FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
-        int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
-        FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
-
-        franchiseAgreementController.createFranchiseAgreement(agreement);
+    franchiseAgreementController.createFranchiseAgreement(agreement);
 
     System.out.println("Franchise agreement signed successfully!");
     System.out.println("Agreement ID: " + agreementId);
 }
 
-    // Use case Vending Machine
-    private void useVendingMachine(Scanner scanner) throws IOException {
-        VendingMachine machine = vendingController.getHotelVendingMachine();
-        System.out.println("---- VENDING MACHINE ----\n");
+    /*
+    * Sends a mass email to all customers in the database.
+    */
+    private void sendMassEmail() throws IOException {
+        Scanner scanner = new Scanner(System.in);
 
-        System.out.print("Please insert between $0.00 and $50.00. Any unused money will be returned at the end" +
-                "of this transaction.\n$");
+        System.out.println("\n\n----- SEND MASS EMAIL -----\n");
 
-        double money = scanner.nextDouble();
-        vendingController.addMoney(machine, money);
+        System.out.print("Enter email subject: ");
+        String subject = scanner.nextLine();
 
-        while(true) {
-            System.out.println("Current balance: $" + machine.getBalance());
-            System.out.println("Choose a slot: ");
-            machine.displaySlots();
-            System.out.println("0. Exit");
-            System.out.print("Choice: ");
+        System.out.print("Enter email message: ");
+        String message = scanner.nextLine();
 
-            int key;
-            try {
-                key = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("ERROR: Must enter a number.\n\n");
-                scanner.nextLine();
-                continue;
-            }
-            if(key == 0) {
-                break;
-            }
-            vendingController.purchaseItem(key, machine);
-        }
+        emailController.sendMassEmail(subject, message);
 
-        System.out.println("Thanks for using! Returning $" + machine.getClass());
+        System.out.println("Mass email sent successfully!");
     }
 
-    public void accessFacility(Scanner scanner, boolean isManager) throws IOException {
-        System.out.println("\n----- ACCESS FACILITY -----\n");
-
-        Booking booking;
-        if(!isManager) {
-            System.out.print("Enter booking ID: ");
-            int id = scanner.nextInt();
-            booking = bookingController.getBooking(id);
-            if (booking == null) {
-                System.out.println("No booking found.");
-                return;
-            }
-        } else {
-            System.out.println("Access granted!");
-            return;
-        }
-        KeyCard keyCard = keyCardController.getKeyCardFromBooking(booking.getId());
-
-        System.out.println("Choose facility/room:");
-        System.out.println("1. Room");
-        System.out.println("2. Vending");
-        System.out.println("3. Staff Room");
-
-        System.out.print("Choice: ");
-        int choice = scanner.nextInt();
-
-        Facility facility = null;
-
-        switch(choice) {
-            case 1:
-                System.out.println("Enter room number to access: ");
-                int roomNum = scanner.nextInt();
-                facility = roomController.getRoom(roomNum);
-                break;
-            case 2:
-                facility = vendingController.getHotelVendingMachine();
-                break;
-            case 3:
-                System.out.println("Access denied.");
-            default:
-                System.out.println("Invalid action.");
-        }
-
-        if(facilityController.checkAccessLevel(facility, keyCard, booking)) {
-            System.out.println("Access granted!");
-        } else {
-            System.out.println("Access denied.");
-        }
+    private void updateBooking() throws IOException {
 
     }
 
+    private void deleteBooking() throws IOException {
+        bookingController.deleteBooking(1);
+        System.out.println("Booking deleted successfully.");
+    }
+
+    private void createCustomer() throws IOException {
+        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "GOLD", "CREDIT_CARD", 5);
+        customerController.createCustomer(customer);
+        System.out.println("Customer created successfully.");
+    }
+
+    private void getCustomer() throws IOException {
+        Customer customer = customerController.getCustomer(1);
+        if (customer != null) {
+            System.out.println("Customer details: " + customer.toMap());
+        } else {
+            System.out.println("Customer not found.");
+        }
+    }
+
+    private void updateCustomer() throws IOException {
+        Customer customer = new Customer(1, "John Doe", "john.doe@example.com", "PLATINUM", "CREDIT_CARD", 10);
+        customerController.updateCustomer(customer);
+        System.out.println("Customer updated successfully.");
+    }
+
+    private void deleteCustomer() throws IOException {
+        customerController.deleteCustomer(1);
+        System.out.println("Customer deleted successfully.");
+    }
+
+    private void createPaymentMethod() throws IOException {
+        PaymentMethod paymentMethod = new PaymentMethod(1, "CREDIT_CARD", "1234567890123456", "12/23", "ACTIVE");
+        paymentController.createPaymentMethod(paymentMethod);
+        System.out.println("Payment method created successfully.");
+    }
+
+    private void getPaymentMethod() throws IOException {
+        PaymentMethod paymentMethod = paymentController.getPaymentMethod(1);
+        if (paymentMethod != null) {
+            System.out.println("Payment method details: " + paymentMethod.toMap());
+        } else {
+            System.out.println("Payment method not found.");
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         try (Scanner scanner = new Scanner(System.in)) {
@@ -765,6 +719,9 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
                     break;
                 }
                 useCases.runUseCaseByActor(useCaseNumber);
+                if (useCaseNumber == 4) {
+                    useCases.bookRoomWithRewards();
+                }
             }
         }
     }
