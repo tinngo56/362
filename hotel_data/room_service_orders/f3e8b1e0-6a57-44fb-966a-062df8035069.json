@@ -1,0 +1,11 @@
+{
+  "totalAmount": 31.98,
+  "roomNumber": 101,
+  "orderId": "f3e8b1e0-6a57-44fb-966a-062df8035069",
+  "lastModified": "2024-11-21_11-49-08",
+  "items": [
+    "Burger               $15.99 - Main Course",
+    "Burger               $15.99 - Main Course"
+  ],
+  "status": "IN_PREPARATION"
+}
