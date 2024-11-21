@@ -1,11 +1,11 @@
 {
   "roomCount": 25,
-  "numAvailableRooms": 22,
+  "numAvailableRooms": 21,
   "size": 5.0,
   "name": "Marriot",
   "rating": 4.0,
   "location": "123 Place",
   "id": 1,
-  "lastModified": "2024-11-20_16-29-17",
+  "lastModified": "2024-11-21_07-31-57",
   "propertyTax": 0.699999988079071
 }

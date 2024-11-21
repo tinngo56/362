@@ -22,6 +22,9 @@ public class UseCases {
     private final VendingController vendingController;
     private final KeyCardController keyCardController;
     private final FacilityController facilityController;
+    private final RoomServiceController roomServiceController;
+    private final KitchenController kitchenController;
+    private final RoomServiceStaffController roomServiceStaffController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -41,10 +44,12 @@ public class UseCases {
         this.vendingController = new VendingController(baseDirectory);
         this.keyCardController = new KeyCardController(baseDirectory);
         this.facilityController = new FacilityController();
+        this.roomServiceController = new RoomServiceController(baseDirectory);
+        this.kitchenController = new KitchenController(baseDirectory);
+        this.roomServiceStaffController = new RoomServiceStaffController(baseDirectory);
     }
 
-    public void runUseCaseByActor(int actor) throws IOException{
-        Scanner scnr = new Scanner(System.in);
+    public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
         switch (actor){
             case 1:
                 //Should have access to most use cases
@@ -88,7 +93,7 @@ public class UseCases {
             case 1:
                 System.out.println("Enter room number: ");
                 String room = scnr.nextLine();
-                cleaningStaffController.cleanRoom(room, cleaningStaff);
+                cleaningStaffController.cleanRoom(room, cleaningStaff, scnr);
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
@@ -321,6 +326,7 @@ public class UseCases {
             System.out.println("3. Book Room with Rewards");
             System.out.println("4. Vending");
             System.out.println("5. Access Facility");
+            System.out.println("6. Room Service");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -345,9 +351,47 @@ public class UseCases {
                 case 5:
                     accessFacility(scnr, false);
                     break;
+                case 6:
+                    roomService(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
+        }
+    }
+
+    private void roomService(Scanner scnr) throws IOException {
+        System.out.println("\n----- ROOM SERVICE -----\n");
+        
+        // Get room number
+        System.out.print("Enter room number: ");
+        int roomNumber = scnr.nextInt();
+        scnr.nextLine();
+        
+        // Validate room
+        if (!roomController.isRoomOccupied(roomNumber)) {
+            System.out.println("Room is not occupied.");
+            return;
+        }
+        RoomServiceStaff staff = roomServiceStaffController.getAvailableRoomServiceStaff();
+        
+        // Display menu and create order
+        System.out.println("----- MENU -----");
+        try {
+            roomServiceController.printMenu();
+            
+            RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
+
+            roomServiceStaffController.assignOrder(staff, roomNumber + "_" + order.getOrderId());
+
+            roomServiceStaffController.requestOrder(order, staff);
+
+            kitchenController.prepareOrder(order, scnr);
+
+            roomServiceStaffController.deliverOrder(order, staff);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            roomServiceStaffController.updateStaffStatus(String.valueOf(staff.getId()), "AVAILABLE");
         }
     }
 
@@ -788,7 +832,7 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
                 if (useCaseNumber == 0) {
                     break;
                 }
-                useCases.runUseCaseByActor(useCaseNumber);
+                useCases.runUseCaseByActor(useCaseNumber, scanner);
             }
         }
     }

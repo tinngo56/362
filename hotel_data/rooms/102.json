@@ -1,23 +1,24 @@
 {
+  "lastUpdatedBy": "Tin",
   "roomNumber": 102,
   "currentGuest": "Bob Smith",
   "accessLevel": "ROOM",
-  "instances": [
-  "Models.Room@27f8302d",
-  "Models.Room@4d76f3f8",
-  "Models.Room@2d8e6db6",
-  "Models.Room@23ab930d",
-  "Models.Room@4534b60d",
-  "Models.Room@3fa77460",
-  "Models.Room@619a5dff",
-  "Models.Room@1ed6993a",
-  "Models.Room@7e32c033",
-  "Models.Room@7ab2bfe1"
-],
+  "consumables": {
+    "shampoo": 2.0,
+    "soap": 2.0,
+    "toilet_paper": 3.0
+  },
   "hotelId": 1,
-  "lastModified": "2024-11-20_16-29-17",
-  "lastCleaned": "",
+  "lastCleaned": "2024-11-21_10-56-13",
+  "isOccupied": false,
+  "lastInventoryUpdate": "2024-11-21_10-56-13",
+  "lastModified": "2024-11-21_10-56-13",
   "roomType": "Standard",
   "pricePerNight": 100.0,
-  "status": "OCCUPIED"
+  "status": "NEEDS_SUPPLIES",
+  "linens": {
+    "pillowcases": 4.0,
+    "towels": 4.0,
+    "bed_sheets": 0.0
+  }
 }

@@ -30,7 +30,6 @@ public class StorageHelper {
         registerStore(new BasicStore<>(storeName));
     }
 
-
     private void registerStore(DataStore<?> store) throws IOException {
         stores.put(store.getStoreName(), store);
         Files.createDirectories(Paths.get(baseDirectory, store.getStoreName()));
@@ -124,145 +123,363 @@ public class StorageHelper {
         }
     }
 
-    // JSON conversion utility
-    private static class JsonConverter {
+    public class JsonConverter {
+        private static final String INDENT = "  ";
+
         public void writeToFile(Map<String, Object> data, Path path) throws IOException {
-            String json = mapToJson(data);
+            String json = mapToJson(data, 0);
             Files.write(path, json.getBytes());
         }
 
         public Map<String, Object> readFromFile(Path path) throws IOException {
             String content = new String(Files.readAllBytes(path));
-            return jsonToMap(content);
+            return parseJson(content);
         }
 
-        private String mapToJson(Map<String, Object> map) {
-            StringBuilder json = new StringBuilder("{\n");
+        private String mapToJson(Map<String, Object> map, int depth) {
+            StringBuilder json = new StringBuilder();
+            String indent = INDENT.repeat(depth);
+            json.append("{\n");
+
             Iterator<Map.Entry<String, Object>> it = map.entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, Object> entry = it.next();
-                json.append("  \"").append(escape(entry.getKey())).append("\": ");
-                json.append(valueToJson(entry.getValue()));
+                json.append(indent).append(INDENT)
+                        .append("\"").append(escape(entry.getKey())).append("\": ")
+                        .append(valueToJson(entry.getValue(), depth + 1));
+
                 if (it.hasNext()) {
                     json.append(",");
                 }
                 json.append("\n");
             }
-            json.append("}");
+
+            json.append(indent).append("}");
             return json.toString();
         }
 
-        private String valueToJson(Object value) {
+        private String valueToJson(Object value, int depth) {
             if (value == null) {
                 return "null";
-            } else if (value instanceof String) {
+            }
+
+            if (value instanceof String) {
                 return "\"" + escape((String) value) + "\"";
-            } else if (value instanceof Number || value instanceof Boolean) {
+            }
+
+            if (value instanceof Number || value instanceof Boolean) {
                 return value.toString();
-            } else if (value instanceof Map) {
+            }
+
+            if (value instanceof Map) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> map = (Map<String, Object>) value;
-                return mapToJson(map);
-            } else if (value instanceof List) {
-                return listToJson((List<?>) value);
-            } else if (value instanceof LocalDateTime) {
-                return "\"" + ((LocalDateTime) value).format(DATE_FORMAT) + "\"";
+                return mapToJson(map, depth);
             }
+
+            if (value instanceof List || value.getClass().isArray()) {
+                List<?> list;
+                if (value.getClass().isArray()) {
+                    list = Arrays.asList((Object[]) value);
+                } else {
+                    list = (List<?>) value;
+                }
+                return listToJson(list, depth);
+            }
+
+            if (value instanceof LocalDateTime) {
+                return "\"" + value.toString() + "\"";
+            }
+
+            // For any other object types, convert to string
             return "\"" + escape(value.toString()) + "\"";
         }
 
-        private String listToJson(List<?> list) {
-            StringBuilder json = new StringBuilder("[\n");
+        private String listToJson(List<?> list, int depth) {
+            if (list.isEmpty()) {
+                return "[]";
+            }
+
+            StringBuilder json = new StringBuilder();
+            String indent = INDENT.repeat(depth);
+            json.append("[\n");
+
             for (int i = 0; i < list.size(); i++) {
-                json.append("  ").append(valueToJson(list.get(i)));
+                json.append(indent).append(INDENT)
+                        .append(valueToJson(list.get(i), depth + 1));
+
                 if (i < list.size() - 1) {
                     json.append(",");
                 }
                 json.append("\n");
             }
-            json.append("]");
+
+            json.append(indent).append("]");
             return json.toString();
         }
 
-        private Map<String, Object> jsonToMap(String json) {
-            Map<String, Object> map = new HashMap<>();
-            json = json.trim();
-            if (!json.startsWith("{") || !json.endsWith("}")) {
-                throw new IllegalArgumentException("Invalid JSON object format");
+        private String escape(String s) {
+            if (s == null) {
+                return "";
             }
 
-            json = json.substring(1, json.length() - 1).trim();
-            String[] pairs = json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-
-            for (String pair : pairs) {
-                pair = pair.trim();
-                String[] keyValue = pair.split(":", 2);
-                if (keyValue.length == 2) {
-                    String key = keyValue[0].trim().replaceAll("\"", "");
-                    String value = keyValue[1].trim();
-                    map.put(key, parseValue(value));
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < s.length(); i++) {
+                char ch = s.charAt(i);
+                switch (ch) {
+                    case '"':
+                        sb.append("\\\"");
+                        break;
+                    case '\\':
+                        sb.append("\\\\");
+                        break;
+                    case '\b':
+                        sb.append("\\b");
+                        break;
+                    case '\f':
+                        sb.append("\\f");
+                        break;
+                    case '\n':
+                        sb.append("\\n");
+                        break;
+                    case '\r':
+                        sb.append("\\r");
+                        break;
+                    case '\t':
+                        sb.append("\\t");
+                        break;
+                    default:
+                        if (ch < ' ') {
+                            String hex = String.format("\\u%04x", (int) ch);
+                            sb.append(hex);
+                        } else {
+                            sb.append(ch);
+                        }
                 }
             }
-
-            return map;
+            return sb.toString();
         }
 
-        private Object parseValue(String value) {
-            value = value.trim();
-            if (value.equals("null")) {
-                return null;
-            } else if (value.startsWith("\"") && value.endsWith("\"")) {
-                return unescape(value.substring(1, value.length() - 1));
-            } else if (value.equals("true")) {
-                return true;
-            } else if (value.equals("false")) {
-                return false;
-            } else if (value.startsWith("{")) {
-                return jsonToMap(value);
-            } else if (value.startsWith("[")) {
-                return parseArray(value);
-            } else {
-                try {
-                    if (value.contains(".")) {
-                        return Double.parseDouble(value);
-                    } else {
-                        return Long.parseLong(value);
+        public Map<String, Object> parseJson(String json) {
+            JsonParser parser = new JsonParser(json);
+            return parser.parse();
+        }
+
+        private class JsonParser {
+            private final String json;
+            private int pos = 0;
+
+            public JsonParser(String json) {
+                this.json = json.trim();
+            }
+
+            public Map<String, Object> parse() {
+                return parseObject();
+            }
+
+            private Map<String, Object> parseObject() {
+                Map<String, Object> map = new HashMap<>();
+
+                consumeWhitespace();
+                if (!consume('{')) {
+                    throw new IllegalStateException("Expected '{' at position " + pos);
+                }
+
+                while (true) {
+                    consumeWhitespace();
+                    if (peek() == '}') {
+                        pos++;
+                        break;
                     }
-                } catch (NumberFormatException e) {
-                    return value;
-                }
-            }
-        }
 
-        private List<Object> parseArray(String json) {
-            List<Object> list = new ArrayList<>();
-            json = json.substring(1, json.length() - 1).trim();
-            if (json.isEmpty()) {
+                    // Parse the key
+                    String key = parseString();
+
+                    consumeWhitespace();
+                    if (!consume(':')) {
+                        throw new IllegalStateException("Expected ':' at position " + pos);
+                    }
+
+                    // Parse the value
+                    consumeWhitespace();
+                    Object value = parseValue();
+                    map.put(key, value);
+
+                    consumeWhitespace();
+                    char c = peek();
+                    if (c == '}') {
+                        pos++;
+                        break;
+                    }
+                    if (!consume(',')) {
+                        throw new IllegalStateException("Expected ',' or '}' at position " + pos);
+                    }
+                }
+
+                return map;
+            }
+
+            private List<Object> parseArray() {
+                List<Object> list = new ArrayList<>();
+
+                if (!consume('[')) {
+                    throw new IllegalStateException("Expected '[' at position " + pos);
+                }
+
+                while (true) {
+                    consumeWhitespace();
+                    if (peek() == ']') {
+                        pos++;
+                        break;
+                    }
+
+                    list.add(parseValue());
+
+                    consumeWhitespace();
+                    char c = peek();
+                    if (c == ']') {
+                        pos++;
+                        break;
+                    }
+                    if (!consume(',')) {
+                        throw new IllegalStateException("Expected ',' or ']' at position " + pos);
+                    }
+                }
+
                 return list;
             }
 
-            String[] elements = json.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
-            for (String element : elements) {
-                list.add(parseValue(element.trim()));
+            private Object parseValue() {
+                consumeWhitespace();
+                char c = peek();
+
+                if (c == '"') {
+                    return parseString();
+                }
+                if (c == '{') {
+                    return parseObject();
+                }
+                if (c == '[') {
+                    return parseArray();
+                }
+                if (Character.isDigit(c) || c == '-') {
+                    return parseNumber();
+                }
+                if (c == 't' && json.startsWith("true", pos)) {
+                    pos += 4;
+                    return true;
+                }
+                if (c == 'f' && json.startsWith("false", pos)) {
+                    pos += 5;
+                    return false;
+                }
+                if (c == 'n' && json.startsWith("null", pos)) {
+                    pos += 4;
+                    return null;
+                }
+
+                throw new IllegalStateException("Unexpected character at position " + pos);
             }
 
-            return list;
-        }
+            private String parseString() {
+                if (!consume('"')) {
+                    throw new IllegalStateException("Expected '\"' at position " + pos);
+                }
 
-        private String escape(String s) {
-            return s.replace("\\", "\\\\")
-                    .replace("\"", "\\\"")
-                    .replace("\n", "\\n")
-                    .replace("\r", "\\r")
-                    .replace("\t", "\\t");
-        }
+                StringBuilder sb = new StringBuilder();
+                boolean escaped = false;
 
-        private String unescape(String s) {
-            return s.replace("\\\\", "\\")
-                    .replace("\\\"", "\"")
-                    .replace("\\n", "\n")
-                    .replace("\\r", "\r")
-                    .replace("\\t", "\t");
+                while (pos < json.length()) {
+                    char c = json.charAt(pos++);
+
+                    if (escaped) {
+                        switch (c) {
+                            case '"':
+                            case '\\':
+                            case '/':
+                                sb.append(c);
+                                break;
+                            case 'b':
+                                sb.append('\b');
+                                break;
+                            case 'f':
+                                sb.append('\f');
+                                break;
+                            case 'n':
+                                sb.append('\n');
+                                break;
+                            case 'r':
+                                sb.append('\r');
+                                break;
+                            case 't':
+                                sb.append('\t');
+                                break;
+                            case 'u':
+                                if (pos + 4 > json.length()) {
+                                    throw new IllegalStateException("Incomplete Unicode escape at position " + pos);
+                                }
+                                String hex = json.substring(pos, pos + 4);
+                                sb.append((char) Integer.parseInt(hex, 16));
+                                pos += 4;
+                                break;
+                            default:
+                                sb.append(c);
+                        }
+                        escaped = false;
+                    } else if (c == '\\') {
+                        escaped = true;
+                    } else if (c == '"') {
+                        return sb.toString();
+                    } else {
+                        sb.append(c);
+                    }
+                }
+
+                throw new IllegalStateException("Unterminated string at position " + pos);
+            }
+
+            private Number parseNumber() {
+                int start = pos;
+                boolean isFloat = false;
+
+                // Handle negative numbers
+                if (peek() == '-') {
+                    pos++;
+                }
+
+                // Parse digits
+                while (pos < json.length() && (Character.isDigit(peek()) || peek() == '.')) {
+                    if (peek() == '.') {
+                        isFloat = true;
+                    }
+                    pos++;
+                }
+
+                String num = json.substring(start, pos);
+                try {
+                    return isFloat ? Double.parseDouble(num) : Long.parseLong(num);
+                } catch (NumberFormatException e) {
+                    throw new IllegalStateException("Invalid number at position " + start + ": " + num);
+                }
+            }
+
+            private void consumeWhitespace() {
+                while (pos < json.length() && Character.isWhitespace(json.charAt(pos))) {
+                    pos++;
+                }
+            }
+
+            private boolean consume(char expected) {
+                if (pos < json.length() && json.charAt(pos) == expected) {
+                    pos++;
+                    return true;
+                }
+                return false;
+            }
+
+            private char peek() {
+                return pos < json.length() ? json.charAt(pos) : '\0';
+            }
         }
     }
 }

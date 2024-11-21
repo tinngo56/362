@@ -1,11 +1,24 @@
 {
+  "lastUpdatedBy": "Tin",
   "roomNumber": 101,
   "currentGuest": "",
   "accessLevel": "ROOM",
+  "consumables": {
+    "shampoo": 2.0,
+    "soap": 2.0,
+    "toilet_paper": 3.0
+  },
   "hotelId": 1,
-  "lastModified": "2024-11-20_15-34-38",
-  "lastCleaned": "",
+  "lastCleaned": "2024-11-21_08-20-39",
+  "lastInventoryUpdate": "2024-11-21_08-20-39",
+  "lastModified": "2024-11-21_08-20-39",
   "roomType": "Deluxe",
   "pricePerNight": 150.0,
-  "status": "AVAILABLE"
+  "status": "CLEAN",
+  "linens": {
+    "pillowcases": 4.0,
+    "towels": 4.0,
+    "bed_sheets": 0.0
+  },
+  "isOccupied": false
 }
