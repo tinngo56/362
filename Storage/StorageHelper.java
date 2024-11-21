@@ -26,9 +26,10 @@ public class StorageHelper {
         Files.createDirectories(Paths.get(baseDirectory));
     }
 
-    private void initializeStores(String storeName) throws IOException {
+    public void initializeStores(String storeName) throws IOException {
         registerStore(new BasicStore<>(storeName));
     }
+
 
     private void registerStore(DataStore<?> store) throws IOException {
         stores.put(store.getStoreName(), store);

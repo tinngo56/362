@@ -2,6 +2,7 @@ package Models;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,6 +89,8 @@ public abstract class Mappable<T> {
                             }
                         } else if (fieldType == String.class && !(value instanceof String)) {
                             field.set(instance, String.valueOf(value));
+                        } else if(fieldType.isEnum()) {
+                            field.set(instance, Enum.valueOf((Class<Enum>) fieldType, value.toString()));
                         } else {
                             field.set(instance, value);
                         }

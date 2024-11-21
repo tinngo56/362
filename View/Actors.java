@@ -1,0 +1,5 @@
+package View;
+
+public enum Actors {
+    MANAGER, MAINTENANCE_STAFF, KITCHEN_STAFF, CUSTOMER, CLEANING_STAFF
+}

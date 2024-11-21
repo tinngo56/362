@@ -9,13 +9,17 @@ public class Booking extends Mappable<Booking> {
     private String paymentStatus;
     private int roomNum;
 
-    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, int roomNum) {
+    private int customerId;
+
+    public Booking(int id, String checkInDate, String checkOutDate, double totalPrice, String paymentStatus, int roomNum,
+                   int customerId) {
         this.id = id;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
         this.totalPrice = totalPrice;
         this.paymentStatus = paymentStatus;
         this.roomNum = roomNum;
+        this.customerId = customerId;
     }
 
     public Booking() {
@@ -69,5 +73,13 @@ public class Booking extends Mappable<Booking> {
 
     public void setRoomNum(int roomNum) {
         this.roomNum = roomNum;
+    }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(int customerId) {
+        this.customerId = customerId;
     }
 }

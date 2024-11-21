@@ -1,8 +1,9 @@
 {
   "roomNumber": 101,
-  "currentGuest": "Bob Smith",
+  "currentGuest": "",
+  "accessLevel": "ROOM",
   "hotelId": 1,
-  "lastModified": "2024-11-19_15-14-36",
+  "lastModified": "2024-11-20_15-34-38",
   "lastCleaned": "",
   "roomType": "Deluxe",
   "pricePerNight": 150.0,

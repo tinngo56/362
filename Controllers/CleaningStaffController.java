@@ -46,7 +46,7 @@ public class CleaningStaffController {
         cleaningStaff.setStatus("BUSY");
         cleaningStaffStorageHelper.getStore(DATA_STAFF_NAME).save(String.valueOf(cleaningStaff.getId()), cleaningStaff.toMap());
         room.put("lastCleaned", cleaningStaff.getName());
-        room.put("status", "CLEAN");
+        room.put("status", "AVAILABLE");
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
         cleaningStaff.setStatus("AVAILABLE");
         cleaningStaffStorageHelper.getStore(DATA_STAFF_NAME).save(String.valueOf(cleaningStaff.getId()), cleaningStaff.toMap());
