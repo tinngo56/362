@@ -63,7 +63,7 @@ public class RoomServiceStaffController {
 
     public void deliverOrder(RoomServiceOrder order, RoomServiceStaff staff) throws IOException {
         order.setStatus(OrderStatus.DELIVERED);
-        orderStorageHelper.getStore(DATA_ORDER_NAME).save(order.getOrderId(), order.toMap());
+        orderStorageHelper.getStore(DATA_ORDER_NAME).save(String.valueOf(order.getRoomNumber()) + "_" + order.getOrderId(), order.toMap());
 
         // Update staff status
         updateStaffStatus(String.valueOf(staff.getId()), "AVAILABLE");
