@@ -75,7 +75,7 @@ public class CleaningStaffController {
             updateRoomInventory(roomNumber, cleaningStaff);
 
             // Perform final inspection
-            if (performFinalInspection(roomNumber, cleaningStaff)) {
+            if (!inspection.isNeedsMaintenance()) {
                 // Update room status to clean
                 updateRoomStatus(roomNumber, STATUS_CLEAN, cleaningStaff);
             }
@@ -107,6 +107,8 @@ public class CleaningStaffController {
             inspection.setNeedsMaintenance(true);
             System.out.println("Please describe the maintenance issues: ");
             inspection.setMaintenanceIssues(scanner.nextLine());
+            System.out.println("Please enter the Priority: ");
+            inspection.setInspectedBy(scanner.nextLine());
         }
 
         System.out.println("Are there any lost and found items? (yes/no): ");
@@ -131,7 +133,8 @@ public class CleaningStaffController {
         // Create maintenance request
         MaintenanceRequest request = new MaintenanceRequest();
         request.setRoomNumber(roomNumber);
-        request.setIssueDescription(inspection.getMaintenanceIssues());
+        request.setIssueDescription(String.format("Maintenance Issues: %s%nDamage Details: %s", 
+                inspection.getMaintenanceIssues(), inspection.getDamageDetails()));
         request.setReportedBy(staff.getName());
 
         // Save maintenance request
@@ -163,7 +166,6 @@ public class CleaningStaffController {
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
         room.put("status", STATUS_CLEANING);
         room.put("cleanedBy", staff.getName());
-        room.put("cleaningStartTime", LocalDateTime.now().toString());
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
     }
 
@@ -187,24 +189,9 @@ public class CleaningStaffController {
                 .save(roomNumber, inventory.toMap());
     }
 
-    private boolean performFinalInspection(String roomNumber, CleaningStaff staff) throws IOException {
-        RoomInspection finalInspection = new RoomInspection();
-        finalInspection.setRoomNumber(roomNumber);
-        finalInspection.setInspectedBy(staff.getName());
-        finalInspection.setInspectionTime(LocalDateTime.now());
-
-        // Save final inspection results
-        inspectionStorageHelper.getStore(DATA_INSPECTION_NAME)
-                .save(roomNumber + "_final_" + System.currentTimeMillis(), finalInspection.toMap());
-
-        return !finalInspection.isNeedsMaintenance() && !finalInspection.isHasDamage();
-    }
-
     private void updateRoomStatus(String roomNumber, String status, CleaningStaff staff) throws IOException {
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
         room.put("status", status);
-        room.put("lastUpdatedBy", staff.getName());
-        room.put("lastUpdatedTime", LocalDateTime.now().toString());
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
     }
 

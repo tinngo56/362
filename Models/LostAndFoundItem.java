@@ -8,8 +8,6 @@ public class LostAndFoundItem extends Mappable<LostAndFoundItem> {
     private String description;
     private LocalDateTime foundTime;
     private String foundBy;
-    private String guestName;
-    private String guestContact;
     private String status;
 
     public LostAndFoundItem() {

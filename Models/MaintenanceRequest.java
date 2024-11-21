@@ -35,4 +35,8 @@ public class MaintenanceRequest extends Mappable<MaintenanceRequest> {
     public void setReportedBy(String name) {
         this.reportedBy = name;
     }
+
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
 }
