@@ -30,6 +30,7 @@ public class CleaningStaffController {
     private final String STATUS_CLEANING = "CLEANING";
     private final String STATUS_MAINTENANCE = "MAINTENANCE_REQUIRED";
     private final String STATUS_CLEAN = "CLEAN";
+    private final String STATUS_NEEDS_SUPPLIES = "NEEDS_SUPPLIES";
 
     private CleaningStaff cleaningStaff;
 
@@ -168,7 +169,19 @@ public class CleaningStaffController {
 
     private void performCleaning(String roomNumber, CleaningStaff staff) throws IOException {
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
-        room.put("status", STATUS_CLEANING);
+        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(DATA_INVENTORY_NAME).load("room_inventory");
+        Inventory mainInventory = new Inventory().fromMap(inventoryData);
+
+        if (mainInventory.getLinenQuantity("towels") < 1 ||
+                mainInventory.getLinenQuantity("bed_sheets") < 1 ||
+                mainInventory.getLinenQuantity("pillowcases") < 1 ||
+                mainInventory.getConsumableQuantity("soap") < 1 ||
+                mainInventory.getConsumableQuantity("shampoo") < 1 ||
+                mainInventory.getConsumableQuantity("toilet_paper") < 1) {
+            room.put("status", STATUS_NEEDS_SUPPLIES);
+        } else {
+            room.put("status", STATUS_CLEANING);
+        }
         room.put("cleanedBy", staff.getName());
         roomStorageHelper.getStore(DATA_ROOM_NAME).save(roomNumber, room);
     }
@@ -252,7 +265,9 @@ public class CleaningStaffController {
 
     private void updateRoomStatus(String roomNumber, String status, CleaningStaff staff) throws IOException {
         Map<String, Object> room = roomStorageHelper.getStore(DATA_ROOM_NAME).load(roomNumber);
-        room.put("status", status);
+        if (!room.get("status").equals(STATUS_NEEDS_SUPPLIES)) {
+            room.put("status", status);
+        }
         if (status.equals(STATUS_CLEAN)) {
             room.put("lastCleaned", LocalDateTime.now().format(DATE_FORMAT));
         }
