@@ -368,22 +368,26 @@ public class UseCases {
             System.out.println("Room is not occupied.");
             return;
         }
+        RoomServiceStaff staff = roomServiceStaffController.getAvailableRoomServiceStaff();
         
         // Display menu and create order
         System.out.println("----- MENU -----");
-        roomServiceController.printMenu();
-        
-        RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
+        try {
+            roomServiceController.printMenu();
+            
+            RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
 
-        RoomServiceStaff staff = roomServiceStaffController.getAvailableRoomServiceStaff();
+            roomServiceStaffController.assignOrder(staff, roomNumber + "_" + order.getOrderId());
 
-        roomServiceStaffController.assignOrder(staff, order.getOrderId());
+            roomServiceStaffController.requestOrder(order, staff);
 
-        roomServiceStaffController.requestOrder(order, staff);
+            kitchenController.prepareOrder(order, scnr);
 
-        kitchenController.prepareOrder(order, scnr);
-
-        roomServiceStaffController.deliverOrder(order, staff);
+            roomServiceStaffController.deliverOrder(order, staff);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            roomServiceStaffController.updateStaffStatus(String.valueOf(staff.getId()), "AVAILABLE");
+        }
     }
 
     private void checkIngredients(Scanner scnr) throws IOException {

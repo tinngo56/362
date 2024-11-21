@@ -89,7 +89,6 @@ public class RoomServiceController {
         order.setRoomNumber(roomNumber);
         order.setItems(items);
         order.setStatus(OrderStatus.RECEIVED);
-        order.setOrderTime(LocalDateTime.now());
         order.setTotalAmount(items.stream().mapToDouble(MenuItem::getPrice).sum());
 
         System.out.println("Any special instructions? (press Enter to skip):");

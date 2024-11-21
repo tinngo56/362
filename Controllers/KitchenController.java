@@ -57,7 +57,7 @@ public class KitchenController {
     }
 
     public boolean checkInventory(List<MenuItem> items) throws IOException {
-        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(INVENTORY_STORE).load("current");
+        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(INVENTORY_STORE).load("kitchen_inventory");
         if (inventoryData == null) {
             throw new IOException("Inventory data not found");
         }
@@ -81,7 +81,7 @@ public class KitchenController {
     }
 
     private void updateInventory(List<MenuItem> items) throws IOException {
-        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(INVENTORY_STORE).load("current");
+        Map<String, Object> inventoryData = inventoryStorageHelper.getStore(INVENTORY_STORE).load("kitchen_inventory");
         KitchenInventory inventory = new KitchenInventory().fromMap(inventoryData);
 
         for (MenuItem item : items) {
@@ -97,7 +97,7 @@ public class KitchenController {
 
         inventoryData = inventory.toMap();
         inventoryData.put("lastUpdated", LocalDateTime.now().toString());
-        inventoryStorageHelper.getStore(INVENTORY_STORE).save("current", inventoryData);
+        inventoryStorageHelper.getStore(INVENTORY_STORE).save("kitchen_inventory", inventoryData);
     }
 
     public void reportMissingIngredients(String orderId) throws IOException {

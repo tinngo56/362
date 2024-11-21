@@ -10,7 +10,6 @@ public class RoomServiceOrder extends Mappable<RoomServiceOrder> {
     private List<MenuItem> items;
     private double totalAmount;
     private OrderStatus status;
-    private LocalDateTime orderTime;
     private LocalDateTime deliveryTime;
     private String notes;
     private PaymentMethod paymentMethod;
@@ -29,14 +28,13 @@ public class RoomServiceOrder extends Mappable<RoomServiceOrder> {
     public RoomServiceOrder() {
     }
     
-    public RoomServiceOrder(String orderId, int roomNumber, String customerId, List<MenuItem> items, double totalAmount, OrderStatus status, LocalDateTime orderTime, LocalDateTime deliveryTime, String notes, PaymentMethod paymentMethod, String staffId) {
+    public RoomServiceOrder(String orderId, int roomNumber, String customerId, List<MenuItem> items, double totalAmount, OrderStatus status, LocalDateTime deliveryTime, String notes, PaymentMethod paymentMethod, String staffId) {
         this.orderId = orderId;
         this.roomNumber = roomNumber;
         this.customerId = customerId;
         this.items = items;
         this.totalAmount = totalAmount;
         this.status = status;
-        this.orderTime = orderTime;
         this.deliveryTime = deliveryTime;
         this.notes = notes;
         this.paymentMethod = paymentMethod;
@@ -89,14 +87,6 @@ public class RoomServiceOrder extends Mappable<RoomServiceOrder> {
     
     public void setStatus(OrderStatus status) {
         this.status = status;
-    }
-    
-    public LocalDateTime getOrderTime() {
-        return orderTime;
-    }
-    
-    public void setOrderTime(LocalDateTime orderTime) {
-        this.orderTime = orderTime;
     }
     
     public LocalDateTime getDeliveryTime() {
