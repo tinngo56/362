@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class UseCases {
+    private final EmailController emailController;
     private final RewardsController rewardsController;
     private final BookingController bookingController;
     private final CustomerController customerController;
@@ -23,6 +24,7 @@ public class UseCases {
     public UseCases(String baseDirectory) throws IOException {
         CEO ceo = new CEO(1, "John Doe", "john.doe@example.com", "CEO", "ACTIVE", 5, 1000000.0, 50000.0);
 
+        this.emailController = new EmailController(baseDirectory);
         this.rewardsController = new RewardsController(baseDirectory);
         this.bookingController = new BookingController(baseDirectory, ceo);
         this.customerController = new CustomerController(baseDirectory);
@@ -464,7 +466,9 @@ public class UseCases {
 
     }
 
-
+    /*
+    * Allows a customer to book a hotel room using their rewards points. If the customer is a rewards member, they can redeem their points for a discount on the room price.
+    */
     public void bookRoomWithRewards() throws IOException {
         Scanner scanner = new Scanner(System.in);
 
@@ -553,7 +557,9 @@ public class UseCases {
         }
     }
 
-    // Use case 11 (core profit cycle)
+    /*
+    * Demonstrates the profit cycle by showing the franchise owner's pay and the CEO's pay for a booking that has been placed.
+    */
     private void demonstrateProfitCycle() throws IOException {
         System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
         if(bookingController.getNumOfBookings() <= 0) {
@@ -568,7 +574,9 @@ public class UseCases {
         System.out.println("CEO's Pay: $" + ceoPay + '\n');
         }
 
-    // Use case 12 (sign franchise agreement)
+    /*
+    * Signs a franchise agreement by creating a new FranchiseAgreement object and storing it in the database.
+    */
 private void signFranchiseAgreement(Scanner scanner) throws IOException {
     System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
 
@@ -623,6 +631,25 @@ private void signFranchiseAgreement(Scanner scanner) throws IOException {
     System.out.println("Franchise agreement signed successfully!");
     System.out.println("Agreement ID: " + agreementId);
 }
+
+    /*
+    * Sends a mass email to all customers in the database.
+    */
+    private void sendMassEmail() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("\n\n----- SEND MASS EMAIL -----\n");
+
+        System.out.print("Enter email subject: ");
+        String subject = scanner.nextLine();
+
+        System.out.print("Enter email message: ");
+        String message = scanner.nextLine();
+
+        emailController.sendMassEmail(subject, message);
+
+        System.out.println("Mass email sent successfully!");
+    }
 
     private void updateBooking() throws IOException {
 
