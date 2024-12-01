@@ -199,19 +199,4 @@ public class WorkRequestController {
 
         return chemicalList.get(selection - 1);
     }
-
-    private boolean nextBoolean(Scanner scanner) {
-        while (true) {
-            System.out.print("Enter 'y' for yes or 'n' for no: ");
-            String input = scanner.nextLine().trim().toLowerCase();
-
-            if (input.equals("y")) {
-                return true;
-            } else if (input.equals("n")) {
-                return false;
-            } else {
-                System.out.println("Invalid input. Please enter 'y' or 'n'.");
-            }
-        }
-    }
 }

@@ -27,6 +27,7 @@ public class UseCases {
     private final RoomServiceStaffController roomServiceStaffController;
     private final CleanFacilityController cleanFacilityController;
     private final WorkRequestController workRequestController;
+    private final BikeCheckoutController bikeCheckoutController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -51,6 +52,7 @@ public class UseCases {
         this.roomServiceStaffController = new RoomServiceStaffController(baseDirectory);
         this.cleanFacilityController = new CleanFacilityController(baseDirectory);
         this.workRequestController = new WorkRequestController(baseDirectory);
+        this.bikeCheckoutController = new BikeCheckoutController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -258,6 +260,12 @@ public class UseCases {
             System.out.println("==========Manage current cleaning inventory actions==========");
             System.out.println("29. View current inventory of cleaning supplies");
             System.out.println("30. Set current inventory of cleaning supplies");
+            System.out.println("==========Manage bikes actions==========");
+            System.out.println("31. Add a bike");
+            System.out.println("32. Maintain a bike");
+            System.out.println("33. Check in a bike");
+            System.out.println("34. Check out a bike");
+            System.out.println("35. See current bike fleet");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -350,7 +358,21 @@ public class UseCases {
                 case 30:
                     cleanFacilityController.setCleaningInventory(scnr);
                     break;
-
+                case 31:
+                    bikeCheckoutController.createAndSaveBikeFromInput(scnr);
+                    break;
+                case 32:
+                    bikeCheckoutController.maintainBike(scnr);
+                    break;
+                case 33:
+                    bikeCheckoutController.checkInBike(scnr);
+                    break;
+                case 34:
+                    bikeCheckoutController.checkOutBike(scnr);
+                    break;
+                case 35:
+                    bikeCheckoutController.printAll();
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
