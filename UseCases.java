@@ -318,6 +318,13 @@ public class UseCases {
         }
     }
 
+
+    private void viewAllWorkRequests() throws IOException {
+        workRequestController.printAll();
+    }
+
+
+
     private void customerUseCases(Scanner scnr) throws IOException {
         while(true) {
             System.out.println("\nCustomer choose what to run:");
