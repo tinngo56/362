@@ -270,7 +270,8 @@ public class UseCases {
             System.out.println("35. See current bike fleet");
             System.out.println("==========Spa actions==========");
             System.out.println("36. Reset for Spa for next week");
-            System.out.println("37.Reserve spa");
+            System.out.println("37. Reserve spa");
+            System.out.println("38. View Reservations for a Specific Day");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -384,6 +385,9 @@ public class UseCases {
                 case 37:
                     spaReservationController.makeAndSaveSpaReservationFromInput(scnr);
                     break;
+                case 38:
+                    spaReservationController.printReservationsForDay(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -399,6 +403,13 @@ public class UseCases {
             System.out.println("4. Vending");
             System.out.println("5. Access Facility");
             System.out.println("6. Room Service");
+            System.out.println("==========Spa actions==========");
+            System.out.println("7. Reserve spa");
+            System.out.println("8. View Reservations for a Specific Day");
+            System.out.println("==========Manage bikes actions==========");
+            System.out.println("9. Check in a bike");
+            System.out.println("10. Check out a bike");
+            System.out.println("11. See current bike fleet");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -425,6 +436,21 @@ public class UseCases {
                     break;
                 case 6:
                     roomService(scnr);
+                    break;
+                case 7:
+                    spaReservationController.makeAndSaveSpaReservationFromInput(scnr);
+                    break;
+                case 8:
+                    spaReservationController.printReservationsForDay(scnr);
+                    break;
+                case 9:
+                    bikeCheckoutController.checkInBike(scnr);
+                    break;
+                case 10:
+                    bikeCheckoutController.checkOutBike(scnr);
+                    break;
+                case 11:
+                    bikeCheckoutController.printAll();
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");

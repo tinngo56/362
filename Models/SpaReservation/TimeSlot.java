@@ -1,25 +1,27 @@
 package Models.SpaReservation;
 
 public class TimeSlot {
+    private DayOfWeek day;
+    private int slot; // 0-6 corresponding to the time slots
 
-    private int day;
-    private int slot;
-
-    public TimeSlot(int day, int slot) {
+    public TimeSlot(DayOfWeek day, int slot) {
         this.day = day;
         this.slot = slot;
     }
 
-    public int getDay() {
+    public DayOfWeek getDay() {
         return day;
+    }
+
+    public void setDay(DayOfWeek day) {
+        this.day = day;
     }
 
     public int getSlot() {
         return slot;
     }
 
-    @Override
-    public String toString() {
-        return "Day: " + (day + 1) + ", Slot: " + (slot + 1);
+    public void setSlot(int slot) {
+        this.slot = slot;
     }
 }

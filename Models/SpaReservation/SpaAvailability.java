@@ -14,6 +14,7 @@ public class SpaAvailability {
         initializeDefaults();
     }
 
+    @SuppressWarnings("unchecked")
     public SpaAvailability(Map<String, Object> map) {
         // Convert times
         List<List<Double>> timesDoubleList = (List<List<Double>>) map.get("times");
@@ -73,7 +74,7 @@ public class SpaAvailability {
     public void resetAvailability() {
         for (List<Boolean> dayAvailability : available) {
             for (int i = 0; i < dayAvailability.size(); i++) {
-                dayAvailability.set(i, false);
+                dayAvailability.set(i, true);
             }
         }
     }
@@ -166,7 +167,7 @@ public class SpaAvailability {
             if (confirmation.equals("yes") || confirmation.equals("y")) {
                 available.get(dayChoice).set(slotChoice, false);
                 System.out.println("Reservation confirmed! Enjoy your spa service.");
-                return new TimeSlot(dayChoice, slotChoice);
+                return new TimeSlot(DayOfWeek.fromInt(dayChoice), slotChoice);
             } else {
                 System.out.println("Reservation not confirmed. Returning to the menu.");
             }
