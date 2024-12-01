@@ -2,24 +2,24 @@ package Models.CleanFacility;
 
 import java.util.Scanner;
 
-public class GameRoom extends HotelFacility {
+public class ConferenceRoom extends HotelFacility {
 
-    boolean cleanGameEquipment;
+    boolean cleanTables;
     boolean vacuumFloor;
-    boolean sanitizeHighTouchSurfaces;
-    String name = "game room";
+    boolean organizeChairs;
+    String name = "conference room";
 
-    public GameRoom(int id) {
+    public ConferenceRoom(int id) {
         super(id);
     }
 
     @Override
     public String getCleaningInstructions() {
         StringBuilder instructions = new StringBuilder();
-        instructions.append("Game Room Cleaning Instructions:\n");
-        instructions.append("- Clean and organize all game equipment.\n");
-        instructions.append("- Vacuum the floor thoroughly.\n");
-        instructions.append("- Sanitize high-touch surfaces like controllers and tables.\n");
+        instructions.append("Conference Room Cleaning Instructions:\n");
+        instructions.append("- Clean and sanitize all tables and surfaces.\n");
+        instructions.append("- Vacuum the floor to ensure cleanliness.\n");
+        instructions.append("- Arrange chairs neatly for the next event.\n");
         return instructions.toString();
     }
 
@@ -29,20 +29,21 @@ public class GameRoom extends HotelFacility {
 
         System.out.println(getCleaningInstructions());
 
-        System.out.print("Was the game equipment cleaned?: ");
-        cleanGameEquipment = nextBoolean(scnr);
+        System.out.print("Were the tables cleaned?: ");
+        cleanTables = nextBoolean(scnr);
 
         System.out.print("Was the floor vacuumed?: ");
         vacuumFloor = nextBoolean(scnr);
 
-        System.out.print("Were high-touch surfaces sanitized?: ");
-        sanitizeHighTouchSurfaces = nextBoolean(scnr);
+        System.out.print("Were the chairs organized?: ");
+        organizeChairs = nextBoolean(scnr);
 
-        System.out.println("\nGame Room Cleaning Report:");
-        System.out.println("Game equipment cleaned: " + cleanGameEquipment);
+        System.out.println("\nConference Room Cleaning Report:");
+        System.out.println("Tables cleaned: " + cleanTables);
         System.out.println("Floor vacuumed: " + vacuumFloor);
-        System.out.println("High-touch surfaces sanitized: " + sanitizeHighTouchSurfaces);
+        System.out.println("Chairs organized: " + organizeChairs);
     }
+
     private boolean nextBoolean(Scanner scanner) {
         while (true) {
             System.out.print("Enter 'y' for yes or 'n' for no: ");

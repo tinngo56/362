@@ -1,5 +1,6 @@
 import Controllers.*;
 import Models.*;
+import Models.CleanFacility.HotelFacility;
 
 import java.awt.print.Book;
 import java.io.IOException;
@@ -15,6 +16,8 @@ public class UseCases {
     private final PoolMaintenanceController poolMaintenanceController;
     private final PoolChemicalsController poolChemicalsController;
     private final CookBreakfastController cookBreakfastController;
+    private final CleanFacilityController cleanFacilityController;
+    private final WorkRequestController workRequestController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -29,6 +32,8 @@ public class UseCases {
         this.poolMaintenanceController = new PoolMaintenanceController(baseDirectory);
         this.poolChemicalsController = new PoolChemicalsController(baseDirectory);
         this.cookBreakfastController = new CookBreakfastController(baseDirectory);
+        this.cleanFacilityController = new CleanFacilityController(baseDirectory);
+        this.workRequestController = new WorkRequestController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor) throws IOException{
@@ -221,6 +226,19 @@ public class UseCases {
             System.out.println("==========Franchise actions==========");
             System.out.println("16. Demonstrate Profit Cycle");
             System.out.println("17. Sign Franchise Agreement");
+            System.out.println("==========Clean facility actions==========");
+            System.out.println("23. Do facility cleaning");
+            System.out.println("24. view all");
+            System.out.println("25. Set cleaning frequency");
+            System.out.println("==========Clean facility actions==========");
+            System.out.println("26. Create a Work Request");
+            System.out.println("27. View All Work Requests");
+            System.out.println("28. Complete a Work Request");
+            System.out.println("==========Manage current cleaning inventory actions==========");
+            System.out.println("29. View current inventory of cleaning supplies");
+            System.out.println("30. Set current inventory of cleaning supplies");
+
+
             System.out.print("Enter your choice: ");
 
             int choice = scnr.nextInt();
@@ -280,11 +298,42 @@ public class UseCases {
                 case 17:
                     signFranchiseAgreement(scnr);
                     break;
+                case 23:
+                    doFacilityCleaningReport(scnr);
+                    break;
+                case 24:
+                    viewAllFacilityCleaningReports();
+                    break;
+                case 25:
+                    setCleaningFrequencyOfFacility(scnr);
+                    break;
+                // New Work Request cases
+                case 26:
+                    workRequestController.createAndSaveWorkRequestFromInput(scnr);
+                    break;
+                case 27:
+                    viewAllWorkRequests();
+                    break;
+                case 28:
+                    workRequestController.completeWorkRequest(scnr);
+                case 29:
+                    System.out.println(cleanFacilityController.getCleaningInventory());
+                    break;
+                case 30:
+                    cleanFacilityController.setCleaningInventory(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
         }
     }
+
+
+    private void viewAllWorkRequests() throws IOException {
+        workRequestController.printAll();
+    }
+
+
 
     private void customerUseCases(Scanner scnr) throws IOException {
         while(true) {
@@ -310,6 +359,38 @@ public class UseCases {
                     System.out.println("Invalid action number. Please try again.");
             }
         }
+    }
+
+    //cleaning
+
+
+    private void setCleaningFrequencyOfFacility(Scanner scnr) throws IOException {
+        cleanFacilityController.changeDaysBetweenCleaning(scnr);
+    }
+    private void viewAllFacilityCleaningReports() throws IOException {
+        List<Map<String, Object>> reports = cleanFacilityController.getAllFacilityCleaningReports();
+        if (reports.isEmpty()) {
+            System.out.println("No facility cleaning reports available.");
+            return;
+        }
+
+        System.out.println("All Facility Cleaning Reports:");
+        System.out.println("------------------------------");
+        for (Map<String, Object> report : reports) {
+            if(report.get("pool") != null) {
+                System.out.println("Days between cleaning");
+            } else {
+                System.out.println("Save");
+            }
+            System.out.println(report);
+            System.out.println("------------------------------");
+        }
+    }
+
+
+    private void doFacilityCleaningReport(Scanner scnr) throws IOException {
+        cleanFacilityController.completeFacilityCleaning(scnr);
+        System.out.println("Facility cleaning report added successfully.");
     }
 
     private void checkIngredients(Scanner scnr) throws IOException {
