@@ -126,6 +126,7 @@ public class WorkRequestController {
         WorkRequest request = getWorkRequest(want);
 
         System.out.println("Is the issue: " + request.getIssue() + " resolved? (y or n)");
+        scanner.nextLine();
         String s = scanner.nextLine().trim().toLowerCase();
         boolean solved = s.equals("y");
         if(solved) {

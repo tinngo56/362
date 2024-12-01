@@ -51,21 +51,21 @@ public class LostAndFoundItem extends Mappable<LostAndFoundItem> {
         this.foundBy = foundBy;
     }
 
-    public String getGuestName() {
-        return guestName;
-    }
-
-    public void setGuestName(String guestName) {
-        this.guestName = guestName;
-    }
-
-    public String getGuestContact() {
-        return guestContact;
-    }
-
-    public void setGuestContact(String guestContact) {
-        this.guestContact = guestContact;
-    }
+//    public String getGuestName() {
+//        return guestName;
+//    }
+//
+//    public void setGuestName(String guestName) {
+//        this.guestName = guestName;
+//    }
+//
+//    public String getGuestContact() {
+//        return guestContact;
+//    }
+//
+//    public void setGuestContact(String guestContact) {
+//        this.guestContact = guestContact;
+//    }
 
     public String getStatus() {
         return status;

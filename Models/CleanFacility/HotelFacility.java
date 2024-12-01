@@ -41,10 +41,9 @@ public abstract class HotelFacility extends Mappable implements Facility {
         lastCleaned = LocalDate.now();
         System.out.println("Next cleaning was scheduled for: " + getNextCleaningDate(daysBetweenCleaning));
 
-        System.out.println("Were there any issues during cleaning?: ");
-        scnr.next();
-        boolean issue = nextBoolean(scnr);
-
+        System.out.println("Were there any issues during cleaning? (y,n): ");
+        String s = scnr.nextLine().trim().toLowerCase();
+        boolean issue = s.equals("y");
         if (issue) {
             System.out.print("Please describe the issues: ");
             issues = scnr.nextLine();

@@ -25,6 +25,8 @@ public class UseCases {
     private final RoomServiceController roomServiceController;
     private final KitchenController kitchenController;
     private final RoomServiceStaffController roomServiceStaffController;
+    private final CleanFacilityController cleanFacilityController;
+    private final WorkRequestController workRequestController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -47,6 +49,8 @@ public class UseCases {
         this.roomServiceController = new RoomServiceController(baseDirectory);
         this.kitchenController = new KitchenController(baseDirectory);
         this.roomServiceStaffController = new RoomServiceStaffController(baseDirectory);
+        this.cleanFacilityController = new CleanFacilityController(baseDirectory);
+        this.workRequestController = new WorkRequestController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -243,6 +247,17 @@ public class UseCases {
             System.out.println("19. Restock the Vending Machine");
             System.out.println("=========Other actions========");
             System.out.println("20. Access Facility");
+            System.out.println("==========Clean facility actions==========");
+            System.out.println("23. Do facility cleaning");
+            System.out.println("24. view all");
+            System.out.println("25. Set cleaning frequency");
+            System.out.println("==========Work request actions==========");
+            System.out.println("26. Create a Work Request");
+            System.out.println("27. View All Work Requests");
+            System.out.println("28. Complete a Work Request");
+            System.out.println("==========Manage current cleaning inventory actions==========");
+            System.out.println("29. View current inventory of cleaning supplies");
+            System.out.println("30. Set current inventory of cleaning supplies");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -312,18 +327,35 @@ public class UseCases {
                 case 20:
                     accessFacility(scnr, true);
                     break;
+                case 23:
+                    doFacilityCleaningReport(scnr);
+                    break;
+                case 24:
+                    viewAllFacilityCleaningReports();
+                    break;
+                case 25:
+                    setCleaningFrequencyOfFacility(scnr);
+                    break;
+                case 26:
+                    workRequestController.createAndSaveWorkRequestFromInput(scnr);
+                    break;
+                case 27:
+                    workRequestController.printAll();
+                    break;
+                case 28:
+                    workRequestController.completeWorkRequest(scnr);
+                case 29:
+                    System.out.println(cleanFacilityController.getCleaningInventory());
+                    break;
+                case 30:
+                    cleanFacilityController.setCleaningInventory(scnr);
+                    break;
+
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
         }
     }
-
-
-    private void viewAllWorkRequests() throws IOException {
-        workRequestController.printAll();
-    }
-
-
 
     private void customerUseCases(Scanner scnr) throws IOException {
         while(true) {
@@ -367,26 +399,58 @@ public class UseCases {
         }
     }
 
+    private void setCleaningFrequencyOfFacility(Scanner scnr) throws IOException {
+        cleanFacilityController.changeDaysBetweenCleaning(scnr);
+    }
+
+    private void viewAllFacilityCleaningReports() throws IOException {
+        List<Map<String, Object>> reports = cleanFacilityController.getAllFacilityCleaningReports();
+        if (reports.isEmpty()) {
+            System.out.println("No facility cleaning reports available.");
+            return;
+        }
+
+
+        System.out.println("All Facility Cleaning Reports:");
+        System.out.println("------------------------------");
+        for (Map<String, Object> report : reports) {
+            if(report.get("pool") != null) {
+                System.out.println("Days between cleaning");
+            } else {
+                System.out.println("Save");
+            }
+            System.out.println(report);
+            System.out.println("------------------------------");
+        }
+    }
+
+    private void doFacilityCleaningReport(Scanner scnr) throws IOException {
+        cleanFacilityController.completeFacilityCleaning(scnr);
+        System.out.println("Facility cleaning report added successfully.");
+    }
+
+
+
     private void roomService(Scanner scnr) throws IOException {
         System.out.println("\n----- ROOM SERVICE -----\n");
-        
+
         // Get room number
         System.out.print("Enter room number: ");
         int roomNumber = scnr.nextInt();
         scnr.nextLine();
-        
+
         // Validate room
         if (!roomController.isRoomOccupied(roomNumber)) {
             System.out.println("Room is not occupied.");
             return;
         }
         RoomServiceStaff staff = roomServiceStaffController.getAvailableRoomServiceStaff();
-        
+
         // Display menu and create order
         System.out.println("----- MENU -----");
         try {
             roomServiceController.printMenu();
-            
+
             RoomServiceOrder order = roomServiceController.createOrder(roomNumber, scnr);
 
             roomServiceStaffController.assignOrder(staff, roomNumber + "_" + order.getOrderId());
@@ -550,8 +614,8 @@ public class UseCases {
     }
 
     /*
-    * Allows a customer to book a hotel room using their rewards points. If the customer is a rewards member, they can redeem their points for a discount on the room price.
-    */
+     * Allows a customer to book a hotel room using their rewards points. If the customer is a rewards member, they can redeem their points for a discount on the room price.
+     */
     public void bookRoomWithRewards() throws IOException {
         Scanner scanner = new Scanner(System.in);
 
@@ -642,83 +706,83 @@ public class UseCases {
     }
 
     /*
-    * Demonstrates the profit cycle by showing the franchise owner's pay and the CEO's pay for a booking that has been placed.
-    */
+     * Demonstrates the profit cycle by showing the franchise owner's pay and the CEO's pay for a booking that has been placed.
+     */
     private void demonstrateProfitCycle() throws IOException {
         System.out.println("\n\n----- DEMONSTRATE PROFIT CYCLE -----\n");
         if(bookingController.getNumOfBookings() <= 0) {
             System.out.println("A booking must be placed first.");
             return;
         }
-    
+
         double franchiseOwnerPay = bookingController.getFranchiseOwnerPay();
         double ceoPay = bookingController.getCEOPay();
-    
+
         System.out.println("Franchise Owner's Pay: $" + franchiseOwnerPay);
         System.out.println("CEO's Pay: $" + ceoPay + '\n');
-        }
-
-    /*
-    * Signs a franchise agreement by creating a new FranchiseAgreement object and storing it in the database.
-    */
-private void signFranchiseAgreement(Scanner scanner) throws IOException {
-    System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
-
-    System.out.print("Enter start date (YYYY-MM-DD): ");
-    String startDate = scanner.next();
-
-    System.out.print("Enter end date (YYYY-MM-DD): ");
-    String endDate = scanner.next();
-
-    double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
-    System.out.println("Franchise fee: " + fees + "%");
-
-    System.out.println("Select conditions from the list below:");
-    String[] conditionsList = {
-        "Maintain brand standards",
-        "Participate in marketing campaigns",
-        "Adhere to pricing guidelines",
-        "Undergo regular inspections",
-        "Provide regular financial reports",
-        "Attend training sessions",
-        "Use approved suppliers",
-        "Pay royalties on time",
-        "Maintain customer satisfaction",
-        "Follow operational procedures"
-    };
-
-    for (int i = 0; i < conditionsList.length; i++) {
-        System.out.println((i + 1) + ". " + conditionsList[i]);
     }
 
-    System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
-    String[] selectedConditionsIndices = scanner.next().split(",");
-    StringBuilder selectedConditions = new StringBuilder();
-    for (String index : selectedConditionsIndices) {
-        int conditionIndex = Integer.parseInt(index.trim()) - 1;
-        if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
-            selectedConditions.append(conditionsList[conditionIndex]).append("\n");
+    /*
+     * Signs a franchise agreement by creating a new FranchiseAgreement object and storing it in the database.
+     */
+    private void signFranchiseAgreement(Scanner scanner) throws IOException {
+        System.out.println("\n\n----- SIGN FRANCHISE AGREEMENT -----\n");
+
+        System.out.print("Enter start date (YYYY-MM-DD): ");
+        String startDate = scanner.next();
+
+        System.out.print("Enter end date (YYYY-MM-DD): ");
+        String endDate = scanner.next();
+
+        double fees = 3.0 + (Math.random() * 4.0); // Random fee between 3% and 7%
+        System.out.println("Franchise fee: " + fees + "%");
+
+        System.out.println("Select conditions from the list below:");
+        String[] conditionsList = {
+                "Maintain brand standards",
+                "Participate in marketing campaigns",
+                "Adhere to pricing guidelines",
+                "Undergo regular inspections",
+                "Provide regular financial reports",
+                "Attend training sessions",
+                "Use approved suppliers",
+                "Pay royalties on time",
+                "Maintain customer satisfaction",
+                "Follow operational procedures"
+        };
+
+        for (int i = 0; i < conditionsList.length; i++) {
+            System.out.println((i + 1) + ". " + conditionsList[i]);
         }
+
+        System.out.print("Enter the numbers of the conditions you agree to (comma-separated): ");
+        String[] selectedConditionsIndices = scanner.next().split(",");
+        StringBuilder selectedConditions = new StringBuilder();
+        for (String index : selectedConditionsIndices) {
+            int conditionIndex = Integer.parseInt(index.trim()) - 1;
+            if (conditionIndex >= 0 && conditionIndex < conditionsList.length) {
+                selectedConditions.append(conditionsList[conditionIndex]).append("\n");
+            }
+        }
+
+        String conditions = selectedConditions.toString();
+
+        System.out.println("You have agreed to the following conditions:");
+        System.out.println(conditions);
+
+        FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
+        int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
+        FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
+
+        franchiseAgreementController.createFranchiseAgreement(agreement);
+
+        System.out.println("Franchise agreement signed successfully!");
+        System.out.println("Agreement ID: " + agreementId);
     }
 
-    String conditions = selectedConditions.toString();
-
-    System.out.println("You have agreed to the following conditions:");
-    System.out.println(conditions);
-
-    FranchiseAgreementController franchiseAgreementController = new FranchiseAgreementController("hotel_data");
-    int agreementId = franchiseAgreementController.getNumOfAgreements() + 1;
-    FranchiseAgreement agreement = new FranchiseAgreement(agreementId, startDate, endDate, fees, conditions);
-
-    franchiseAgreementController.createFranchiseAgreement(agreement);
-
-    System.out.println("Franchise agreement signed successfully!");
-    System.out.println("Agreement ID: " + agreementId);
-}
-
     /*
-    * Sends a mass email to all customers in the database.
-    */
+     * Sends a mass email to all customers in the database.
+     */
     private void sendMassEmail() throws IOException {
         Scanner scanner = new Scanner(System.in);
 

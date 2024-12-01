@@ -217,7 +217,7 @@ public class CleanFacilityController {
 
     public void completeFacilityCleaning(Scanner scanner) throws IOException {
         System.out.println("=== Complete New Cleaning Save ===");
-        System.out.println("Enter the following details for a new facility cleaning reading:");
+        System.out.println("Enter the following details for a new facility cleaning:");
 
         int id = nextId++;
         String facilityType = null;
@@ -332,25 +332,6 @@ public class CleanFacilityController {
             return str;
         }
         return str.substring(0, 1).toUpperCase() + str.substring(1);
-    }
-
-    public void printAll() throws IOException {
-        List<Map<String, Object>> allReadings = getAllFacilityCleaningReports();
-
-        if (allReadings.isEmpty()) {
-            System.out.println("No cleaning reports available.");
-            return;
-        }
-
-        System.out.println("All Chemical Readings:");
-        System.out.println("----------------------");
-
-        for (Map<String, Object> readingMap : allReadings) {
-            for (Map.Entry<String, Object> entry : readingMap.entrySet()) {
-                System.out.println(entry.getKey() + ": " + entry.getValue());
-            }
-            System.out.println("----------------------");
-        }
     }
 
     public void addToCleaningInventory(Scanner scnr) throws IOException {
