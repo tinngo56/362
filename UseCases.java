@@ -28,6 +28,7 @@ public class UseCases {
     private final CleanFacilityController cleanFacilityController;
     private final WorkRequestController workRequestController;
     private final BikeCheckoutController bikeCheckoutController;
+    private final SpaReservationController spaReservationController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -53,6 +54,7 @@ public class UseCases {
         this.cleanFacilityController = new CleanFacilityController(baseDirectory);
         this.workRequestController = new WorkRequestController(baseDirectory);
         this.bikeCheckoutController = new BikeCheckoutController(baseDirectory);
+        this.spaReservationController = new SpaReservationController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -266,6 +268,9 @@ public class UseCases {
             System.out.println("33. Check in a bike");
             System.out.println("34. Check out a bike");
             System.out.println("35. See current bike fleet");
+            System.out.println("==========Spa actions==========");
+            System.out.println("36. Reset for Spa for next week");
+            System.out.println("37.Reserve spa");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -372,6 +377,12 @@ public class UseCases {
                     break;
                 case 35:
                     bikeCheckoutController.printAll();
+                    break;
+                case 36:
+                    spaReservationController.resetSpaAvailabilityForNextWeek();
+                    break;
+                case 37:
+                    spaReservationController.makeAndSaveSpaReservationFromInput(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
