@@ -122,11 +122,75 @@ public class BikeCheckoutController {
         int want = scanner.nextInt();
         Bike request = getBike(want);
 
+        if(!processPayment(scanner)){
+            System.out.println("You need a successful payment to checkout a bike going back to possible use cases");
+            return;
+        }
+
         request.setBikeState(OUT);
 
         saveBike(request);
         System.out.println("Bike has been checked out and saved.\n");
     }
+
+    public boolean processPayment(Scanner scanner) {
+        System.out.println("=== Bike Rental Payment ===");
+
+        System.out.println("Enter the number of days you want to rent the bike ($10 per day):");
+        int rentalDays = scanner.nextInt();
+        scanner.nextLine();
+
+        if (rentalDays <= 0) {
+            System.out.println("Invalid number of days. Please try again.");
+            return false;
+        }
+
+        int totalCost = rentalDays * 10;
+        System.out.println("The total cost for renting the bike is: $" + totalCost);
+
+        System.out.println("Select payment method: (1) Cash (2) Card");
+        int paymentMethod = scanner.nextInt();
+        scanner.nextLine();
+
+        if (paymentMethod == 1) {
+            System.out.println("Please hand over $" + totalCost + " in cash to the cashier.");
+            System.out.println("Payment successful. Enjoy your ride!");
+            return true;
+        } else if (paymentMethod == 2) {
+            System.out.println("Enter your card number (16 digits):");
+            String cardNumber = scanner.nextLine().trim();
+
+            if (cardNumber.length() != 16 || !cardNumber.matches("\\d+")) {
+                System.out.println("Invalid card number. Payment failed.");
+                return false;
+            }
+
+            System.out.println("Enter card expiration date (MM/YY):");
+            String expirationDate = scanner.nextLine().trim();
+
+            System.out.println("Enter CVV (3 digits):");
+            String cvv = scanner.nextLine().trim();
+
+            if (cvv.length() != 3 || !cvv.matches("\\d+")) {
+                System.out.println("Invalid CVV. Payment failed.");
+                return false;
+            }
+
+            System.out.println("Processing payment...");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+
+            System.out.println("Payment successful. Enjoy your ride!");
+            return true;
+        } else {
+            System.out.println("Invalid payment method selected. Please try again.");
+            return false;
+        }
+    }
+
 
     public void checkInBike(Scanner scanner) throws IOException {
         System.out.println("=== Checking in a bike===");
