@@ -29,6 +29,11 @@ public class UseCases {
     private final WorkRequestController workRequestController;
     private final BikeCheckoutController bikeCheckoutController;
     private final SpaReservationController spaReservationController;
+    private final HiringController hiringController;
+    private final ApplicantController applicantController;
+    private final PayrollController payrollController;
+    private final GroundsMaintenanceController groundsMaintenanceController;
+    private final EventPlanningController eventPlanningController;
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
 
@@ -55,6 +60,11 @@ public class UseCases {
         this.workRequestController = new WorkRequestController(baseDirectory);
         this.bikeCheckoutController = new BikeCheckoutController(baseDirectory);
         this.spaReservationController = new SpaReservationController(baseDirectory);
+        this.hiringController = new HiringController(baseDirectory);
+        this.applicantController = new ApplicantController(baseDirectory);
+        this.payrollController = new PayrollController(baseDirectory);
+        this.groundsMaintenanceController = new GroundsMaintenanceController(baseDirectory);
+        this.eventPlanningController = new EventPlanningController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -75,8 +85,82 @@ public class UseCases {
             case 5:
                 cleaningStaffUseCases(scnr);
                 break;
+            case 6:
+                applicantUseCases(scnr);
+                break;
+            case 7:
+                groundsKeeperUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
+        }
+    }
+
+    private void applicantUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nApplicant Actions:");
+            System.out.println("1. Apply to Job Posting");
+            System.out.println("2. Accept or Decline Job Offer");
+            System.out.println("0. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    applicantController.applyToJobPosting(scnr);
+                    break;
+                case 2:
+                    applicantController.acceptOrDeclineJobOffer(scnr);
+                    break;
+                default:
+                    System.out.println("Invalid action number. Please try again.");
+            }
+        }
+    }
+
+    private void groundsKeeperUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nGrounds Keeper choose what to run:");
+            System.out.println("1. Create Grounds Inspection");
+            System.out.println("2. Modify Grounds Inspection");
+            System.out.println("3. Generate Inspection Report");
+            System.out.println("4. Log Unexpected Issues");
+            System.out.println("5. Validate and Replace Grounds Log");
+            System.out.println("6. Cancel Grounds Inspection");
+            System.out.println("0. Exit to change your Actor choice");
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine(); // Consume the newline
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    groundsMaintenanceController.createAndSaveGroundsInspectionFromInput(scnr);
+                    break;
+                case 2:
+                    groundsMaintenanceController.modifyGroundsInspection(scnr);
+                    break;
+                case 3:
+                    groundsMaintenanceController.generateInspectionReport();
+                    break;
+                case 4:
+                    groundsMaintenanceController.logUnexpectedIssues(scnr);
+                    break;
+                case 5:
+                    groundsMaintenanceController.validateAndReplaceGroundsLog(scnr);
+                    break;
+                case 6:
+                    groundsMaintenanceController.cancelGroundsInspection(scnr); // New option
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
         }
     }
 
@@ -274,6 +358,16 @@ public class UseCases {
             System.out.println("38. View Reservations for a Specific Day");
             System.out.println("==========Marketing actions==========");
             System.out.println("39. Send marketing email");
+            System.out.println("==========Hiring actions==========");
+            System.out.println("40. Request New Hire");
+            System.out.println("41. Shortlist Applicants");
+            System.out.println("42. Interview Shortlisted Applicants");
+            System.out.println("43. Select Candidate");
+            System.out.println("44. Cancel Hiring Process");
+            System.out.println("45. Schedule interview");
+            System.out.println("==========Payroll actions==========");
+            System.out.println("46. Verify Employee Payroll Info");
+            System.out.println("47. Pay Employee");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -393,6 +487,30 @@ public class UseCases {
                 case 39:
                     sendMassEmail();
                     break;
+                case 40:
+                    hiringController.requestNewHire(scnr);
+                    break;
+                case 41:
+                    hiringController.shortListApplicants(scnr);
+                    break;
+                case 42:
+                    hiringController.interviewShortlistedApplicants(scnr);
+                    break;
+                case 43:
+                    hiringController.selectCandidate(scnr);
+                    break;
+                case 44:
+                    hiringController.cancelHiringProcess(scnr);
+                    break;
+                case 45:
+                    hiringController.scheduleInterview(scnr);
+                    break;
+                case 46:
+                    payrollController.verifyPayrollInfo(scnr);
+                    break;
+                case 47:
+                    payrollController.payEmployee(scnr);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -415,6 +533,9 @@ public class UseCases {
             System.out.println("9. Check in a bike");
             System.out.println("10. Check out a bike");
             System.out.println("11. See current bike fleet");
+            System.out.println("==========Event Booking Actions==========");
+            System.out.println("12. Book Event Room");
+            System.out.println("13. Cancel Event Room Booking");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -456,6 +577,12 @@ public class UseCases {
                     break;
                 case 11:
                     bikeCheckoutController.printAll();
+                    break;
+                case 12:
+                    eventPlanningController.createBooking(scnr);
+                    break;
+                case 13:
+                    eventPlanningController.cancelBooking(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -961,6 +1088,8 @@ public void sendMassEmail() throws IOException {
                 System.out.println("3. Kitchen Staff");
                 System.out.println("4. Customer");
                 System.out.println("5. Cleaning Staff");
+                System.out.println("6. Applicant");
+                System.out.println("7. Grounds Keeper");
                 System.out.println("0. Exit");
                 System.out.print("Enter your choice: ");
                 int useCaseNumber = scanner.nextInt();
