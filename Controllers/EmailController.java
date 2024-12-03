@@ -1,3 +1,4 @@
+// Controllers/EmailController.java
 package Controllers;
 
 import Models.Customer;
@@ -15,31 +16,26 @@ public class EmailController {
 
     public void sendMassEmail(String subject, String message) throws IOException {
         StorageHelper.DataStore<Map<String, Object>> customerStore = storageHelper.getStore("customers");
+        List<Map<String, Object>> customers = customerStore.loadAll();
 
-        List<Map<String, Object>> customersData = customerStore.loadAll();
-        for (Map<String, Object> customerData : customersData) {
+        for (Map<String, Object> customerData : customers) {
             Customer customer = convertMapToCustomer(customerData);
-            if (customer.getLoyaltyProgramLevel() != null && !customer.getLoyaltyProgramLevel().isEmpty()) {
-                sendEmail(customer.getContactInfo(), subject, message);
+            String email = (String) customerData.get("email");
+            if (email != null && !email.isEmpty()) {
+                System.out.println("Sending email to: " + email);
+                System.out.println("Subject: " + subject);
+                System.out.println("Message: " + message);
             }
         }
+        System.out.println("Mass email sent to all customers.");
     }
 
-    private void sendEmail(String email, String subject, String message) {
-        // Simulate sending an email
-        System.out.println("Sending email to: " + email);
-        System.out.println("Subject: " + subject);
-        System.out.println("Message: " + message);
-        System.out.println("Email sent successfully!\n");
-    }
-
-    private Customer convertMapToCustomer(Map<String, Object> map) {
-        int id = (Integer) map.get("id");
-        String name = (String) map.get("name");
-        String contactInfo = (String) map.get("contactInfo");
-        String loyaltyProgramLevel = (String) map.get("loyaltyProgramLevel");
-        String paymentMethod = (String) map.get("paymentMethod");
-        int numberOfStays = (Integer) map.get("numberOfStays");
-        return new Customer(id, name, contactInfo, loyaltyProgramLevel, paymentMethod, numberOfStays);
+    private Customer convertMapToCustomer(Map<String, Object> customerData) {
+        Customer customer = new Customer();
+        customer.setId(((Number) customerData.get("id")).intValue());
+        customer.setLoyaltyProgramLevel((String) customerData.get("loyaltyProgramLevel"));
+        customer.setPaymentMethod((String) customerData.get("paymentMethod"));
+        customer.setNumberOfStays(((Number) customerData.get("numberOfStays")).intValue());
+        return customer;
     }
 }

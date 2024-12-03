@@ -272,6 +272,8 @@ public class UseCases {
             System.out.println("36. Reset for Spa for next week");
             System.out.println("37. Reserve spa");
             System.out.println("38. View Reservations for a Specific Day");
+            System.out.println("==========Marketing actions==========");
+            System.out.println("39. Send marketing email");
             System.out.println("0. Exit to change your Actor choice");
             System.out.print("Enter your choice: ");
 
@@ -387,6 +389,9 @@ public class UseCases {
                     break;
                 case 38:
                     spaReservationController.printReservationsForDay(scnr);
+                    break;
+                case 39:
+                    sendMassEmail();
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
@@ -845,21 +850,18 @@ public void bookRoomWithRewards() throws IOException {
     /*
      * Sends a mass email to all customers in the database.
      */
-    private void sendMassEmail() throws IOException {
-        Scanner scanner = new Scanner(System.in);
+public void sendMassEmail() throws IOException {
+    Scanner scanner = new Scanner(System.in);
 
-        System.out.println("\n\n----- SEND MASS EMAIL -----\n");
+    System.out.print("Enter email subject: ");
+    String subject = scanner.nextLine();
 
-        System.out.print("Enter email subject: ");
-        String subject = scanner.nextLine();
+    System.out.print("Enter email message: ");
+    String message = scanner.nextLine();
 
-        System.out.print("Enter email message: ");
-        String message = scanner.nextLine();
-
-        emailController.sendMassEmail(subject, message);
-
-        System.out.println("Mass email sent successfully!");
-    }
+    EmailController emailController = new EmailController("hotel_data");
+    emailController.sendMassEmail(subject, message);
+}
 
     // Use case Vending Machine
     private void useVendingMachine(Scanner scanner) throws IOException {
