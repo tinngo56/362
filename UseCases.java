@@ -675,94 +675,97 @@ public class UseCases {
     /*
      * Allows a customer to book a hotel room using their rewards points. If the customer is a rewards member, they can redeem their points for a discount on the room price.
      */
-    public void bookRoomWithRewards() throws IOException {
-        Scanner scanner = new Scanner(System.in);
+public void bookRoomWithRewards() throws IOException {
+    Scanner scanner = new Scanner(System.in);
 
-        Hotel hotel = hotelController.getHotel(1);
+    Hotel hotel = hotelController.getHotel(1);
 
-        System.out.println("\n\n----- BOOK A HOTEL ROOM -----\n");
-        if (hotelController.isHotelSoldOut(hotel)) {
-            System.out.println("Hotel is sold out!");
-            return;
-        }
-
-        System.out.print("What room type? (Standard, Deluxe or Suite): ");
-        String roomType = scanner.next();
-
-        Room room = roomController.isARoomAvailableFromRequirements(roomType);
-        if (room == null) {
-            System.out.println("Could not find a room. Try again with different requirements.");
-            return;
-        }
-
-        System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
-        char answer = scanner.next().charAt(0);
-
-        if (answer == 'y') {
-            System.out.print("How many nights? ");
-            int nights;
-            try {
-                nights = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid nights!");
-                return;
-            }
-
-            double totalPrice = nights * room.getPricePerNight();
-            double finalPrice = totalPrice;
-            double rewardsUsed = 0.0;
-
-            System.out.print("Is the customer a rewards member? (yes/no): ");
-            String isRewardsMember = scanner.next();
-
-            if (isRewardsMember.equalsIgnoreCase("yes")) {
-                System.out.print("Enter customer ID: ");
-                int customerId = scanner.nextInt();
-
-                StorageHelper.DataStore<Map<String, Object>> loyaltyStore = rewardsController.getStorageHelper().getStore("loyaltyPrograms");
-                Map<String, Object> loyaltyData = loyaltyStore.load(String.valueOf(customerId));
-
-                if (loyaltyData != null && loyaltyData.containsKey("rewardsAvailable")) {
-                    double rewardsAvailable = (double) loyaltyData.get("rewardsAvailable");
-
-                    System.out.print("Do they want to redeem their rewards? (yes/no): ");
-                    String redeemRewards = scanner.next();
-
-                    if (redeemRewards.equalsIgnoreCase("yes")) {
-                        rewardsUsed = Math.min(rewardsAvailable, totalPrice);
-                        finalPrice = totalPrice - rewardsUsed;
-
-                        // Update the loyalty program with the new points
-                        int pointsAccumulated = (int) loyaltyData.get("pointsAccumulated");
-                        int pointsUsed = (int) (rewardsUsed / 0.5);
-                        loyaltyData.put("pointsAccumulated", pointsAccumulated - pointsUsed);
-                        loyaltyData.put("rewardsAvailable", (pointsAccumulated - pointsUsed) * 0.5);
-
-                        loyaltyStore.save(String.valueOf(customerId), loyaltyData);
-                    }
-                } else {
-                    System.out.println("Customer is not a rewards member.");
-                }
-            }
-
-            System.out.println("Final price after rewards: $" + finalPrice);
-            System.out.println("Rewards used: $" + rewardsUsed);
-            System.out.println("Total price: $" + totalPrice);
-
-            Booking booking = bookingController.bookRoom(room, nights, customer);
-            if (booking == null) return;
-            keyCardController.newKeyCard(booking, room);
-            room.setStatus("OCCUPIED");
-            room.setCurrentGuest(customer.getName());
-            roomController.updateRoom(room);
-            hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
-            hotelController.updateHotel(hotel);
-
-            System.out.println("Booking confirmed for customer ID: " + customer.getId());
-            System.out.println("Booking ID: " + booking.getId());
-            System.out.println("Check-out date: " + booking.getCheckOutDate());
-        }
+    System.out.println("\n\n----- BOOK A HOTEL ROOM WITH REWARDS -----\n");
+    if (hotelController.isHotelSoldOut(hotel)) {
+        System.out.println("Hotel is sold out!");
+        return;
     }
+
+    System.out.print("What room type? (Standard, Deluxe or Suite): ");
+    String roomType = scanner.next();
+
+    Room room = roomController.isARoomAvailableFromRequirements(roomType);
+    if (room == null) {
+        System.out.println("Could not find a room. Try again with different requirements.");
+        return;
+    }
+
+    System.out.print("There is a room for $" + room.getPricePerNight() + " per night. Purchase? (y/n) ");
+    char answer = scanner.next().charAt(0);
+
+    if (answer == 'y') {
+        System.out.print("How many nights? ");
+        int nights;
+        try {
+            nights = scanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid nights!");
+            return;
+        }
+
+        double totalPrice = nights * room.getPricePerNight();
+        double finalPrice = totalPrice;
+        double rewardsUsed = 0.0;
+        int customerId = -1; // Declare customerId outside the if block
+
+        System.out.print("Is the customer a rewards member? (yes/no): ");
+        String isRewardsMember = scanner.next();
+
+        if (isRewardsMember.equalsIgnoreCase("yes")) {
+            System.out.print("Enter customer ID: ");
+            customerId = scanner.nextInt();
+
+            StorageHelper.DataStore<Map<String, Object>> customerStore = rewardsController.getCustomerStorageHelper().getStore("customers");
+            Map<String, Object> customerData = customerStore.load(String.valueOf(customerId));
+
+            if (customerData != null && customerData.containsKey("loyaltyProgramLevel") && customerData.containsKey("rewardsAvailable")) {
+                double rewardsAvailable = (double) customerData.get("rewardsAvailable");
+
+                System.out.print("Do they want to redeem their rewards? (yes/no): ");
+                String redeemRewards = scanner.next();
+
+                if (redeemRewards.equalsIgnoreCase("yes")) {
+                    rewardsUsed = Math.min(rewardsAvailable, totalPrice);
+                    finalPrice = totalPrice - rewardsUsed;
+
+                    // Update the loyalty program with the new points
+                    int pointsAccumulated = ((Number) customerData.get("pointsAccumulated")).intValue();
+                    int pointsUsed = (int) (rewardsUsed / 0.5);
+                    customerData.put("pointsAccumulated", pointsAccumulated - pointsUsed);
+                    customerData.put("rewardsAvailable", (pointsAccumulated - pointsUsed) * 0.5);
+
+                    customerStore.save(String.valueOf(customerId), customerData);
+                }
+            } else {
+                System.out.println("Customer is not a rewards member.");
+            }
+        }
+
+        System.out.println("Price before rewards: $" + totalPrice);
+        System.out.println("Rewards used: $" + rewardsUsed);
+        System.out.println("Final price after rewards: $" + finalPrice);
+        
+
+        Customer customer = customerController.getCustomer(customerId);
+        Booking booking = bookingController.bookRoom(room, nights, customer);
+        if (booking == null) return;
+        keyCardController.newKeyCard(booking, room);
+        room.setStatus("OCCUPIED");
+        room.setCurrentGuest(customer.getName());
+        roomController.updateRoom(room);
+        hotel.setNumAvailableRooms(hotel.getNumAvailableRooms() - 1);
+        hotelController.updateHotel(hotel);
+
+        System.out.println("Booking confirmed for customer ID: " + customer.getId());
+        System.out.println("Booking ID: " + booking.getId());
+        System.out.println("Check-out date: " + booking.getCheckOutDate());
+    }
+}
 
     /*
      * Demonstrates the profit cycle by showing the franchise owner's pay and the CEO's pay for a booking that has been placed.

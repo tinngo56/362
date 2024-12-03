@@ -1,38 +1,17 @@
-// Models/LoyaltyProgram.java
 package Models;
 
 public class LoyaltyProgram {
     private int id;
-    private String tier;
     private int pointsAccumulated;
     private double rewardsAvailable;
+    private String tier;
 
-    public LoyaltyProgram(int id, String tier, int pointsAccumulated) {
-        this.id = id;
-        this.tier = tier;
-        this.pointsAccumulated = pointsAccumulated;
-        this.rewardsAvailable = calculateRewards(pointsAccumulated);
-    }
-
-    public LoyaltyProgram() {
-        super();
-    }
-
-    // Getters and setters
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTier() {
-        return tier;
-    }
-
-    public void setTier(String tier) {
-        this.tier = tier;
     }
 
     public int getPointsAccumulated() {
@@ -47,6 +26,14 @@ public class LoyaltyProgram {
 
     public double getRewardsAvailable() {
         return rewardsAvailable;
+    }
+
+    public void setRewardsAvailable(double rewardsAvailable) {
+        this.rewardsAvailable = rewardsAvailable;
+    }
+
+    public String getTier() {
+        return tier;
     }
 
     private double calculateRewards(int points) {

@@ -47,17 +47,23 @@ public class RoomController {
     }
 
     public boolean isRoomAvailable(Room room) {
-        return room.getStatus().equals("AVAILABLE");
+        return room.getStatus().equals("CLEAN") && !room.isOccupied();
     }
 
     public Room isARoomAvailableFromRequirements(String roomType) throws IOException {
         List<Room> rooms = getAllRooms();
-        for(Room room : rooms) {
-            if(room.getRoomType().equals(roomType) && isRoomAvailable(room)) {
+        if (rooms == null) {
+            System.out.println("No rooms available.");
+            return null;
+        }
+        for (Room room : rooms) {
+            System.out.println("Checking room: " + room.getRoomNumber() + ", Type: " + room.getRoomType() + ", Status: " + room.getStatus() + ", Occupied: " + room.isOccupied());
+            if (room.getRoomType().equals(roomType) && isRoomAvailable(room)) {
+                System.out.println("Room available: " + room.getRoomNumber());
                 return room;
             }
         }
-
+        System.out.println("No available room found for type: " + roomType);
         return null;
     }
 
