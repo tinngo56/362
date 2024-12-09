@@ -1,12 +1,10 @@
-// Controllers/RewardsController.java
 package Controllers;
-
-import Models.LoyaltyProgram;
-import Models.Booking;
 import Storage.StorageHelper;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import Models.Booking;
 
 public class RewardsController {
     private final StorageHelper loyaltyStorageHelper;
@@ -41,17 +39,12 @@ public class RewardsController {
             loyaltyData.put("rewardsAvailable", 0.0);
         }
 
-        int currentPoints = (int) loyaltyData.get("pointsAccumulated");
+        int currentPoints = ((Number) loyaltyData.get("pointsAccumulated")).intValue();
         int newPoints = currentPoints + (int) amountSpent;
         double newRewardsAvailable = newPoints * 0.5; // Assuming 1 point = $0.5 rewards
 
         loyaltyData.put("pointsAccumulated", newPoints);
         loyaltyData.put("rewardsAvailable", newRewardsAvailable);
-
-        LoyaltyProgram loyaltyProgram = new LoyaltyProgram();
-        loyaltyProgram.setId(customerId);
-        loyaltyProgram.setPointsAccumulated(newPoints);
-        loyaltyProgram.setRewardsAvailable(newRewardsAvailable);
 
         loyaltyStore.save(String.valueOf(customerId), loyaltyData);
     }
@@ -60,5 +53,31 @@ public class RewardsController {
         int customerId = booking.getCustomerId();
         double amountSpent = booking.getTotalPrice();
         earnPoints(customerId, amountSpent);
+    }
+
+    public void updateCustomerTiers() throws IOException {
+        StorageHelper.DataStore<Map<String, Object>> customerStore = customerStorageHelper.getStore("customers");
+        List<Map<String, Object>> customers = customerStore.loadAll();
+
+        for (Map<String, Object> customerData : customers) {
+            int points = ((Number) customerData.get("pointsAccumulated")).intValue();
+            String newTier = calculateTier(points);
+            customerData.put("loyaltyProgramLevel", newTier);
+            customerStore.save(String.valueOf(customerData.get("id")), customerData);
+        }
+    }
+
+    private String calculateTier(int points) {
+        if (points >= 2000) {
+            return "Diamond";
+        } else if (points >= 1500) {
+            return "Platinum";
+        } else if (points >= 1000) {
+            return "Gold";
+        } else if (points >= 500) {
+            return "Silver";
+        } else {
+            return "Bronze";
+        }
     }
 }
