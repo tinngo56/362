@@ -35,6 +35,7 @@ public class UseCases {
     private final PayrollController payrollController;
     private final GroundsMaintenanceController groundsMaintenanceController;
     private final EventPlanningController eventPlanningController;
+    private final TravelDeskController travelDeskController;
     private static final Display display = new Display();
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
@@ -67,6 +68,7 @@ public class UseCases {
         this.payrollController = new PayrollController(baseDirectory);
         this.groundsMaintenanceController = new GroundsMaintenanceController(baseDirectory);
         this.eventPlanningController = new EventPlanningController(baseDirectory);
+        this.travelDeskController = new TravelDeskController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -93,8 +95,38 @@ public class UseCases {
             case 7:
                 groundsKeeperUseCases(scnr);
                 break;
+            case 8:
+                travelDeskUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
+        }
+    }
+
+    private void travelDeskUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nTravel Desk Actions:");
+            display.DisplayTravelDeskAgentUseCases();
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    travelDeskController.displayAllExcursions();
+                    break;
+                case 2:
+                    travelDeskController.addExcursion();
+                    break;
+                case 3:
+                    travelDeskController.removeExcursion();
+                    break;
+                default:
+                    System.out.println("Invalid number.");
+            }
         }
     }
 

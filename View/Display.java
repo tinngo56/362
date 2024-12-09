@@ -10,6 +10,7 @@ public class Display {
         System.out.println("5. Cleaning Staff");
         System.out.println("6. Applicant");
         System.out.println("7. Grounds Keeper");
+        System.out.println("8. Travel Desk");
         System.out.println("0. Exit");
     }
 
@@ -82,6 +83,14 @@ public class Display {
         System.out.println("12. Book Event Room");
         System.out.println("13. Cancel Event Room Booking");
         System.out.println("0. Exit to change your Actor choice");
+    }
+
+    public void DisplayTravelDeskAgentUseCases() {
+        System.out.println("1. View Excursions");
+        System.out.println("2. Create Excursion");
+        System.out.println("3. Delete Excursion");
+
+        System.out.println("0. Exit");
     }
 
     public void DisplayManagerUseCases() {

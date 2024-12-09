@@ -10,6 +10,8 @@ public class Excursion extends Mappable<Excursion> {
     private String description;
     private int availableSlots;
 
+    public Excursion() {}
+
     public Excursion(String name, double price, String description, int availableSlots) {
         this.name = name;
         this.price = price;
@@ -47,12 +49,7 @@ public class Excursion extends Mappable<Excursion> {
 
     @Override
     public String toString() {
-        return "Excursion{" +
-                "name='" + name + '\'' +
-                ", price=" + price +
-                ", description='" + description + '\'' +
-                ", availableSlots=" + availableSlots +
-                '}';
+        return "Name: " + name + "\n Price: $" + price + ", Description: " + description + ", Slots: " + availableSlots + "\n";
     }
 
     @Override
