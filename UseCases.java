@@ -2,6 +2,9 @@ import Controllers.*;
 import Models.*;
 import Models.Excursions.Excursion;
 import Models.Excursions.ExcursionBooking;
+import Models.PetCare.Pet;
+import Models.PetCare.PetService;
+import Models.PetCare.PetServiceBooking;
 import Models.Vending.VendingMachine;
 import Storage.StorageHelper;
 import View.Display;
@@ -38,6 +41,7 @@ public class UseCases {
     private final GroundsMaintenanceController groundsMaintenanceController;
     private final EventPlanningController eventPlanningController;
     private final TravelDeskController travelDeskController;
+    private final PetServiceController petServiceController;
     private static final Display display = new Display();
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
@@ -71,6 +75,7 @@ public class UseCases {
         this.groundsMaintenanceController = new GroundsMaintenanceController(baseDirectory);
         this.eventPlanningController = new EventPlanningController(baseDirectory);
         this.travelDeskController = new TravelDeskController(baseDirectory);
+        this.petServiceController = new PetServiceController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -100,9 +105,77 @@ public class UseCases {
             case 8:
                 travelDeskUseCases(scnr);
                 break;
+            case 9:
+                petDeskUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
         }
+    }
+
+    private void petDeskUseCases(Scanner scnr) throws IOException {
+        while(true) {
+            System.out.println("\nPet Service Desk Actions:");
+            display.DisplayPetServiceDeskUseCases();
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    petServiceController.displayAllPetServices();
+                    break;
+                case 2:
+                    petServiceController.addPetService();
+                    break;
+                case 3:
+                    petServiceController.removePetService();
+                    break;
+                case 4:
+
+                    break;
+                default:
+                    System.out.println("Invalid number.");
+            }
+        }
+    }
+
+    private void BookPetServiceUseCase(Scanner scnr) throws IOException {
+        System.out.println("\n===== BOOK PET SERVICE =====\n");
+
+        System.out.println("Here are the list of available pet services we offer: ");
+
+        petServiceController.displayAllPetServices();
+
+        System.out.print("Enter a pet service name to book: ");
+        String name = scnr.nextLine();
+        PetService service = petServiceController.getPetService(name);
+        if(service == null){
+            System.out.println("\nERROR: Invalid pet service name.");
+            return;
+        }
+
+        System.out.println("Great! Please provide some information about your pet: ");
+        System.out.print("Name of pet: ");
+        String petName = scnr.nextLine();
+        System.out.print("Age of pet: ");
+        int age = scnr.nextInt();
+        scnr.nextLine();
+        System.out.print("Pet Breed (ex. Dog - Poodle, Cat - Domestic Shorthaired): ");
+        String breed = scnr.nextLine();
+        System.out.print("Pet behavior: ");
+        String behavior = scnr.nextLine();
+        System.out.print("Feeding Schedule: ");
+        String feedingSchedule = scnr.nextLine();
+
+        Pet pet = new Pet(petName, breed, behavior, feedingSchedule, age);
+        PetServiceBooking booking = petServiceController.AddPetBooking(pet, service);
+
+        System.out.println("Booking made! ID: " + booking.getId());
+
     }
 
     private void travelDeskUseCases(Scanner scnr) throws IOException {
@@ -564,6 +637,9 @@ public class UseCases {
                     break;
                 case 16:
                     travelDeskController.completeExcursion(true);
+                    break;
+                case 17:
+                    BookPetServiceUseCase(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");

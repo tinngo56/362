@@ -11,6 +11,14 @@ public class Display {
         System.out.println("6. Applicant");
         System.out.println("7. Grounds Keeper");
         System.out.println("8. Travel Desk");
+        System.out.println("9. Pet Service Desk");
+        System.out.println("0. Exit");
+    }
+
+    public void DisplayPetServiceDeskUseCases() {
+        System.out.println("1. View Pet Services");
+        System.out.println("2. Create Pet Service");
+        System.out.println("3. Delete Pet Service");
         System.out.println("0. Exit");
     }
 
@@ -86,6 +94,8 @@ public class Display {
         System.out.println("14. Book Excursion");
         System.out.println("15. Go on Excursion!");
         System.out.println("16. Cancel Excursion");
+        System.out.println("========Pet Services=======");
+        System.out.println("17. Book Pet Service");
         System.out.println("0. Exit to change your Actor choice");
     }
 
