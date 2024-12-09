@@ -559,6 +559,12 @@ public class UseCases {
                 case 14:
                     BookExcursionUseCase(scnr);
                     break;
+                case 15:
+                    travelDeskController.completeExcursion(false);
+                    break;
+                case 16:
+                    travelDeskController.completeExcursion(true);
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }

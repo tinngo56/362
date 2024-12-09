@@ -84,6 +84,8 @@ public class Display {
         System.out.println("13. Cancel Event Room Booking");
         System.out.println("=========Excursions========");
         System.out.println("14. Book Excursion");
+        System.out.println("15. Go on Excursion!");
+        System.out.println("16. Cancel Excursion");
         System.out.println("0. Exit to change your Actor choice");
     }
 

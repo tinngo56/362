@@ -147,11 +147,11 @@ public class TravelDeskController {
         return booking;
     }
 
-    public void removeBooking(int id) throws IOException {
+    public boolean removeBooking(int id) throws IOException {
         ExcursionBooking booking = getBooking(id);
         if(booking == null) {
             System.out.println("\nERROR: Booking does not exist!\n");
-            return;
+            return false;
         }
 
         Excursion excursion = getExcursion(booking.getExcursionName());
@@ -160,10 +160,27 @@ public class TravelDeskController {
 
         deleteBooking(id);
         updateTravelDesk();
+        return true;
+    }
+
+    public void completeExcursion(boolean isCancelling) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEnter booking ID: ");
+        int id = scanner.nextInt();
+
+        if(removeBooking(id)) {
+            System.out.println(!isCancelling ? "\nYou had fun on your excursion!\n" : "\nExcursion has been cancelled!\n");
+        }
     }
 
     public void DisplayAllBookings() throws IOException {
         List<ExcursionBooking> bookings = getAllBookings();
+
+        if(bookings.isEmpty()) {
+            System.out.println("\nThere are no excursion bookings.\n");
+            return;
+        }
+
         for(ExcursionBooking booking : bookings) {
             System.out.println(booking);
         }
