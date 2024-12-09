@@ -82,6 +82,8 @@ public class Display {
         System.out.println("==========Event Booking Actions==========");
         System.out.println("12. Book Event Room");
         System.out.println("13. Cancel Event Room Booking");
+        System.out.println("=========Excursions========");
+        System.out.println("14. Book Excursion");
         System.out.println("0. Exit to change your Actor choice");
     }
 
@@ -89,7 +91,7 @@ public class Display {
         System.out.println("1. View Excursions");
         System.out.println("2. Create Excursion");
         System.out.println("3. Delete Excursion");
-
+        System.out.println("4. View Current Bookings");
         System.out.println("0. Exit");
     }
 

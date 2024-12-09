@@ -11,6 +11,10 @@ public class TravelDesk {
         this.excursions = new ArrayList<>();
     }
 
+    public TravelDesk(List<Excursion> excursions) {
+        this.excursions = excursions;
+    }
+
     public void addExcursion(Excursion excursion) {
         excursions.add(excursion);
     }
@@ -38,7 +42,9 @@ public class TravelDesk {
     public void showExcursions() {
         System.out.println("Available Excursions:");
         for (Excursion excursion : excursions) {
-            System.out.println(excursion);
+            if(excursion.isAvailable()) {
+                System.out.println(excursion);
+            }
         }
     }
 }

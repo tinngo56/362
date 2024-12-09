@@ -1,5 +1,7 @@
 import Controllers.*;
 import Models.*;
+import Models.Excursions.Excursion;
+import Models.Excursions.ExcursionBooking;
 import Models.Vending.VendingMachine;
 import Storage.StorageHelper;
 import View.Display;
@@ -124,10 +126,52 @@ public class UseCases {
                 case 3:
                     travelDeskController.removeExcursion();
                     break;
+                case 4:
+                    travelDeskController.DisplayAllBookings();
+                    break;
                 default:
                     System.out.println("Invalid number.");
             }
         }
+    }
+
+    private void BookExcursionUseCase(Scanner scnr) throws IOException {
+        System.out.println("\n===== BOOK EXCURSION =====\n");
+
+        System.out.println("Here are the list of available excursions: ");
+
+        travelDeskController.displayAvailableExcursions();
+
+        System.out.print("Enter a excursion name to book: ");
+        String name = scnr.nextLine();
+        Excursion excursion = travelDeskController.getExcursion(name);
+        if(excursion == null){
+            System.out.println("\nERROR: Invalid excursion name.");
+            return;
+        }
+
+        System.out.println("\nEnter a preferred date: ");
+        System.out.println("1. " + LocalDate.now());
+        System.out.println("2. " + LocalDate.now().plusDays(1));
+        System.out.println("3. " + LocalDate.now().plusDays(2));
+        System.out.println("4. " + LocalDate.now().plusDays(3));
+
+        System.out.print("Enter choice: ");
+        int choice = scnr.nextInt();
+        if(choice > 4) choice = 4;
+        if(choice < 1) choice = 1;
+        scnr.nextLine();
+
+        System.out.print("How many people? (1 per slot) ");
+        int people = scnr.nextInt();
+        if(people > excursion.getAvailableSlots()) {
+            System.out.println("\nERROR: Invalid number of people.");
+            return;
+        }
+
+       ExcursionBooking booking = travelDeskController.newBooking(name,
+                LocalDate.now().plusDays(choice - 1).toString(), people);
+        System.out.println("\nExcursion Booking created! ID: " + booking.getId());
     }
 
     private void applicantUseCases(Scanner scnr) throws IOException {
@@ -511,6 +555,9 @@ public class UseCases {
                     break;
                 case 13:
                     eventPlanningController.cancelBooking(scnr);
+                    break;
+                case 14:
+                    BookExcursionUseCase(scnr);
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");

@@ -47,6 +47,10 @@ public class Excursion extends Mappable<Excursion> {
         }
     }
 
+    public void setAvailableSlots(int availableSlots) {
+        this.availableSlots = availableSlots;
+    }
+
     @Override
     public String toString() {
         return "Name: " + name + "\n Price: $" + price + ", Description: " + description + ", Slots: " + availableSlots + "\n";
