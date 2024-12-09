@@ -9,7 +9,6 @@ import Models.Vending.VendingMachine;
 import Storage.StorageHelper;
 import View.Display;
 
-import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -135,7 +134,10 @@ public class UseCases {
                     petServiceController.removePetService();
                     break;
                 case 4:
-
+                    petServiceController.displayAllBookings();
+                    break;
+                case 5:
+                    petServiceController.DisplayAllPets();
                     break;
                 default:
                     System.out.println("Invalid number.");
@@ -640,6 +642,9 @@ public class UseCases {
                     break;
                 case 17:
                     BookPetServiceUseCase(scnr);
+                    break;
+                case 18:
+                    petServiceController.CancelPetServiceBooking();
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");

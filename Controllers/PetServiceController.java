@@ -54,8 +54,8 @@ public class PetServiceController {
         storage.getStore(PET_SERVICE_BOOKING_STORAGE).save(String.valueOf(booking.getId()), booking.toMap());
     }
 
-    public void deletePetServiceBooking(String name) throws IOException {
-        storage.getStore(PET_SERVICE_BOOKING_STORAGE).delete(name);
+    public void deletePetServiceBooking(int id) throws IOException {
+        storage.getStore(PET_SERVICE_BOOKING_STORAGE).delete(String.valueOf(id));
     }
 
     public PetServiceBooking getPetServiceBooking(int id) throws IOException {
@@ -83,6 +83,15 @@ public class PetServiceController {
 
     public void deletePet(String petName) throws IOException {
         storage.getStore(PET_STORAGE).delete(petName);
+    }
+
+    public List<Pet> getAllPets() throws IOException {
+        List<Map<String, Object>> data = storage.getStore(PET_STORAGE).loadAll();
+        List<Pet> pets = new ArrayList<>();
+        for(Map<String, Object> pet : data) {
+            pets.add(new Pet().fromMap(pet));
+        }
+        return pets;
     }
 
     public void addPetService() throws IOException {
@@ -125,12 +134,60 @@ public class PetServiceController {
         }
     }
 
+    public void displayAllBookings() throws IOException {
+        List<PetServiceBooking> petServiceBookingList = getAllPetServiceBookings();
+        if(petServiceBookingList.isEmpty()) {
+            System.out.println("No booking services.");
+            return;
+        }
+        System.out.println();
+
+        for(PetServiceBooking booking : petServiceBookingList) {
+            System.out.println(booking);
+        }
+    }
+
     public PetServiceBooking AddPetBooking(Pet pet, PetService service) throws IOException {
         createPet(pet);
         PetServiceBooking booking = new PetServiceBooking(pet.getName(), getAllPetServiceBookings().size() + 1,
                 service.getServiceName());
         createPetServiceBooking(booking);
         return booking;
+    }
+
+    public void CancelPetServiceBooking() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("\nEnter Pet Service Booking ID to cancel booking: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        PetServiceBooking booking = getPetServiceBooking(id);
+        if(booking == null) {
+            System.out.println("\nERROR: Booking not found.\n");
+            return;
+        }
+
+        System.out.print("Are you sure you want to cancel " + booking + "? (y / n) ");
+        String choice = scanner.nextLine();
+
+        if(choice.equalsIgnoreCase("y")) {
+            deletePetServiceBooking(booking.getId());
+            System.out.println("\nPet Service Booking Canceled\n");
+        }
+    }
+
+    public void DisplayAllPets() throws IOException {
+        List<Pet> pets = getAllPets();
+
+        if(pets.isEmpty()) {
+            System.out.println("No pets.");
+            return;
+        }
+        System.out.println();
+
+        for(Pet pet : pets) {
+            System.out.println(pet);
+        }
     }
 
 }

@@ -38,4 +38,9 @@ public class Pet extends Mappable<Pet> {
     public int getAge() {
         return age;
     }
+
+    @Override
+    public String toString() {
+        return "Pet name: " + name + ", Age: " + age + ", Breed: " + breed + ", Behavior: " + behavior + ", Feeding Schedule: " + feedingSchedule;
+    }
 }

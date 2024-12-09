@@ -34,4 +34,10 @@ public class PetServiceBooking extends Mappable<PetServiceBooking> {
     public String getPetServiceName() {
         return petServiceName;
     }
+
+    @Override
+    public String toString() {
+        return "Booking ID: " + id + ", Service Name: " + petServiceName + ", Pet Name: " + petName;
+    }
+
 }
