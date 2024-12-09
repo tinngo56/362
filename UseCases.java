@@ -1039,18 +1039,59 @@ public void bookRoomWithRewards() throws IOException {
     /*
      * Sends a mass email to all customers in the database.
      */
-public void sendMassEmail() throws IOException {
-    Scanner scanner = new Scanner(System.in);
+    public void sendMassEmail() throws IOException {
+        Scanner scanner = new Scanner(System.in);
 
-    System.out.print("Enter email subject: ");
-    String subject = scanner.nextLine();
+        System.out.print("Enter email subject: ");
+        String subject = scanner.nextLine();
 
-    System.out.print("Enter email message: ");
-    String message = scanner.nextLine();
+        System.out.print("Enter email message: ");
+        String message = scanner.nextLine();
 
-    EmailController emailController = new EmailController("hotel_data");
-    emailController.sendMassEmail(subject, message);
-}
+        EmailController emailController = new EmailController("hotel_data");
+        emailController.sendMassEmail(subject, message);
+    }
+
+    /*
+    * Submits customer feedback by taking in a customer ID and feedback message from the user and storing it in the database.
+    */
+    public void submitCustomerFeedback() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter customer ID: ");
+        int customerId = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        System.out.print("Enter feedback: ");
+        String feedback = scanner.nextLine();
+
+        FeedbackController feedbackController = new FeedbackController("hotel_data");
+        feedbackController.submitFeedback(customerId, feedback);
+
+        System.out.println("Feedback submitted successfully.");
+    }
+
+    public void viewAllCustomerFeedback() throws IOException {
+        FeedbackController feedbackController = new FeedbackController("hotel_data");
+        List<Map<String, Object>> feedbackList = feedbackController.viewAllFeedback();
+
+        System.out.println("All Customer Feedback:");
+        for (Map<String, Object> feedback : feedbackList) {
+            System.out.println("Customer ID: " + feedback.get("customerId"));
+            System.out.println("Feedback: " + feedback.get("feedback"));
+            System.out.println("Timestamp: " + feedback.get("timestamp"));
+            System.out.println("------------------------------");
+        }
+    }
+
+    /*
+    * Update loyalty tiers
+    */
+    public void updateLoyaltyTiers() throws IOException {
+        RewardsController rewardsController = new RewardsController("hotel_data");
+        rewardsController.updateCustomerTiers();
+        System.out.println("Customer loyalty tiers updated successfully.");
+    }
 
     // Use case Vending Machine
     private void useVendingMachine(Scanner scanner) throws IOException {
