@@ -171,6 +171,7 @@ public class PetServiceController {
         String choice = scanner.nextLine();
 
         if(choice.equalsIgnoreCase("y")) {
+            deletePet(booking.getPetName());
             deletePetServiceBooking(booking.getId());
             System.out.println("\nPet Service Booking Canceled\n");
         }
