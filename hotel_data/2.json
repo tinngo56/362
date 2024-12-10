@@ -1,0 +1,9 @@
+{
+  "contactInfo": "098-765-4321",
+  "numberOfStays": 5,
+  "name": "Jane Smith",
+  "paymentMethod": "CREDIT_CARD",
+  "loyaltyProgramLevel": "SILVER",
+  "id": 2,
+  "lastModified": "2024-12-10_01-02-47"
+}

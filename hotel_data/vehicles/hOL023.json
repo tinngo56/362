@@ -1,0 +1,13 @@
+{
+  "condition": "Good",
+  "claimTicket": "hOL023_PS010_2024-12-10_01-25-46",
+  "licensePlate": "hOL023",
+  "fuelLevel": 1.0,
+  "parkTime": "2024-12-10T01:25:46.076508",
+  "model": "fit",
+  "parkedBy": "Tin",
+  "lastModified": "2024-12-10_01-25-46",
+  "make": "honda",
+  "parkingSpace": "PS010",
+  "status": "PARKED"
+}

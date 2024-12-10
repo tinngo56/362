@@ -11,7 +11,7 @@ public class TinUseCases {
     public static void main(String[] args) {
         try {
             // Initialize controller with data directory
-            controller = new CarRentalController("./data");
+            controller = new CarRentalController("./hotel_data");
             scanner = new Scanner(System.in);
 
             // Initialize sample data
@@ -119,10 +119,10 @@ public class TinUseCases {
     }
 
     private static void initializeSampleData() throws IOException {
-        StorageHelper vehicleStorage = new StorageHelper("./data", "rental_vehicles");
-        StorageHelper customerStorage = new StorageHelper("./data", "customers");
-        StorageHelper roomStorage = new StorageHelper("./data", "hotel_rooms");
-        StorageHelper insuranceStorage = new StorageHelper("./data", "insurance_options");
+        StorageHelper vehicleStorage = new StorageHelper("./hotel_data", "rental_vehicles");
+        StorageHelper customerStorage = new StorageHelper("./hotel_data", "customers");
+        StorageHelper roomStorage = new StorageHelper("./hotel_data", "rooms");
+        StorageHelper insuranceStorage = new StorageHelper("./hotel_data", "insurance_options");
 
         // Initialize sample vehicles
         VehicleForRent[] vehicles = {
@@ -154,7 +154,7 @@ public class TinUseCases {
         };
 
         for (Room room : rooms) {
-            roomStorage.getStore("hotel_rooms").save(String.valueOf(room.getRoomNumber()), room.toMap());
+            roomStorage.getStore("rooms").save(String.valueOf(room.getRoomNumber()), room.toMap());
         }
 
         // Initialize insurance options

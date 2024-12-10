@@ -14,11 +14,11 @@
   "lastModified": "2024-11-21_08-20-39",
   "roomType": "Deluxe",
   "pricePerNight": 150.0,
-  "status": "CLEAN",
+  "status": "AVAILABLE",
   "linens": {
     "pillowcases": 4.0,
     "towels": 4.0,
     "bed_sheets": 0.0
   },
-  "isOccupied": false
+  "isOccupied": true
 }

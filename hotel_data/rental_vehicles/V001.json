@@ -1,0 +1,10 @@
+{
+  "year": 2023,
+  "model": "Camry",
+  "vehicleId": "V001",
+  "lastModified": "2024-12-10_01-02-47",
+  "make": "Toyota",
+  "status": "AVAILABLE",
+  "dailyRate": 65.0,
+  "currentLocation": "HOTEL_GARAGE"
+}
