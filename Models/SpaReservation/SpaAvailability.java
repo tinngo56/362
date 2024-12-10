@@ -161,15 +161,15 @@ public class SpaAvailability {
             // Confirm reservation
             System.out.println("You have chosen " + daysOfWeek[dayChoice] + ", " +
                     times.get(slotChoice).get(0) + ":00 - " + times.get(slotChoice).get(1) + ":00.");
-            System.out.print("Do you want to confirm this reservation? (yes/y/no/n): ");
+            System.out.print("Do you want to confirm this reservation time? (yes/y/no/n): ");
             scnr.nextLine(); // Clear the buffer
             String confirmation = scnr.nextLine().trim().toLowerCase();
             if (confirmation.equals("yes") || confirmation.equals("y")) {
                 available.get(dayChoice).set(slotChoice, false);
-                System.out.println("Reservation confirmed! Enjoy your spa service.");
+                System.out.println("Reservation time confirmed! Chose your your spa services.");
                 return new TimeSlot(DayOfWeek.fromInt(dayChoice), slotChoice);
             } else {
-                System.out.println("Reservation not confirmed. Returning to the menu.");
+                System.out.println("Reservation time not confirmed. Returning to the menu.");
             }
         }
     }
