@@ -41,6 +41,7 @@ public class UseCases {
     private final EventPlanningController eventPlanningController;
     private final TravelDeskController travelDeskController;
     private final PetServiceController petServiceController;
+    private final ValetController valetController;
     private static final Display display = new Display();
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
@@ -75,6 +76,7 @@ public class UseCases {
         this.eventPlanningController = new EventPlanningController(baseDirectory);
         this.travelDeskController = new TravelDeskController(baseDirectory);
         this.petServiceController = new PetServiceController(baseDirectory);
+        this.valetController = new ValetController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -107,8 +109,38 @@ public class UseCases {
             case 9:
                 petDeskUseCases(scnr);
                 break;
+            case 10:
+                valetUseCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
+        }
+    }
+
+    private void valetUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nValet Actions:");
+            display.DisplayValetUseCases();
+            System.out.print("Enter your choice: ");
+            ValetStaff valetStaff = valetController.getAvailableValetStaff();
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+            
+
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    valetController.parkVehicle(valetStaff, scnr);
+                    break;
+                case 2:
+                    valetController.retrieveVehicle(scnr, valetStaff);
+                    break;
+                default:
+                    System.out.println("Invalid number.");
+            }
         }
     }
 

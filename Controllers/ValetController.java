@@ -41,6 +41,7 @@ public class ValetController {
                 .filter(staff -> staff.get("status").equals(STATUS_AVAILABLE))
                 .collect(Collectors.toList());
         if (availableStaff.isEmpty()) {
+            System.out.println("No available valet staff:");
             throw new IOException("No available valet staff");
         }
         valetStaff = (ValetStaff) new ValetStaff().fromMap(availableStaff.get(0));

@@ -12,6 +12,7 @@ public class Display {
         System.out.println("7. Grounds Keeper");
         System.out.println("8. Travel Desk");
         System.out.println("9. Pet Service Desk");
+        System.out.println("10. Valet Service");
         System.out.println("0. Exit");
     }
 
@@ -173,4 +174,9 @@ public class Display {
         System.out.println("0. Exit to change your Actor choice");
     }
 
+    public void DisplayValetUseCases() {
+        System.out.println("1. Check in a car");
+        System.out.println("2. Check out a car");
+        System.out.println("0. Exit");
+    }
 }
