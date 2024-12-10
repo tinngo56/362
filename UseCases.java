@@ -659,6 +659,9 @@ public class UseCases {
                 case 47:
                     payrollController.payEmployee(scnr);
                     break;
+                case 48:
+                    viewAllCustomerFeedback();
+                    break;
                 default:
                     System.out.println("Invalid action number. Please try again.");
             }
@@ -730,6 +733,9 @@ public class UseCases {
                     break;
                 case 18:
                     petServiceController.CancelPetServiceBooking();
+                    break;
+                case 19:
+                    submitCustomerFeedback();
                     break;
                 default:
                     System.out.println("Invalid action number. Please try again.");

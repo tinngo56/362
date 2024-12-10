@@ -101,6 +101,8 @@ public class Display {
         System.out.println("========Pet Services=======");
         System.out.println("17. Book Pet Service");
         System.out.println("18. Cancel Pet Service Booking");
+        System.out.println("=======Feedback=======");
+        System.out.println("19. Leave Customer Feedback");
         System.out.println("0. Exit to change your Actor choice");
     }
 
@@ -172,6 +174,8 @@ public class Display {
         System.out.println("==========Payroll actions==========");
         System.out.println("46. Verify Employee Payroll Info");
         System.out.println("47. Pay Employee");
+        System.out.println("==========Feedback===========");
+        System.out.println("48. View Feedback");
         System.out.println("0. Exit to change your Actor choice");
     }
 
