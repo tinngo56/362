@@ -41,6 +41,8 @@ public class UseCases {
     private final EventPlanningController eventPlanningController;
     private final TravelDeskController travelDeskController;
     private final PetServiceController petServiceController;
+    private final ValetController valetController;
+    private final CarRentalController carRentalController;
     private static final Display display = new Display();
 
     private Customer customer = new Customer(1, "Bob Smith", "bob.smith@gmail.com", "Basic", "Visa", 0);
@@ -75,6 +77,8 @@ public class UseCases {
         this.eventPlanningController = new EventPlanningController(baseDirectory);
         this.travelDeskController = new TravelDeskController(baseDirectory);
         this.petServiceController = new PetServiceController(baseDirectory);
+        this.valetController = new ValetController(baseDirectory);
+        this.carRentalController = new CarRentalController(baseDirectory);
     }
 
     public void runUseCaseByActor(int actor, Scanner scnr) throws IOException{
@@ -107,8 +111,89 @@ public class UseCases {
             case 9:
                 petDeskUseCases(scnr);
                 break;
+            case 10:
+                valetUseCases(scnr);
+                break;
+            case 11:
+                carRentalCases(scnr);
+                break;
             default:
                 System.out.println("Invalid actor number. Please try again.");
+        }
+    }
+
+    private void carRentalCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nCar Rental Actions:");
+            display.DisplayCarRentalUseCases();
+            System.out.print("Enter your choice: ");
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    carRentalController.initiateRental(scnr);
+                    break;
+                case 2:
+                    carRentalController.extendRental(scnr);
+                    break;
+                case 3: 
+                    carRentalController.completeRental(scnr);
+                    break;
+                case 4:
+                    carRentalController.displayRentalStatus(scnr);
+                    break;
+                case 5:
+                    listAvailableVehicles();
+                default:
+                    System.out.println("Invalid number.");
+
+            }
+        }
+    }
+
+    private void listAvailableVehicles() {
+        try {
+            System.out.println("\nAvailable Vehicles:");
+            carRentalController.getAvailableVehicles().forEach(vehicle -> 
+                System.out.printf("%s - %s %s (%d) - $%.2f per day%n",
+                    vehicle.getVehicleId(),
+                    vehicle.getMake(),
+                    vehicle.getModel(),
+                    vehicle.getYear(),
+                    vehicle.getDailyRate())
+            );
+        } catch (IOException e) {
+            System.err.println("Error listing vehicles: " + e.getMessage());
+        }
+    }
+    private void valetUseCases(Scanner scnr) throws IOException {
+        while (true) {
+            System.out.println("\nValet Actions:");
+            display.DisplayValetUseCases();
+            System.out.print("Enter your choice: ");
+            ValetStaff valetStaff = valetController.getAvailableValetStaff();
+
+            int choice = scnr.nextInt();
+            scnr.nextLine();
+            
+
+
+            switch (choice) {
+                case 0:
+                    return;
+                case 1:
+                    valetController.parkVehicle(valetStaff, scnr);
+                    break;
+                case 2:
+                    valetController.retrieveVehicle(scnr, valetStaff);
+                    break;
+                default:
+                    System.out.println("Invalid number.");
+            }
         }
     }
 

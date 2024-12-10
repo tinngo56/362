@@ -15,7 +15,7 @@
   "lastModified": "2024-11-21_10-56-13",
   "roomType": "Standard",
   "pricePerNight": 100.0,
-  "status": "NEEDS_SUPPLIES",
+  "status": "AVAILABLE",
   "linens": {
     "pillowcases": 4.0,
     "towels": 4.0,

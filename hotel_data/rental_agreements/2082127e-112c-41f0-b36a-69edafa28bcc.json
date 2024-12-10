@@ -1,0 +1,24 @@
+{
+  "insurance": {
+    "coverage": 50000.0,
+    "type": "BASIC",
+    "dailyRate": 15.0
+  },
+  "agreementId": "2082127e-112c-41f0-b36a-69edafa28bcc",
+  "deposit": 130.0,
+  "startTime": "2024-12-10T02:04:14.659110",
+  "endTime": "2024-12-16T02:04:14.659849",
+  "lastModified": "2024-12-10_02-04-43",
+  "insuranceSelected": false,
+  "vehicle": {
+    "year": 2023,
+    "model": "Camry",
+    "vehicleId": "V001",
+    "make": "Toyota",
+    "status": "AVAILABLE",
+    "dailyRate": 65.0,
+    "currentLocation": "HOTEL_GARAGE"
+  },
+  "dailyRate": 65.0,
+  "status": "COMPLETED"
+}

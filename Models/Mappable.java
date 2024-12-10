@@ -2,7 +2,7 @@ package Models;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Enumeration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,7 +16,6 @@ public abstract class Mappable<T> {
         Map<String, Object> map = new HashMap<>();
         Class<?> currentClass = this.getClass();
         
-        // Loop through the class hierarchy until we hit Object class
         while (currentClass != null && currentClass != Object.class) {
             Field[] fields = currentClass.getDeclaredFields();
             
@@ -25,6 +24,12 @@ public abstract class Mappable<T> {
                     field.setAccessible(true);
                     Object value = field.get(this);
                     if (value != null) {
+                        if (value instanceof LocalDateTime) {
+                            value = ((LocalDateTime) value).toString();
+                        } else if (value instanceof Mappable) {
+                            // Handle nested Mappable objects
+                            value = ((Mappable<?>) value).toMap();
+                        }
                         map.put(field.getName(), value);
                     }
                 }
@@ -32,7 +37,6 @@ public abstract class Mappable<T> {
                 throw new RuntimeException("Error converting object to map", e);
             }
             
-            // Move up to the superclass
             currentClass = currentClass.getSuperclass();
         }
         
@@ -48,50 +52,37 @@ public abstract class Mappable<T> {
     @SuppressWarnings("unchecked")
     public T fromMap(Map<String, Object> map) {
         try {
-            // Get the actual class of T
             Class<T> clazz = (Class<T>) this.getClass();
-    
-            // Create a new instance using the default constructor
             Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
     
-            // Start with current class and work up the hierarchy
             Class<?> currentClass = clazz;
             while (currentClass != null && currentClass != Object.class) {
-                // Get fields for current class level
                 Field[] fields = currentClass.getDeclaredFields();
     
-                // Set each field from the map
                 for (Field field : fields) {
                     field.setAccessible(true);
                     Object value = map.get(field.getName());
     
                     if (value != null) {
-                        // Handle primitive type conversions
                         Class<?> fieldType = field.getType();
     
-                        if (value instanceof Number) {
-                            Number numValue = (Number) value;
-    
-                            if (fieldType == Integer.class || fieldType == int.class) {
-                                field.set(instance, numValue.intValue());
-                            } else if (fieldType == Long.class || fieldType == long.class) {
-                                field.set(instance, numValue.longValue());
-                            } else if (fieldType == Double.class || fieldType == double.class) {
-                                field.set(instance, numValue.doubleValue());
-                            } else if (fieldType == Float.class || fieldType == float.class) {
-                                field.set(instance, numValue.floatValue());
-                            } else if (fieldType == Short.class || fieldType == short.class) {
-                                field.set(instance, numValue.shortValue());
-                            } else if (fieldType == Byte.class || fieldType == byte.class) {
-                                field.set(instance, numValue.byteValue());
-                            }
+                        if (fieldType == LocalDateTime.class && value instanceof String) {
+                            field.set(instance, LocalDateTime.parse((String) value));
+                        } else if (value instanceof Map && Mappable.class.isAssignableFrom(fieldType)) {
+                            // Handle nested Mappable objects
+                            Constructor<?> fieldConstructor = fieldType.getDeclaredConstructor();
+                            fieldConstructor.setAccessible(true);
+                            Mappable<?> nestedInstance = (Mappable<?>) fieldConstructor.newInstance();
+                            field.set(instance, nestedInstance.fromMap((Map<String, Object>) value));
+                        } else if (value instanceof Number) {
+                            setNumberField(field, instance, (Number) value);
                         } else if (fieldType == String.class && !(value instanceof String)) {
                             field.set(instance, String.valueOf(value));
                         } else if(fieldType.isEnum()) {
                             field.set(instance, Enum.valueOf((Class<Enum>) fieldType, value.toString()));
-                        } else {
+                        } else if (fieldType.isAssignableFrom(value.getClass())) {
                             field.set(instance, value);
                         }
                     }
@@ -102,7 +93,24 @@ public abstract class Mappable<T> {
     
             return instance;
         } catch (Exception e) {
-            throw new RuntimeException("Error converting map to object", e);
+            throw new RuntimeException("Error converting map to object: " + e.getMessage(), e);
+        }
+    }
+
+    private void setNumberField(Field field, Object instance, Number value) throws IllegalAccessException {
+        Class<?> fieldType = field.getType();
+        if (fieldType == Integer.class || fieldType == int.class) {
+            field.set(instance, value.intValue());
+        } else if (fieldType == Long.class || fieldType == long.class) {
+            field.set(instance, value.longValue());
+        } else if (fieldType == Double.class || fieldType == double.class) {
+            field.set(instance, value.doubleValue());
+        } else if (fieldType == Float.class || fieldType == float.class) {
+            field.set(instance, value.floatValue());
+        } else if (fieldType == Short.class || fieldType == short.class) {
+            field.set(instance, value.shortValue());
+        } else if (fieldType == Byte.class || fieldType == byte.class) {
+            field.set(instance, value.byteValue());
         }
     }
 }

@@ -1,0 +1,9 @@
+{
+  "contactInfo": "123-456-7890",
+  "numberOfStays": 10,
+  "name": "John Doe",
+  "paymentMethod": "CREDIT_CARD",
+  "loyaltyProgramLevel": "GOLD",
+  "id": 1,
+  "lastModified": "2024-12-10_01-02-47"
+}

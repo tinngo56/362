@@ -1,0 +1,10 @@
+{
+  "year": 2023,
+  "model": "CR-V",
+  "vehicleId": "V002",
+  "lastModified": "2024-12-10_01-50-37",
+  "make": "Honda",
+  "status": "AVAILABLE",
+  "dailyRate": 75.0,
+  "currentLocation": "HOTEL_GARAGE"
+}

@@ -1,0 +1,10 @@
+{
+  "year": 2023,
+  "model": "Model 3",
+  "vehicleId": "V004",
+  "lastModified": "2024-12-10_01-02-47",
+  "make": "Tesla",
+  "status": "AVAILABLE",
+  "dailyRate": 100.0,
+  "currentLocation": "HOTEL_GARAGE"
+}

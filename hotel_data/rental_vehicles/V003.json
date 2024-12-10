@@ -1,0 +1,10 @@
+{
+  "year": 2023,
+  "model": "X5",
+  "vehicleId": "V003",
+  "lastModified": "2024-12-10_01-04-49",
+  "make": "BMW",
+  "status": "RENTED",
+  "dailyRate": 120.0,
+  "currentLocation": "HOTEL_GARAGE"
+}
