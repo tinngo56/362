@@ -2,7 +2,7 @@ package Models;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.Enumeration;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +25,10 @@ public abstract class Mappable<T> {
                     field.setAccessible(true);
                     Object value = field.get(this);
                     if (value != null) {
+                        // Convert LocalDateTime to String when storing in map
+                        if (value instanceof LocalDateTime) {
+                            value = ((LocalDateTime) value).toString();
+                        }
                         map.put(field.getName(), value);
                     }
                 }
@@ -32,7 +36,6 @@ public abstract class Mappable<T> {
                 throw new RuntimeException("Error converting object to map", e);
             }
             
-            // Move up to the superclass
             currentClass = currentClass.getSuperclass();
         }
         
@@ -48,30 +51,27 @@ public abstract class Mappable<T> {
     @SuppressWarnings("unchecked")
     public T fromMap(Map<String, Object> map) {
         try {
-            // Get the actual class of T
             Class<T> clazz = (Class<T>) this.getClass();
-    
-            // Create a new instance using the default constructor
             Constructor<T> constructor = clazz.getDeclaredConstructor();
             constructor.setAccessible(true);
             T instance = constructor.newInstance();
     
-            // Start with current class and work up the hierarchy
             Class<?> currentClass = clazz;
             while (currentClass != null && currentClass != Object.class) {
-                // Get fields for current class level
                 Field[] fields = currentClass.getDeclaredFields();
     
-                // Set each field from the map
                 for (Field field : fields) {
                     field.setAccessible(true);
                     Object value = map.get(field.getName());
     
                     if (value != null) {
-                        // Handle primitive type conversions
                         Class<?> fieldType = field.getType();
     
-                        if (value instanceof Number) {
+                        if (fieldType == LocalDateTime.class && value instanceof String) {
+                            // Convert String to LocalDateTime
+                            LocalDateTime dateTime = LocalDateTime.parse((String) value);
+                            field.set(instance, dateTime);
+                        } else if (value instanceof Number) {
                             Number numValue = (Number) value;
     
                             if (fieldType == Integer.class || fieldType == int.class) {
