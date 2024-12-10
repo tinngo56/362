@@ -1,0 +1,13 @@
+{
+  "condition": "Good",
+  "claimTicket": "HOL100_PS007_2024-12-09_22-55-08",
+  "licensePlate": "HOL100",
+  "fuelLevel": 1.0,
+  "parkTime": "2024-12-09T22:55:08.410508",
+  "model": "Altima",
+  "parkedBy": "Tin",
+  "lastModified": "2024-12-09_22-55-08",
+  "make": "Nissan",
+  "parkingSpace": "PS007",
+  "status": "PARKED"
+}

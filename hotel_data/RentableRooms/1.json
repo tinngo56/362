@@ -1,0 +1,8 @@
+{
+  "name": "conference",
+  "ratePerPerson": 20.0,
+  "bookedDates": "",
+  "id": 1,
+  "lastModified": "2024-12-09_23-06-23",
+  "capacity": 100
+}
