@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class CarRentalController {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
-    
+
     // Storage helpers
     private final StorageHelper vehicleStorage;
     private final StorageHelper agreementStorage;
@@ -99,7 +99,7 @@ public class CarRentalController {
      */
     public RentalAgreement initiateRental(Scanner scanner) throws IOException {
         System.out.println("\n=== Initiating Vehicle Rental ===");
-        
+
         // Verify customer's room
         int roomNumber = promptForInt(scanner, "Enter room number:");
         if (!verifyCustomerStay(roomNumber)) {
@@ -109,7 +109,7 @@ public class CarRentalController {
         // Display and select vehicle
         List<VehicleForRent> availableVehicles = getAvailableVehicles();
         displayAvailableVehicles(availableVehicles);
-        
+
         String vehicleId = promptForString(scanner, "\nEnter vehicle ID:");
         VehicleForRent selectedVehicle = getVehicleById(vehicleId);
         if (selectedVehicle == null || !STATUS_AVAILABLE.equals(selectedVehicle.getStatus())) {
@@ -125,14 +125,17 @@ public class CarRentalController {
         // Display and select insurance
         displayInsuranceOptions(getInsuranceOptions());
         String insuranceType = promptForString(scanner, "Select insurance (enter type or 'none'):");
-        Insurance selectedInsurance = !"none".equalsIgnoreCase(insuranceType) 
-                ? getInsuranceByType(insuranceType) 
+        Insurance selectedInsurance = !"none".equalsIgnoreCase(insuranceType)
+                ? getInsuranceByType(insuranceType)
                 : null;
 
         // Create and save the agreement
         RentalAgreement agreement = createRentalAgreement(selectedVehicle, rentalDays, selectedInsurance);
         saveRentalAgreement(agreement);
         updateVehicleStatus(selectedVehicle, STATUS_RENTED);
+
+        System.out.println("\nRental agreement created successfully!");
+        System.out.println("Agreement ID: " + agreement.getAgreementId());
 
         return agreement;
     }
@@ -149,7 +152,7 @@ public class CarRentalController {
         agreement.setInsurance(insurance);
         agreement.setDailyRate(vehicle.getDailyRate());
         agreement.setStatus(AGREEMENT_STATUS_ACTIVE);
-        
+
         // Calculate deposit based on insurance
         double deposit = (insurance != null ? 2 : 4) * vehicle.getDailyRate();
         agreement.setDeposit(deposit);
@@ -162,7 +165,7 @@ public class CarRentalController {
      */
     public void extendRental(Scanner scanner) throws IOException {
         System.out.println("\n=== Extending Rental Period ===");
-        
+
         String agreementId = promptForString(scanner, "Enter agreement ID:");
         RentalAgreement agreement = loadRentalAgreement(agreementId);
         if (agreement == null) {
@@ -187,7 +190,7 @@ public class CarRentalController {
      */
     public void completeRental(Scanner scanner) throws IOException {
         System.out.println("\n=== Completing Rental ===");
-        
+
         String agreementId = promptForString(scanner, "Enter agreement ID:");
         RentalAgreement agreement = loadRentalAgreement(agreementId);
         if (agreement == null) {
@@ -208,7 +211,9 @@ public class CarRentalController {
     /**
      * Display the status of a rental agreement
      */
-    public void displayRentalStatus(String agreementId) throws IOException {
+    public void displayRentalStatus(Scanner scanner) throws IOException {
+        System.out.println("Enter agreement ID:");
+        String agreementId = scanner.nextLine();
         RentalAgreement agreement = loadRentalAgreement(agreementId);
         if (agreement == null) {
             System.out.println("Agreement not found");
@@ -217,7 +222,7 @@ public class CarRentalController {
 
         System.out.println("\n=== Rental Status ===");
         System.out.println("Agreement ID: " + agreement.getAgreementId());
-        System.out.println("Vehicle: " + agreement.getVehicle().getMake() + " " + 
+        System.out.println("Vehicle: " + agreement.getVehicle().getMake() + " " +
                 agreement.getVehicle().getModel());
         System.out.println("Start Time: " + agreement.getStartTime());
         System.out.println("End Time: " + agreement.getEndTime());

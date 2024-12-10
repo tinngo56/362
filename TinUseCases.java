@@ -94,9 +94,7 @@ public class TinUseCases {
 
     private static void checkRentalStatus() {
         try {
-            System.out.println("Enter agreement ID:");
-            String agreementId = scanner.nextLine();
-            controller.displayRentalStatus(agreementId);
+            controller.displayRentalStatus(scanner);
         } catch (IOException e) {
             System.err.println("Error checking rental status: " + e.getMessage());
         }

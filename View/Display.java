@@ -13,6 +13,7 @@ public class Display {
         System.out.println("8. Travel Desk");
         System.out.println("9. Pet Service Desk");
         System.out.println("10. Valet Service");
+        System.out.println("11. Car Rental");
         System.out.println("0. Exit");
     }
 
@@ -178,5 +179,16 @@ public class Display {
         System.out.println("1. Check in a car");
         System.out.println("2. Check out a car");
         System.out.println("0. Exit");
+    }
+
+    public void DisplayCarRentalUseCases() {
+        System.out.println("\n=== Hotel Car Rental System ===");
+        System.out.println("1. Rent a Vehicle");
+        System.out.println("2. Extend Rental");
+        System.out.println("3. Complete Rental");
+        System.out.println("4. Check Rental Status");
+        System.out.println("5. List Available Vehicles");
+        System.out.println("0. Exit");
+        System.out.print("Enter your choice: ");
     }
 }
