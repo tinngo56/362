@@ -16,7 +16,6 @@ public abstract class Mappable<T> {
         Map<String, Object> map = new HashMap<>();
         Class<?> currentClass = this.getClass();
         
-        // Loop through the class hierarchy until we hit Object class
         while (currentClass != null && currentClass != Object.class) {
             Field[] fields = currentClass.getDeclaredFields();
             
@@ -25,9 +24,11 @@ public abstract class Mappable<T> {
                     field.setAccessible(true);
                     Object value = field.get(this);
                     if (value != null) {
-                        // Convert LocalDateTime to String when storing in map
                         if (value instanceof LocalDateTime) {
                             value = ((LocalDateTime) value).toString();
+                        } else if (value instanceof Mappable) {
+                            // Handle nested Mappable objects
+                            value = ((Mappable<?>) value).toMap();
                         }
                         map.put(field.getName(), value);
                     }
@@ -68,30 +69,20 @@ public abstract class Mappable<T> {
                         Class<?> fieldType = field.getType();
     
                         if (fieldType == LocalDateTime.class && value instanceof String) {
-                            // Convert String to LocalDateTime
-                            LocalDateTime dateTime = LocalDateTime.parse((String) value);
-                            field.set(instance, dateTime);
+                            field.set(instance, LocalDateTime.parse((String) value));
+                        } else if (value instanceof Map && Mappable.class.isAssignableFrom(fieldType)) {
+                            // Handle nested Mappable objects
+                            Constructor<?> fieldConstructor = fieldType.getDeclaredConstructor();
+                            fieldConstructor.setAccessible(true);
+                            Mappable<?> nestedInstance = (Mappable<?>) fieldConstructor.newInstance();
+                            field.set(instance, nestedInstance.fromMap((Map<String, Object>) value));
                         } else if (value instanceof Number) {
-                            Number numValue = (Number) value;
-    
-                            if (fieldType == Integer.class || fieldType == int.class) {
-                                field.set(instance, numValue.intValue());
-                            } else if (fieldType == Long.class || fieldType == long.class) {
-                                field.set(instance, numValue.longValue());
-                            } else if (fieldType == Double.class || fieldType == double.class) {
-                                field.set(instance, numValue.doubleValue());
-                            } else if (fieldType == Float.class || fieldType == float.class) {
-                                field.set(instance, numValue.floatValue());
-                            } else if (fieldType == Short.class || fieldType == short.class) {
-                                field.set(instance, numValue.shortValue());
-                            } else if (fieldType == Byte.class || fieldType == byte.class) {
-                                field.set(instance, numValue.byteValue());
-                            }
+                            setNumberField(field, instance, (Number) value);
                         } else if (fieldType == String.class && !(value instanceof String)) {
                             field.set(instance, String.valueOf(value));
                         } else if(fieldType.isEnum()) {
                             field.set(instance, Enum.valueOf((Class<Enum>) fieldType, value.toString()));
-                        } else {
+                        } else if (fieldType.isAssignableFrom(value.getClass())) {
                             field.set(instance, value);
                         }
                     }
@@ -102,7 +93,24 @@ public abstract class Mappable<T> {
     
             return instance;
         } catch (Exception e) {
-            throw new RuntimeException("Error converting map to object", e);
+            throw new RuntimeException("Error converting map to object: " + e.getMessage(), e);
+        }
+    }
+
+    private void setNumberField(Field field, Object instance, Number value) throws IllegalAccessException {
+        Class<?> fieldType = field.getType();
+        if (fieldType == Integer.class || fieldType == int.class) {
+            field.set(instance, value.intValue());
+        } else if (fieldType == Long.class || fieldType == long.class) {
+            field.set(instance, value.longValue());
+        } else if (fieldType == Double.class || fieldType == double.class) {
+            field.set(instance, value.doubleValue());
+        } else if (fieldType == Float.class || fieldType == float.class) {
+            field.set(instance, value.floatValue());
+        } else if (fieldType == Short.class || fieldType == short.class) {
+            field.set(instance, value.shortValue());
+        } else if (fieldType == Byte.class || fieldType == byte.class) {
+            field.set(instance, value.byteValue());
         }
     }
 }

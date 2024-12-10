@@ -143,9 +143,4 @@ public class RentalAgreement extends Mappable<RentalAgreement> {
         }
         return rate * (1 - discount);
     }
-
-    public boolean isInsuranceSelected() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isInsuranceSelected'");
-    }
 }

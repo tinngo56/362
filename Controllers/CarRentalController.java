@@ -66,12 +66,6 @@ public class CarRentalController {
             throw new IOException("Invalid room number or customer not staying at hotel");
         }
 
-        // Get customer information
-        System.out.println("Enter customer ID:");
-        String customerId = scanner.nextLine();
-        Customer customer = (Customer) new Customer()
-                .fromMap(customerStorageHelper.getStore(DATA_CUSTOMER_NAME).load(customerId));
-
         // Display available vehicles
         List<VehicleForRent> availableVehicles = getAvailableVehicles();
         System.out.println("\nAvailable Vehicles:");
@@ -110,8 +104,7 @@ public class CarRentalController {
         }
 
         // Create rental agreement
-        RentalAgreement agreement = createRentalAgreement(
-            customer, selectedVehicle, rentalDays, selectedInsurance);
+        RentalAgreement agreement = createRentalAgreement(selectedVehicle, rentalDays, selectedInsurance);
 
         // Save agreement
         agreementStorageHelper.getStore(DATA_AGREEMENT_NAME)
@@ -125,26 +118,19 @@ public class CarRentalController {
         return agreement;
     }
 
-    private RentalAgreement createRentalAgreement(
-            Customer customer, VehicleForRent vehicle, int rentalDays, Insurance insurance) {
+    private RentalAgreement createRentalAgreement(VehicleForRent vehicle, int rentalDays, Insurance insurance) {
         RentalAgreement agreement = new RentalAgreement();
         agreement.setAgreementId(UUID.randomUUID().toString());
-        agreement.setCustomer(customer);
         agreement.setVehicle(vehicle);
         agreement.setStartTime(LocalDateTime.now());
         agreement.setEndTime(LocalDateTime.now().plusDays(rentalDays));
-        agreement.setInsuranceSelected(insurance != null);
+        agreement.setInsurance(insurance);
         agreement.setDailyRate(vehicle.getDailyRate());
         agreement.setStatus(AGREEMENT_STATUS_ACTIVE);
         
         // Calculate deposit based on insurance selection
         double deposit = insurance != null ? vehicle.getDailyRate() * 2 : vehicle.getDailyRate() * 4;
         agreement.setDeposit(deposit);
-
-        // Apply loyalty discount if applicable
-        if (customer.getNumberOfStays() > 5) {
-            agreement.applyLoyaltyDiscount(0.10); // 10% discount for loyal customers
-        }
 
         return agreement;
     }
@@ -163,20 +149,13 @@ public class CarRentalController {
         // Extend the rental period
         agreement.extendRental(agreement.getEndTime().plusDays(additionalDays));
 
-        // Update deposit if needed
-        if (!agreement.isInsuranceSelected()) {
-            double additionalDeposit = agreement.getDailyRate() * additionalDays * 2;
-            agreement.setDeposit(agreement.getDeposit() + additionalDeposit);
-        }
-
         // Save updated agreement
         agreementStorageHelper.getStore(DATA_AGREEMENT_NAME)
                 .save(agreementId, agreement.toMap());
 
         System.out.println("Rental period extended successfully");
         System.out.println("New return date: " + agreement.getEndTime());
-        System.out.println("Additional deposit required: $" + 
-                (agreement.isInsuranceSelected() ? 0 : agreement.getDailyRate() * additionalDays * 2));
+        System.out.println("Total cost: $" + agreement.calculateTotalCost());
     }
 
     public void completeRental(Scanner scanner) throws IOException {
@@ -222,7 +201,6 @@ public class CarRentalController {
                 agreement.getVehicle().getModel());
         System.out.println("Start Time: " + agreement.getStartTime());
         System.out.println("End Time: " + agreement.getEndTime());
-        System.out.println("Insurance: " + (agreement.isInsuranceSelected() ? "Yes" : "No"));
         System.out.println("Daily Rate: $" + agreement.getDailyRate());
         System.out.println("Total Cost: $" + agreement.calculateTotalCost());
         System.out.println("Status: " + agreement.getStatus());
